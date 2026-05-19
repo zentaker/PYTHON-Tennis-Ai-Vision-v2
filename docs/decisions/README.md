@@ -9,6 +9,7 @@ Una decision tecnica relevante, un archivo. Los ADRs iniciales de Stage 0 quedan
 - ADR-0003: `0003-gestor-entorno.md`
 - ADR-0004: `0004-clip-referencia.md`
 - ADR-0005: `0005-ground-truth-vs-finetuning.md`
+- ADR-0007: `0007-ubicacion-repositorio-mntc-vs-wsl-home.md`
 
 ## Flujo
 
