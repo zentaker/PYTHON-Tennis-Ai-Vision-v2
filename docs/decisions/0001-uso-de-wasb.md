@@ -1,6 +1,6 @@
 # ADR-0001: Uso de WASB como tracker principal
 
-- **Status:** Propuesta
+- **Status:** Aceptada
 - **Fecha:** 2026-05-18
 - **Stage:** 0
 
@@ -26,3 +26,7 @@ Usar WASB como tracker principal en Stage 2, con fallbacks documentados antes de
 ## Notas
 
 Stage 0 no instala ni prueba WASB.
+
+## Aceptación
+
+Aceptada por el usuario el 2026-05-18 vía aprobación verbal en la sesión de planificación (carry-over de Stage 0 documentado en STAGE_1_PROMPT.md).

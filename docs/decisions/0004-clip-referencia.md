@@ -1,6 +1,6 @@
 # ADR-0004: Madrid Open R1 como clip de referencia
 
-- **Status:** Propuesta
+- **Status:** Aceptada
 - **Fecha:** 2026-05-18
 - **Stage:** 0
 
@@ -26,3 +26,7 @@ Usar `data/reference_clip/madrid_R1.mp4` como clip de referencia Nivel A.
 ## Notas
 
 El video real no se commitea. Debe existir localmente para cerrar Stage 0.
+
+## Aceptación
+
+Aceptada por el usuario el 2026-05-18 vía aprobación verbal en la sesión de planificación (carry-over de Stage 0 documentado en STAGE_1_PROMPT.md).

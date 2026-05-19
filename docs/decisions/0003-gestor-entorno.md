@@ -1,6 +1,6 @@
 # ADR-0003: uv como gestor de entorno
 
-- **Status:** Propuesta
+- **Status:** Aceptada
 - **Fecha:** 2026-05-18
 - **Stage:** 0
 
@@ -26,3 +26,7 @@ Usar `uv` como gestor de entorno, dependencias, lock file y version de Python.
 ## Notas
 
 `uv.lock` debe generarse dentro del entorno objetivo antes de cerrar Stage 0.
+
+## Aceptación
+
+Aceptada por el usuario el 2026-05-18 vía aprobación verbal en la sesión de planificación (carry-over de Stage 0 documentado en STAGE_1_PROMPT.md).

@@ -1,6 +1,6 @@
 # ADR-0002: Python 3.11 como version objetivo
 
-- **Status:** Propuesta
+- **Status:** Aceptada
 - **Fecha:** 2026-05-18
 - **Stage:** 0
 
@@ -26,3 +26,7 @@ Usar Python 3.11.x como version objetivo del proyecto.
 ## Notas
 
 Si un blocker real demuestra que Python 3.11 es el problema, se abre un ADR de pivote.
+
+## Aceptación
+
+Aceptada por el usuario el 2026-05-18 vía aprobación verbal en la sesión de planificación (carry-over de Stage 0 documentado en STAGE_1_PROMPT.md).

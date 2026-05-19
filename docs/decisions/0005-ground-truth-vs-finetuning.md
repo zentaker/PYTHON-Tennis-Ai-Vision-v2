@@ -1,6 +1,6 @@
 # ADR-0005: Anotaciones manuales como ground truth, no training data
 
-- **Status:** Propuesta
+- **Status:** Aceptada
 - **Fecha:** 2026-05-18
 - **Stage:** 0
 
@@ -26,3 +26,7 @@ Usar las anotaciones manuales de Stage 0 como ground truth de validacion para St
 ## Notas
 
 Si WASB detecta al menos 75% sobre ground truth, no se fine-tunea en Stage 2.
+
+## Aceptación
+
+Aceptada por el usuario el 2026-05-18 vía aprobación verbal en la sesión de planificación (carry-over de Stage 0 documentado en STAGE_1_PROMPT.md).
