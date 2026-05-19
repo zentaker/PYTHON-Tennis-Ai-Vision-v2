@@ -1,7 +1,7 @@
 # Anomaly Refinement Report - Stage 3
 
 **Fecha:** 2026-05-19  
-**Estado:** refinamiento implementado, pendiente de nueva validacion visual humana
+**Estado:** segundo refinamiento implementado, pendiente de nueva validacion visual humana
 
 ## Contexto
 
@@ -112,6 +112,67 @@ C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\smoothed_trajectory_overlay.mp4
 C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\trajectory_debug_overlay.mp4
 C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\smoothed_trajectory.csv
 C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\trajectory_quality_report.json
+```
+
+## Segundo refinamiento: artefacto residual segundo 12
+
+Tras revisar el primer refinamiento, el usuario confirmo:
+
+- El artefacto del saque quedo corregido.
+- Permanece un unico artefacto residual alrededor del segundo 12.
+- El problema se ve en el lado far / jugador lejano como una mala continuidad local.
+
+Rango analizado:
+
+- Prioritario: frames `700-740`
+- Expandido: frames `680-760`
+
+Hallazgo:
+
+| Frame | Antes | Despues | Motivo |
+|---:|---|---|---|
+| 745 | `detected` | `rejected` | Punto de baja confidence relativa (`0.547193`) que rompe el puente local entre frames vecinos coherentes. |
+
+Detalle del frame responsable:
+
+```text
+frame_id: 745
+raw: (750.0, 183.75)
+smooth antes: (744.0, 129.75)
+smooth despues: (742.5, 116.25)
+reason despues: low_confidence_prediction_break|filled_by_interpolation
+```
+
+Regla adicional aplicada:
+
+- `low_confidence_prediction_break`
+- Se activa solo para puntos que pasaron el threshold minimo pero tienen confidence baja relativa.
+- Requiere desviacion contra prediccion local + saltos a vecinos, no velocidad sola.
+
+Parametros nuevos:
+
+- `low_confidence_break_max_conf`: `0.6`
+- `low_confidence_prediction_px`: `55.0`
+- `low_confidence_neighbor_jump_px`: `50.0`
+
+Metricas antes/despues del segundo refinamiento:
+
+| Metrica | Antes segundo refinamiento | Despues segundo refinamiento |
+|---|---:|---:|
+| Detected | 799 | 798 |
+| Rejected | 5 | 6 |
+| Interpolated | 95 | 95 |
+| Missing | 50 | 50 |
+| Cobertura final | 899 / 949 (94.73%) | 899 / 949 (94.73%) |
+| Anomalias residuales detectadas | 2 | 3 |
+| Gaps interpolados | 40 | 41 |
+| Maximo gap interpolado | 9 | 9 |
+
+Artefactos focalizados:
+
+```text
+C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\refinement_review\second12_anomaly_window.csv
+C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\refinement_review\second12_debug_excerpt.mp4
 ```
 
 ## Gate pendiente

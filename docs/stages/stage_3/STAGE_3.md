@@ -64,19 +64,22 @@ Estados por frame:
 - `isolated_outlier_px`: `140.0`
 - `residual_prediction_px`: `120.0`
 - `residual_neighbor_jump_px`: `135.0`
+- `low_confidence_break_max_conf`: `0.6`
+- `low_confidence_prediction_px`: `55.0`
+- `low_confidence_neighbor_jump_px`: `50.0`
 - `smoothing_window`: `5`
 
 ## Metricas del run actual
 
 - Frames totales: `949`
-- Frames `detected`: `799`
-- Frames `rejected`: `5`
+- Frames `detected`: `798`
+- Frames `rejected`: `6`
 - Frames `interpolated`: `95`
 - Frames `missing`: `50`
 - Cobertura final: `899 / 949` (`94.73%`)
 - Saltos rechazados: `3`
-- Anomalias residuales rechazadas: `2`
-- Gaps interpolados: `40`
+- Anomalias residuales rechazadas: `3`
+- Gaps interpolados: `41`
 - Maximo gap interpolado: `9`
 
 Frames rechazados automaticamente:
@@ -89,12 +92,15 @@ Frames rechazados por refinamiento posterior a validacion humana:
 
 - `81`
 - `132`
+- `745`
 
 ## Relacion con limitaciones de Stage 2
 
 Stage 2 fue cerrado como visualmente viable con 4 errores/desvios puntuales observados por el usuario, principalmente cerca de impactos del jugador far/lejos de la camara.
 
 La primera version de Stage 3 rechazo automaticamente 3 spikes aislados y relleno esos frames mediante interpolacion local. Tras validacion humana inicial `C`, se agrego una segunda pasada `local_prediction_break` para eliminar dos artefactos residuales visibles. El maximo salto frame-a-frame bajo de `73.717790 px` a `35.363514 px` sin reducir la cobertura final.
+
+Tras una segunda validacion humana, el artefacto del saque quedo corregido y solo permanecio un artefacto residual alrededor del segundo 12. Se agrego `low_confidence_prediction_break`, que rechazo el frame `745` y lo reinterpolo localmente sin reducir cobertura.
 
 Reporte de refinamiento:
 

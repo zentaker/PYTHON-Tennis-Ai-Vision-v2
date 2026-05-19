@@ -95,6 +95,10 @@ def generate_refinement_review(
     before_csv: Path,
     after_csv: Path,
     output_dir: Path,
+    *,
+    focus_start: int | None = None,
+    focus_end: int | None = None,
+    excerpt_name: str = "refined_overlay_excerpt.mp4",
 ) -> dict:
     output_dir.mkdir(parents=True, exist_ok=True)
     top_jump_dir = output_dir / "top_jump_frames"
@@ -177,6 +181,45 @@ def generate_refinement_review(
         writer.writeheader()
         writer.writerows(candidates)
 
+    if focus_start is not None and focus_end is not None:
+        focus_path = output_dir / "second12_anomaly_window.csv"
+        with focus_path.open("w", newline="", encoding="utf-8") as handle:
+            fieldnames = [
+                "frame_id",
+                "before_source",
+                "after_source",
+                "before_x_smooth",
+                "before_y_smooth",
+                "after_x_smooth",
+                "after_y_smooth",
+                "x_raw",
+                "y_raw",
+                "confidence",
+                "before_reason",
+                "after_reason",
+            ]
+            writer = csv.DictWriter(handle, fieldnames=fieldnames)
+            writer.writeheader()
+            for frame_id in range(focus_start, focus_end + 1):
+                if frame_id not in before or frame_id not in after:
+                    continue
+                writer.writerow(
+                    {
+                        "frame_id": frame_id,
+                        "before_source": before[frame_id]["source"],
+                        "after_source": after[frame_id]["source"],
+                        "before_x_smooth": before[frame_id]["x_smooth"],
+                        "before_y_smooth": before[frame_id]["y_smooth"],
+                        "after_x_smooth": after[frame_id]["x_smooth"],
+                        "after_y_smooth": after[frame_id]["y_smooth"],
+                        "x_raw": after[frame_id]["x_raw"],
+                        "y_raw": after[frame_id]["y_raw"],
+                        "confidence": after[frame_id]["confidence"],
+                        "before_reason": before[frame_id]["reason"],
+                        "after_reason": after[frame_id]["reason"],
+                    }
+                )
+
     interesting_frames = sorted(
         set(new_rejections + [329] + [end for _value, _start, end, _previous, _current in before_jumps[:6]])
     )
@@ -207,14 +250,19 @@ def generate_refinement_review(
         cv2.imwrite(str(output_dir / "before_after_contact_sheet.png"), np.vstack(sheet_rows))
 
     excerpt_frames = []
-    for center in sorted(set(new_rejections + [329])):
+    excerpt_centers = sorted(set(new_rejections + [329]))
+    if focus_start is not None and focus_end is not None:
+        excerpt_centers = [frame_id for frame_id in excerpt_centers if focus_start <= frame_id <= focus_end]
+        if not excerpt_centers:
+            excerpt_centers = [(focus_start + focus_end) // 2]
+    for center in excerpt_centers:
         excerpt_frames.extend(range(max(0, center - 12), center + 13))
     excerpt_frames = sorted(set(excerpt_frames))
 
     cap = cv2.VideoCapture(str(video_path))
     fps = cap.get(cv2.CAP_PROP_FPS) or 60.0
     writer = cv2.VideoWriter(
-        str(output_dir / "refined_overlay_excerpt.mp4"),
+        str(output_dir / excerpt_name),
         cv2.VideoWriter_fourcc(*"mp4v"),
         fps,
         (1440, 270),
@@ -234,6 +282,9 @@ def generate_refinement_review(
         "before_max_unit_jump": before_jumps[0][0] if before_jumps else 0.0,
         "after_max_unit_jump": after_jumps[0][0] if after_jumps else 0.0,
         "candidates_csv": str(candidates_path),
+        "focus_start": focus_start,
+        "focus_end": focus_end,
+        "excerpt": str(output_dir / excerpt_name),
     }
     (output_dir / "refinement_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     return summary
@@ -245,12 +296,23 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--before-csv", type=Path, default=PROJECT_ROOT / "outputs" / "stage_3" / "refinement_review" / "smoothed_trajectory_before.csv")
     parser.add_argument("--after-csv", type=Path, default=PROJECT_ROOT / "outputs" / "stage_3" / "smoothed_trajectory.csv")
     parser.add_argument("--output-dir", type=Path, default=PROJECT_ROOT / "outputs" / "stage_3" / "refinement_review")
+    parser.add_argument("--focus-start", type=int)
+    parser.add_argument("--focus-end", type=int)
+    parser.add_argument("--excerpt-name", default="refined_overlay_excerpt.mp4")
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    summary = generate_refinement_review(args.video, args.before_csv, args.after_csv, args.output_dir)
+    summary = generate_refinement_review(
+        args.video,
+        args.before_csv,
+        args.after_csv,
+        args.output_dir,
+        focus_start=args.focus_start,
+        focus_end=args.focus_end,
+        excerpt_name=args.excerpt_name,
+    )
     print(json.dumps(summary, indent=2))
 
 

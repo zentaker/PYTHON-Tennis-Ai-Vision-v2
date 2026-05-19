@@ -125,6 +125,60 @@ def test_prediction_break_between_neighbors_is_interpolated():
     assert rows[2]["reason"].endswith("filled_by_interpolation")
 
 
+def test_low_confidence_spike_is_rejected_by_local_coherence():
+    rows, report = smooth_trajectory(
+        [
+            row(0, 0.0, 0.0),
+            row(1, 10.0, 0.0),
+            row(2, 15.0, 65.0, confidence=0.55),
+            row(3, 20.0, 0.0),
+            row(4, 30.0, 0.0),
+        ],
+        SmoothingParams(
+            threshold_min=0.5,
+            residual_prediction_px=120.0,
+            residual_neighbor_jump_px=135.0,
+            low_confidence_break_max_conf=0.6,
+            low_confidence_prediction_px=50.0,
+            low_confidence_neighbor_jump_px=45.0,
+            smoothing_window=1,
+        ),
+    )
+
+    assert rows[2]["source"] == "rejected"
+    assert "low_confidence_prediction_break" in rows[2]["reason"]
+    assert rows[2]["y_smooth"] == 0.0
+    assert report["residual_anomalies_rejected"] == 1
+
+
+def test_microgap_one_to_three_frames_reinterpolates_after_rejection():
+    rows, report = smooth_trajectory(
+        [
+            row(0, 0.0, 0.0),
+            row(1, 10.0, 0.0),
+            row(2, 20.0, 70.0, confidence=0.55),
+            row(3, 30.0, 0.0, confidence=0.2),
+            row(4, 40.0, 0.0, confidence=0.2),
+            row(5, 50.0, 0.0),
+        ],
+        SmoothingParams(
+            max_gap_frames=3,
+            low_confidence_break_max_conf=0.6,
+            low_confidence_prediction_px=50.0,
+            low_confidence_neighbor_jump_px=45.0,
+            smoothing_window=1,
+        ),
+    )
+
+    assert rows[2]["source"] == "rejected"
+    assert rows[3]["source"] == "interpolated"
+    assert rows[4]["source"] == "interpolated"
+    assert rows[2]["y_smooth"] == 0.0
+    assert rows[3]["y_smooth"] == 0.0
+    assert rows[4]["y_smooth"] == 0.0
+    assert report["max_gap_interpolated"] == 3
+
+
 def test_trajectory_without_outliers_is_preserved():
     rows, report = smooth_trajectory(
         [row(i, float(i * 10), 5.0) for i in range(5)],

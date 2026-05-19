@@ -194,3 +194,81 @@ C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\smoothed_trajectory_overlay.mp4
 ```
 
 Si persiste duda, revisar el overlay debug y el contact sheet antes/despues. Stage 3 sigue pendiente de validacion humana y Stage 4 no se inicia.
+
+## Segundo refinamiento tras validacion humana
+
+El usuario reviso el overlay posterior al primer refinamiento y confirmo:
+
+- El artefacto del saque fue corregido.
+- Quedaba un unico artefacto residual alrededor del segundo 12, en el lado far / jugador lejano.
+
+Rango analizado:
+
+- frames `700-740`;
+- expansion diagnostica `680-760`.
+
+Frame responsable:
+
+- `745`
+
+Antes:
+
+```text
+source: detected
+confidence: 0.547193
+raw: (750.0, 183.75)
+smooth: (744.0, 129.75)
+```
+
+Despues:
+
+```text
+source: rejected
+smooth: (742.5, 116.25)
+reason: low_confidence_prediction_break|filled_by_interpolation
+```
+
+Regla agregada:
+
+- `low_confidence_prediction_break`
+- Aplica a puntos que pasaron `threshold_min`, pero tienen confidence baja relativa y rompen el puente local coherente entre vecinos.
+- No rechaza por velocidad sola.
+
+Parametros agregados:
+
+- `low_confidence_break_max_conf`: `0.6`
+- `low_confidence_prediction_px`: `55.0`
+- `low_confidence_neighbor_jump_px`: `50.0`
+
+Metricas antes/despues del segundo refinamiento:
+
+| Metrica | Antes | Despues |
+|---|---:|---:|
+| Detected | 799 | 798 |
+| Rejected | 5 | 6 |
+| Interpolated | 95 | 95 |
+| Missing | 50 | 50 |
+| Cobertura final | 899 / 949 (94.73%) | 899 / 949 (94.73%) |
+| Segmentos anomalos residuales detectados | 2 | 3 |
+| Gaps interpolados | 40 | 41 |
+| Maximo gap interpolado | 9 | 9 |
+
+Rutas de revision del segundo refinamiento:
+
+```text
+C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\smoothed_trajectory_overlay.mp4
+C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\trajectory_debug_overlay.mp4
+C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\refinement_review\second12_anomaly_window.csv
+C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\refinement_review\second12_debug_excerpt.mp4
+C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\refinement_review\before_after_contact_sheet.png
+```
+
+Nuevo gate pendiente:
+
+El usuario debe revisar el overlay refinado y decidir:
+
+- `A`: trayectoria suavizada aceptable.
+- `B`: trayectoria suavizada peor/no sirve.
+- `C`: dudoso, requiere otro ajuste.
+
+Stage 4 no se inicia hasta que este gate sea aceptado.

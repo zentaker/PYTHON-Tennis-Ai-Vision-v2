@@ -26,6 +26,9 @@ class SmoothingParams:
     isolated_outlier_px: float = 140.0
     residual_prediction_px: float = 120.0
     residual_neighbor_jump_px: float = 135.0
+    low_confidence_break_max_conf: float = 0.6
+    low_confidence_prediction_px: float = 55.0
+    low_confidence_neighbor_jump_px: float = 50.0
     smoothing_window: int = 5
 
 
@@ -161,9 +164,16 @@ def reject_local_prediction_breaks(rows: list[dict], params: SmoothingParams) ->
             and prev_distance >= params.residual_neighbor_jump_px
             and next_distance >= params.residual_neighbor_jump_px
         )
+        low_confidence_break = (
+            row["confidence"] <= params.low_confidence_break_max_conf
+            and deviation >= params.low_confidence_prediction_px
+            and prev_distance >= params.low_confidence_neighbor_jump_px
+            and next_distance >= params.low_confidence_neighbor_jump_px
+        )
 
-        if bridge_is_coherent and point_breaks_bridge:
-            _mark_rejected(row, "local_prediction_break")
+        if bridge_is_coherent and (point_breaks_bridge or low_confidence_break):
+            reason = "low_confidence_prediction_break" if low_confidence_break else "local_prediction_break"
+            _mark_rejected(row, reason)
             rejected += 1
 
     return rejected
@@ -311,6 +321,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--isolated-outlier-px", type=float, default=SmoothingParams.isolated_outlier_px)
     parser.add_argument("--residual-prediction-px", type=float, default=SmoothingParams.residual_prediction_px)
     parser.add_argument("--residual-neighbor-jump-px", type=float, default=SmoothingParams.residual_neighbor_jump_px)
+    parser.add_argument("--low-confidence-break-max-conf", type=float, default=SmoothingParams.low_confidence_break_max_conf)
+    parser.add_argument("--low-confidence-prediction-px", type=float, default=SmoothingParams.low_confidence_prediction_px)
+    parser.add_argument("--low-confidence-neighbor-jump-px", type=float, default=SmoothingParams.low_confidence_neighbor_jump_px)
     parser.add_argument("--smoothing-window", type=int, default=SmoothingParams.smoothing_window)
     return parser.parse_args()
 
@@ -325,6 +338,9 @@ def main() -> None:
         isolated_outlier_px=args.isolated_outlier_px,
         residual_prediction_px=args.residual_prediction_px,
         residual_neighbor_jump_px=args.residual_neighbor_jump_px,
+        low_confidence_break_max_conf=args.low_confidence_break_max_conf,
+        low_confidence_prediction_px=args.low_confidence_prediction_px,
+        low_confidence_neighbor_jump_px=args.low_confidence_neighbor_jump_px,
         smoothing_window=args.smoothing_window,
     )
     report = run_stage_3(
