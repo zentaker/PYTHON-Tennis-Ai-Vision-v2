@@ -67,6 +67,37 @@ Se genero `outputs/stage_1/calibration_guide.png` con marcadores aproximados par
 
 La calibracion final usara `layout=doubles`, confirmado por el usuario el 2026-05-19.
 
+## 1.4 - Homografia
+
+Se calculo `data/reference_clip/homography.json` usando los 8 puntos capturados por clic web en `data/reference_clip/court_corners_pixel.json`.
+
+- Modo de cancha: `doubles`.
+- Metodo: `cv2.findHomography(method=0)`.
+- Justificacion: puntos manuales cuidadosamente clickeados; usar RANSAC podria ocultar errores de anotacion.
+- Error medio de reproyeccion en pixeles: `2.3969369839150216`.
+- Error maximo de reproyeccion en pixeles: `4.840169152421834`.
+
+## 1.5 - Validacion de reproyeccion
+
+Se genero `outputs/stage_1/reprojection_error_report.json`.
+
+- Error medio court->pixel: `2.3969369839150216 px`.
+- Error maximo court->pixel: `4.840169152421834 px`.
+- Error medio pixel->court: `0.060892341675991835 m`.
+- Error maximo pixel->court: `0.12152420090899765 m`.
+- DoD numerico: aprobado (`mean < 5 px`, `max < 15 px`).
+
+No se pidieron puntos independientes en este bloque; queda pendiente para el gate visual de 1.7 si el usuario lo requiere.
+
+## 1.6 - Renders de evidencia visual
+
+Se generaron:
+
+- `outputs/stage_1/court_2d_top.png`
+- `outputs/stage_1/reference_frame_with_reprojected_court.png`
+
+El gate de Stage 1 queda pendiente de validacion visual humana sobre la reproyeccion.
+
 ## Definition of Done
 
 - Error medio de reproyeccion menor a 5 px sobre 8 puntos de calibracion.
