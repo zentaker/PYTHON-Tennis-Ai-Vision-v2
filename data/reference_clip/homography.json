@@ -1,0 +1,93 @@
+{
+  "H_pixel_to_court": [
+    [
+      0.02617295398113015,
+      -5.496115531067888e-05,
+      -24.974473375920113
+    ],
+    [
+      6.527068352634503e-05,
+      -0.10548102879149261,
+      48.50357357710226
+    ],
+    [
+      8.978890144941565e-06,
+      0.0022615735448373356,
+      1.0
+    ]
+  ],
+  "court_corners_pixel": {
+    "far_left": [
+      612.0,
+      276.0
+    ],
+    "far_right": [
+      1300.0,
+      276.0
+    ],
+    "near_left": [
+      380.0,
+      770.0
+    ],
+    "near_right": [
+      1536.0,
+      774.0
+    ],
+    "far_left_service": [
+      672.0,
+      352.0
+    ],
+    "far_right_service": [
+      1237.0,
+      352.0
+    ],
+    "near_left_service": [
+      586.0,
+      603.0
+    ],
+    "near_right_service": [
+      1326.0,
+      602.0
+    ]
+  },
+  "court_corners_court_meters": {
+    "far_left": [
+      -5.485,
+      11.885
+    ],
+    "far_right": [
+      5.485,
+      11.885
+    ],
+    "near_left": [
+      -5.485,
+      -11.885
+    ],
+    "near_right": [
+      5.485,
+      -11.885
+    ],
+    "far_left_service": [
+      -4.115,
+      6.4
+    ],
+    "far_right_service": [
+      4.115,
+      6.4
+    ],
+    "near_left_service": [
+      -4.115,
+      -6.4
+    ],
+    "near_right_service": [
+      4.115,
+      -6.4
+    ]
+  },
+  "court_mode": "doubles",
+  "method": "cv2.findHomography(method=0)",
+  "method_notes": "Standard direct homography solve without RANSAC. The 8 correspondences come from careful manual clicks, not automatic noisy detections, so rejecting points would hide annotation errors instead of surfacing them.",
+  "reprojection_error_pixels_mean": 2.3969369839150216,
+  "reprojection_error_pixels_max": 4.840169152421834,
+  "computed_at": "2026-05-19T17:47:55.230732+00:00"
+}

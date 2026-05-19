@@ -1,63 +1,42 @@
 # Tennis Vision AI v2
 
-Sistema para analizar clips reales de tenis con camara fija de broadcast y generar, por etapas, dos vistas 2D del rally:
+Proyecto para análisis de video de broadcast de tenis con generación progresiva de:
 
-- Vista superior: trayectoria de la pelota proyectada sobre la cancha.
-- Vista lateral: trayectoria con altura inferida fisicamente entre botes.
-
-Este repositorio vive directamente en la raiz de trabajo del proyecto. No debe anidarse dentro de otra carpeta de proyecto.
+- Vista superior 2D de la trayectoria de la pelota sobre la cancha.
+- Vista lateral 2D con altura inferida físicamente entre botes.
 
 ## Estado actual
 
-- Stage actual: `Stage 0 - Fundacion`
-- Entorno objetivo: WSL2 + Ubuntu 24.04
-- Python objetivo: 3.11
-- Gestor de entorno: `uv`
-- Vision computacional: todavia no se ejecuta en Stage 0
+Stage 1 cerrado. Stage 2 en preparación.
 
-## Estructura
+- Stage 0: fundación, entorno y documentación base.
+- Stage 1: calibración de cancha cerrada con gate visual firmado.
+- Stage 2: detección de pelota, pendiente de prompt y revisión previa.
 
-```text
-README.md
-ROADMAP.md
-pyproject.toml
-uv.lock
-data/               # local, no versionado salvo README/templates
-models/             # local, no versionado salvo README
-outputs/            # local, no versionado salvo README
-src/                # codigo fuente
-scripts/            # utilitarios
-docs/               # documentacion viva
-legacy/             # referencia negativa del proyecto anterior
-```
+Roadmap completo: [ROADMAP.md](ROADMAP.md)
 
-## Setup desde cero
+## Setup
 
-1. Clonar o abrir el repositorio.
-2. Entrar a la raiz del proyecto.
-3. Verificar WSL2 Ubuntu 24.04. En Codex, los comandos WSL deben ejecutarse fuera del sandbox para ver las distros del usuario Windows:
+Entorno objetivo:
+
+- WSL2 Ubuntu 24.04
+- Python 3.11
+- `uv`
+
+Desde la raíz del repo en WSL:
 
 ```bash
-uname -a
-cat /etc/os-release
-echo "$USER"
+cd /mnt/c/Users/MSI/Desktop/TennisAI
 ```
 
-4. Instalar dependencias base del sistema si faltan:
-
-```bash
-sudo apt update
-sudo apt install -y build-essential git ffmpeg curl
-```
-
-5. Instalar `uv`:
+Instalar `uv` si no existe:
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source "$HOME/.local/bin/env"
 ```
 
-6. Crear el entorno Python:
+Crear entorno e instalar dependencias:
 
 ```bash
 uv venv --python 3.11
@@ -66,26 +45,76 @@ UV_LINK_MODE=copy uv pip install -e ".[dev]"
 uv lock
 ```
 
-7. Verificar el entorno:
+Verificar entorno:
 
 ```bash
 python scripts/verify_env.py
 ```
 
-## Datos locales requeridos
+Nota: si se trabaja desde Codex, los comandos `wsl.exe` deben ejecutarse fuera del sandbox cuando necesiten ver las distros WSL del usuario Windows.
 
-Stage 0 requiere que el usuario prepare manualmente:
+## Estructura del proyecto
 
-- `data/reference_clip/madrid_R1.mp4`
-- `data/reference_clip/reference_frame.png`
-- `data/reference_clip/manual_annotation.json`
+```text
+docs/                 Documentación viva, stages, ADRs, validación y fricción
+src/                  Código fuente del pipeline
+scripts/              Utilitarios operativos
+data/                 Datos locales no versionados
+models/               Pesos/modelos locales no versionados
+outputs/              Salidas generadas no versionadas
+legacy/               Postmortem del proyecto anterior
+```
 
-Estos archivos no se commitean. Usar `data/reference_clip/manual_annotation.example.json` como punto de partida para la anotacion.
+Entradas principales:
 
-## Por donde seguir
+- [docs/README.md](docs/README.md)
+- [docs/stages/stage_1/exit_report.md](docs/stages/stage_1/exit_report.md)
+- [docs/decisions/](docs/decisions/)
+- [docs/friction/FRICTION_LOG.md](docs/friction/FRICTION_LOG.md)
 
-- Roadmap general: [ROADMAP.md](ROADMAP.md)
-- Stage 0: [docs/stages/stage_0/STAGE_0.md](docs/stages/stage_0/STAGE_0.md)
-- Validacion por etapa: [docs/validation/VALIDATION_FRAMEWORK.md](docs/validation/VALIDATION_FRAMEWORK.md)
-- Decisiones tecnicas: [docs/decisions/](docs/decisions/)
-- Friccion: [docs/friction/FRICTION_LOG.md](docs/friction/FRICTION_LOG.md)
+## Datos requeridos para reproducir
+
+El video de referencia no está incluido en el repositorio por motivos de derechos.
+
+Para reproducir Stage 1 o preparar Stage 2, un colaborador debe conseguir por separado el clip Nivel A y colocarlo en:
+
+```text
+data/reference_clip/madrid_R1.mov
+```
+
+Los JSON de calibración de Stage 1 sí están en el repo y se cargan automáticamente:
+
+```text
+data/reference_clip/court_corners_pixel.json
+data/reference_clip/homography.json
+```
+
+El frame de referencia y los renders son derivados del video y se regeneran localmente:
+
+```text
+data/reference_clip/reference_frame.png
+outputs/stage_1/
+```
+
+Los pesos de modelos se descargarán automáticamente en Stage 2 al primer uso, pendiente de implementación.
+
+## Test de reproducibilidad
+
+Primer paso de validación tras clonar y preparar el entorno:
+
+```bash
+python scripts/verify_env.py
+```
+
+Después de colocar `data/reference_clip/madrid_R1.mov`, Stage 1 puede regenerar `reference_frame.png`, reportes y renders usando los JSON de calibración versionados.
+
+## Aviso legal
+
+Este repositorio contiene scripts y documentación para análisis de video de broadcast deportivo. El video de referencia (Madrid Open, TennisTV/ATP) no se incluye en el repo por motivos de derechos. Los frames derivados que aparecen en `outputs/` se usan únicamente con fines de investigación técnica personal.
+
+## Reglas de repositorio
+
+- No commitear videos, pesos de modelos, datasets, salidas generadas ni secretos.
+- `data/`, `models/`, `outputs/` son carpetas locales.
+- Cualquier decisión técnica relevante se documenta como ADR.
+- Stage 2 no debe comenzar hasta validar ADR-0007 y ADR-0009.

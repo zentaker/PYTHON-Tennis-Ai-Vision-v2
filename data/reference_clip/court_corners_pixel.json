@@ -1,0 +1,51 @@
+{
+  "image_path": "data/reference_clip/reference_frame.png",
+  "guide_path": "outputs/stage_1/calibration_guide.png",
+  "layout": "doubles",
+  "method": "manual_web_click",
+  "point_order": [
+    "far_left",
+    "far_right",
+    "near_left",
+    "near_right",
+    "far_left_service",
+    "far_right_service",
+    "near_left_service",
+    "near_right_service"
+  ],
+  "court_corners_pixel": {
+    "far_left": [
+      612,
+      276
+    ],
+    "far_right": [
+      1300,
+      276
+    ],
+    "near_left": [
+      380,
+      770
+    ],
+    "near_right": [
+      1536,
+      774
+    ],
+    "far_left_service": [
+      672,
+      352
+    ],
+    "far_right_service": [
+      1237,
+      352
+    ],
+    "near_left_service": [
+      586,
+      603
+    ],
+    "near_right_service": [
+      1326,
+      602
+    ]
+  },
+  "created_at": "2026-05-19T17:40:44.374615+00:00"
+}

@@ -1,34 +1,90 @@
-.venv/
-__pycache__/
-*.py[cod]
-*.egg-info/
-.pytest_cache/
-.ruff_cache/
-.ipynb_checkpoints/
-
-# Local, non-versioned project artifacts
+# --- Carpetas binarias del proyecto (contenido no se versiona) ---
 data/*
 !data/README.md
 !data/reference_clip/
 data/reference_clip/*
 !data/reference_clip/README.md
+!data/reference_clip/court_corners_pixel.json
+!data/reference_clip/homography.json
+!data/reference_clip/manual_annotation.json
 !data/reference_clip/manual_annotation.example.json
 
 models/*
 !models/README.md
-!models/wasb/
-models/wasb/*
-!models/wasb/.gitkeep
 
 outputs/*
 !outputs/README.md
 
-# Secrets and local environment
+# --- Entornos virtuales ---
+.venv/
+venv/
+env/
+.python-version
+
+# --- Cache de Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Videos: nunca al repo, en ninguna carpeta ---
+*.mov
+*.mp4
+*.avi
+*.mkv
+*.webm
+*.wmv
+*.flv
+*.m4v
+*.ts
+
+# --- Audio: nunca al repo ---
+*.wav
+*.mp3
+*.aac
+*.flac
+*.ogg
+
+# --- Imágenes pesadas: las de documentación se permiten explícitamente ---
+# (No bloqueamos PNG/JPG en general porque outputs/ ya está excluida,
+# y si alguien quiere subir un diagrama a docs/ debe poder hacerlo.)
+
+# --- Pesos de modelos y datasets ---
+*.pth
+*.pt
+*.ckpt
+*.h5
+*.onnx
+*.tflite
+*.safetensors
+*.bin
+*.npz
+*.npy
+*.parquet
+
+# --- Secretos ---
 .env
 .env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+secrets.json
 
-# OS/editor noise
-.DS_Store
-Thumbs.db
+# --- IDEs y SO ---
 .vscode/
 .idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Logs y temporales ---
+*.log
+*.tmp
+*.bak
+tmp/
