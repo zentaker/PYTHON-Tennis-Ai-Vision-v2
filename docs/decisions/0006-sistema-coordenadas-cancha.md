@@ -1,6 +1,6 @@
 # ADR-0006: Sistema de coordenadas de cancha y elección de corners
 
-- **Status:** Propuesta
+- **Status:** Aceptada
 - **Fecha:** 2026-05-18
 - **Stage:** 1
 
@@ -26,4 +26,8 @@ Usar un sistema de coordenadas en metros con origen en el centro de la red, eje 
 
 ## Notas
 
-La implementación inicial vive en `src/court/coordinates.py`. Este ADR no se auto-acepta y queda en `Propuesta` hasta aprobación explícita del usuario.
+La implementación inicial vive en `src/court/coordinates.py`.
+
+## Aceptación
+
+Aceptada por el usuario el 2026-05-18 vía aprobación verbal en la sesión de planificación.
