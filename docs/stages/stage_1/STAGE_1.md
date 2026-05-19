@@ -61,6 +61,12 @@ Se creo `src/court/calibrate_interactive.py`.
 
 Resultado WSLg: `cv2.imshow` no inicializo por error Qt/xcb. Se activa modo `1.3-fallback` salvo que se instalen dependencias GUI antes de capturar puntos.
 
+## Guia manual de calibracion
+
+Se genero `outputs/stage_1/calibration_guide.png` con marcadores aproximados para indicar el orden de los 8 puntos. La guia es orientativa y no se usa como ground truth.
+
+La calibracion final usara `layout=doubles`, confirmado por el usuario el 2026-05-19.
+
 ## Definition of Done
 
 - Error medio de reproyeccion menor a 5 px sobre 8 puntos de calibracion.
