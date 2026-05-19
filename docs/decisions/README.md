@@ -11,6 +11,7 @@ Una decision tecnica relevante, un archivo. Los ADRs iniciales de Stage 0 quedan
 - ADR-0005: `0005-ground-truth-vs-finetuning.md`
 - ADR-0006: `0006-sistema-coordenadas-cancha.md`
 - ADR-0007: `0007-ubicacion-repositorio-mntc-vs-wsl-home.md`
+- ADR-0008: `0008-captura-calibracion-web-local.md`
 
 ## Flujo
 

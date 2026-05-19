@@ -51,18 +51,6 @@ def draw_calibration_guide(image: np.ndarray) -> np.ndarray:
             2,
             cv2.LINE_AA,
         )
-
-    cv2.rectangle(guide, (0, 0), (guide.shape[1], 52), (0, 0, 0), -1)
-    cv2.putText(
-        guide,
-        "Approximate guide only. Report exact pixel coordinates from the original reference_frame.png.",
-        (18, 34),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.75,
-        (255, 255, 255),
-        2,
-        cv2.LINE_AA,
-    )
     return guide
 
 
