@@ -78,6 +78,10 @@ Lectura: fricción moderada, con lecciones documentadas.
 
 No hubo cambios al roadmap. Stage 1 se mantuvo dentro del alcance de geometría y calibración; no se avanzó a detección, tracking ni modelos.
 
+## Recomendación ADR-0007
+
+`ADR-0007` debe revisarse antes de iniciar trabajo pesado de Stage 2. Recomendación: hacer el review obligatorio al inicio de Stage 2, antes del primer test real de inferencia de WASB, pero no migrar todavía. La decisión debe basarse en la prueba que importa para Stage 2: si WASB corre el clip en menos de 10 minutos. Si el primer benchmark apunta a cuello de botella serio por `/mnt/c`, migrar a WSL home antes de invertir más trabajo.
+
 ## Aprobación humana
 
 Gate 1.7 firmado visualmente por el usuario el 2026-05-18. Líneas reproyectadas caen correctamente sobre las líneas reales del clip en toda la cancha.

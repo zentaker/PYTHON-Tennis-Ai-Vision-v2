@@ -12,6 +12,7 @@ Una decision tecnica relevante, un archivo. Los ADRs iniciales de Stage 0 quedan
 - ADR-0006: `0006-sistema-coordenadas-cancha.md`
 - ADR-0007: `0007-ubicacion-repositorio-mntc-vs-wsl-home.md`
 - ADR-0008: `0008-captura-calibracion-web-local.md`
+- ADR-0009: `0009-patron-diseno-herramientas-anotacion-manual.md`
 
 ## Flujo
 
