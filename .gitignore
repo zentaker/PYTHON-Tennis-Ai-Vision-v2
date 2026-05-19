@@ -15,6 +15,8 @@ models/*
 outputs/*
 !outputs/README.md
 
+third_party/
+
 # --- Entornos virtuales ---
 .venv/
 venv/
