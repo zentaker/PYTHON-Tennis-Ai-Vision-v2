@@ -1,0 +1,33 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Local, non-versioned project artifacts
+data/*
+!data/README.md
+!data/reference_clip/
+data/reference_clip/*
+!data/reference_clip/README.md
+!data/reference_clip/manual_annotation.example.json
+
+models/*
+!models/README.md
+!models/wasb/
+models/wasb/*
+!models/wasb/.gitkeep
+
+outputs/*
+!outputs/README.md
+
+# Secrets and local environment
+.env
+.env.*
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,28 @@
+[project]
+name = "tennis-vision-ai-v2"
+version = "0.0.1"
+description = "Tennis broadcast video analysis: 2D top and side views"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "numpy>=1.26,<2.0",
+    "opencv-python>=4.10",
+    "scipy>=1.13",
+    "matplotlib>=3.8",
+    "pillow>=10.0",
+    "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+tracker = []
+dev = [
+    "ruff>=0.5",
+    "pytest>=8.0",
+    "ipykernel>=6.29",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
