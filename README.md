@@ -35,7 +35,7 @@ legacy/             # referencia negativa del proyecto anterior
 
 1. Clonar o abrir el repositorio.
 2. Entrar a la raiz del proyecto.
-3. Verificar WSL2 Ubuntu 24.04:
+3. Verificar WSL2 Ubuntu 24.04. En Codex, los comandos WSL deben ejecutarse fuera del sandbox para ver las distros del usuario Windows:
 
 ```bash
 uname -a
@@ -62,7 +62,7 @@ source "$HOME/.local/bin/env"
 ```bash
 uv venv --python 3.11
 source .venv/bin/activate
-uv pip install -e ".[dev]"
+UV_LINK_MODE=copy uv pip install -e ".[dev]"
 uv lock
 ```
 

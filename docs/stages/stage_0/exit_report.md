@@ -26,10 +26,10 @@ Pendiente.
 ## Gate checklist
 
 ```text
-[ ] WSL2 Ubuntu 24.04 verificado (env_report.md)
+[x] WSL2 Ubuntu 24.04 verificado (env_report.md)
 [x] Repo con la estructura de Stage 0
-[ ] pyproject.toml + uv.lock presentes
-[ ] scripts/verify_env.py corre y sale 0 dentro de WSL
+[x] pyproject.toml + uv.lock presentes
+[x] scripts/verify_env.py corre y sale 0 dentro de WSL
 [x] README.md raiz permite reproducir el setup desde cero
 [x] docs/ contiene STAGE_0, plantillas, VALIDATION_FRAMEWORK, FRICTION_LOG, AGENT_PROTOCOL
 [ ] ADR-0001 a ADR-0005 aceptados por usuario

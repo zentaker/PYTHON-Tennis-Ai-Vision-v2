@@ -17,9 +17,9 @@ No se prueba WASB, no se hace deteccion, no se hace tracking y no se procesa vid
 ## Entregables (checklist)
 
 ```text
-[ ] 0.1 WSL2 + Ubuntu 24.04 verificado desde el entorno del agente
+[x] 0.1 WSL2 + Ubuntu 24.04 verificado desde el entorno del agente
 [x] 0.2 Estructura del repositorio creada en la raiz del workspace
-[ ] 0.3 Entorno Python reproducible dentro de WSL2 (uv.lock + README setup)
+[x] 0.3 Entorno Python reproducible dentro de WSL2 (uv.lock + README setup)
 [x] 0.4 Sistema de documentacion inicializado
 [x] 0.5 Bitacora de friccion inicializada
 [x] 0.6 ADRs iniciales ADR-0001 a ADR-0005 redactados como Propuesta
@@ -57,13 +57,14 @@ Todas quedan como `Propuesta` hasta aprobacion humana.
 
 ## Friccion registrada
 
-- `F-0001`: el entorno `wsl.exe` visible desde el agente reporta que no hay distribuciones instaladas, en contradiccion con el supuesto inicial de Ubuntu 24.04 operativo.
+- `F-0001`: WSL visible solo fuera del sandbox, resuelto operativamente.
+- `F-0002`: instalacion de dependencias atascada, resuelta con reinstalacion usando `UV_LINK_MODE=copy`.
 
 ## Definition of Done
 
-- WSL2 Ubuntu 24.04 verificado y evidencia persistida en `env_report.md`.
-- `pyproject.toml` y `uv.lock` creados.
-- `scripts/verify_env.py` corre dentro de WSL y sale 0.
+- WSL2 Ubuntu 24.04 verificado y evidencia persistida en `env_report.md`. Completado.
+- `pyproject.toml` y `uv.lock` creados. Completado.
+- `scripts/verify_env.py` corre dentro de WSL y sale 0. Completado con warnings por clip/anotacion faltantes.
 - Documentacion base, ADRs, friccion, validacion y protocolo del agente estan presentes.
 - El clip Nivel A y su anotacion manual existen localmente.
 - Usuario revisa y acepta ADRs iniciales.
