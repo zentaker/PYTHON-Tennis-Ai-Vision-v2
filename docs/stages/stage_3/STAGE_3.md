@@ -1,68 +1,138 @@
 # STAGE 3 - Trayectoria temporalmente suavizada
 
-**Estado:** Preparada, no iniciada  
+**Estado:** Implementada, pendiente de gate visual humano  
 **Nivel:** A  
-**Fecha de preparacion:** 2026-05-19
+**Fecha de implementacion:** 2026-05-19
 
 ## Proposito
 
 Convertir las detecciones crudas de WASB en una trayectoria continua y fisicamente plausible de la pelota, robusta a falsos positivos puntuales y frames con deteccion debil o perdida.
 
-Esta etapa no esta implementada todavia. Este documento solo prepara el handoff desde Stage 2.
+Stage 3 no detecta eventos, botes ni golpes. Tampoco renderiza la vista superior final. Su unico objetivo es mejorar la continuidad temporal de la pelota en coordenadas de imagen 2D.
 
-## Entradas iniciales
-
-Stage 3 empieza desde:
+## Entradas
 
 - `data/reference_clip/wasb_detections.csv`
 - `data/reference_clip/homography.json`
-
-Entradas auxiliares disponibles:
-
 - `data/reference_clip/madrid_R1.mov`
-- `outputs/stage_2/wasb_detections_overlay.mp4`
-- `docs/stages/stage_2/exit_report.md`
 
-## Problemas que debe atender
+La homografia se conserva como input de continuidad para etapas posteriores, pero el suavizado de Stage 3 trabaja en coordenadas de imagen 2D. No asume fisica 3D, botes ni golpes.
 
-Stage 2 fue cerrado como visualmente viable, pero con limitaciones conocidas. Stage 3 debe atender explicitamente:
+## Entregables
 
-- outliers aislados en momentos de impacto;
-- gaps cortos;
-- discontinuidades entre frames;
-- rechazo de detecciones fisicamente incoherentes;
-- interpolacion en tramos cortos.
+Versionados:
 
-La observacion humana clave heredada de Stage 2 es:
+- `src/tracker/trajectory_io.py`
+- `src/tracker/trajectory_smoothing.py`
+- `src/tracker/render_trajectory_overlay.py`
+- `tests/test_trajectory_smoothing.py`
+- `docs/stages/stage_3/STAGE_3.md`
+- `docs/stages/stage_3/trajectory_smoothing_report.md`
+
+Locales ignorados por Git:
+
+- `outputs/stage_3/smoothed_trajectory.csv`
+- `outputs/stage_3/smoothed_trajectory_overlay.mp4`
+- `outputs/stage_3/trajectory_debug_overlay.mp4`
+- `outputs/stage_3/trajectory_quality_report.json`
+
+## Metodo implementado
+
+Pipeline:
+
+1. Leer detecciones WASB crudas desde CSV.
+2. Marcar detecciones con `confidence < 0.5` como `missing`.
+3. Mantener detecciones con `confidence >= 0.5` como candidatas `detected`.
+4. Rechazar spikes aislados y saltos imposibles con reglas locales en pixeles/frame.
+5. Interpolar gaps cortos de hasta 10 frames.
+6. Aplicar media movil centrada de 5 frames dentro de segmentos continuos validos.
+7. Exportar CSV suavizado, reporte JSON y overlays MP4.
+
+Estados por frame:
+
+- `detected`
+- `rejected`
+- `interpolated`
+- `missing`
+
+## Parametros actuales
+
+- `threshold_min`: `0.5`
+- `max_gap_frames`: `10`
+- `max_jump_px`: `220.0`
+- `local_window`: `7`
+- `isolated_outlier_px`: `140.0`
+- `smoothing_window`: `5`
+
+## Metricas del run actual
+
+- Frames totales: `949`
+- Frames `detected`: `801`
+- Frames `rejected`: `3`
+- Frames `interpolated`: `95`
+- Frames `missing`: `50`
+- Cobertura final: `899 / 949` (`94.73%`)
+- Saltos rechazados: `3`
+- Gaps interpolados: `39`
+- Maximo gap interpolado: `9`
+
+Frames rechazados automaticamente:
+
+- `202`
+- `329`
+- `545`
+
+## Relacion con limitaciones de Stage 2
+
+Stage 2 fue cerrado como visualmente viable con 4 errores/desvios puntuales observados por el usuario, principalmente cerca de impactos del jugador far/lejos de la camara.
+
+La primera version de Stage 3 rechazo automaticamente 3 spikes aislados y relleno esos frames mediante interpolacion local. El cuarto caso observado por el usuario debe revisarse visualmente en el overlay de Stage 3: puede haber sido absorbido por suavizado/interpolacion o puede requerir ajuste de parametros.
+
+## Definition of Done
+
+- Leer detecciones crudas WASB desde CSV.
+- Clasificar cada frame como `detected`, `rejected`, `interpolated` o `missing`.
+- Rechazar outliers con reglas fisicas simples en 2D.
+- Interpolar gaps cortos de hasta 10 frames.
+- Suavizar trayectoria sin destruir movimientos reales rapidos.
+- Generar CSV nuevo con trayectoria suavizada.
+- Generar overlay visual con raw WASB, punto suavizado, estado por frame y trayectoria reciente.
+- Generar reporte con metricas de calidad.
+- Tests unitarios pasando.
+- Gate visual listo para validacion humana.
+
+## Gate
+
+El usuario debe revisar:
 
 ```text
-Se observaron 4 errores/desvios puntuales, principalmente en momentos de impacto del jugador far/lejos de la camara.
+C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\smoothed_trajectory_overlay.mp4
+C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\trajectory_debug_overlay.mp4
 ```
 
-## Alcance previsto
+Veredicto esperado:
 
-Entregables esperados cuando Stage 3 se implemente:
+- `A`: trayectoria suavizada aceptable.
+- `B`: trayectoria suavizada peor/no sirve.
+- `C`: dudoso, requiere ajuste de parametros.
 
-- CSV de trayectoria suavizada con columnas derivadas de deteccion cruda.
-- Campo `source` con valores como `detected`, `interpolated` o `rejected`.
-- Overlay de trayectoria suavizada para validacion visual.
-- Reporte de cierre con veredicto humano.
+## Criterios de exito
 
-## Criterios preliminares de exito
+- La trayectoria suavizada no presenta saltos visualmente absurdos.
+- Los errores puntuales de Stage 2 quedan rechazados o absorbidos sin destruir la trayectoria.
+- Los gaps cortos se interpolan de forma razonable.
+- El overlay suavizado se ve mas estable que el overlay crudo.
+- No se introducen trayectorias falsas largas.
+- La cobertura final es suficiente para pasar a Stage 4.
 
-- Cero discontinuidades visibles en la trayectoria final.
-- Saltos entre frames consecutivos coherentes con velocidad fisica plausible.
-- Los errores puntuales observados en Stage 2 quedan rechazados o absorbidos sin romper la trayectoria.
-- Los gaps cortos se interpolan sin crear saltos visuales.
+## Criterios de falla
 
-## Reglas de la etapa
-
-- No cambiar de modelo durante Stage 3.
-- No instalar TrackNetV3.
-- No hacer fine-tuning.
-- No reabrir Stage 2 salvo que el suavizado no pueda absorber los errores puntuales documentados.
-- No avanzar a Stage 4 hasta que la trayectoria suavizada pase validacion visual humana.
+- El suavizado sigue falsos positivos en vez de rechazarlos.
+- La trayectoria suavizada se despega claramente de la pelota real.
+- Se inventan tramos largos sin evidencia.
+- Los errores de impacto del lado far contaminan el resto de la trayectoria.
+- El output es peor que el overlay crudo.
 
 ## Estado actual
 
-Stage 3 queda documentada y lista para recibir un prompt especifico de implementacion. No se implemento codigo de Stage 3 en esta sesion.
+Stage 3 queda implementada y lista para gate visual humano. No se inicio Stage 4.
