@@ -1,6 +1,6 @@
 # ADR-0007: Ubicación del repositorio: /mnt/c vs WSL home
 
-- **Status:** Propuesta
+- **Status:** Aceptada
 - **Fecha:** 2026-05-18
 - **Stage:** 1
 
@@ -26,6 +26,6 @@ Mantener el repositorio en `/mnt/c/Users/MSI/Desktop/TennisAI` por continuidad d
 
 Antes de iniciar Stage 2 se hará un review obligatorio del impacto de I/O. Si la inferencia de WASB sobre el clip de referencia corre en tiempo aceptable, definido por el DoD de Stage 2 como menos de 10 minutos, esta decisión podrá aceptarse. Si no, se migrará el repositorio a WSL home antes de continuar.
 
-## Notas
+## Aceptación
 
-Este ADR no se auto-acepta. Sigue el flujo normal y queda en `Propuesta` hasta aprobación explícita del usuario.
+Aceptada por el usuario el 2026-05-19. El usuario priorizó accesibilidad directa desde Windows Explorer sobre performance de I/O. La fricción de install/inferencia en /mnt/c se acepta como trade-off conocido y documentado. Cualquier intento previo de migración fuera de /mnt/c queda revertido.
