@@ -130,3 +130,67 @@ Stage 3 no queda cerrada automaticamente. Requiere veredicto visual humano:
 - `A`: trayectoria suavizada aceptable.
 - `B`: trayectoria suavizada peor/no sirve.
 - `C`: dudoso, requiere ajuste de parametros.
+
+## Refinamiento tras validacion humana
+
+Veredicto humano inicial sobre el primer overlay de Stage 3:
+
+```text
+C) aceptable en general, pero con 2 artefactos visibles que deben corregirse antes de cerrar.
+```
+
+Artefactos observados:
+
+- Cerca del saque / bote del saque: aparecia un segmento diagonal largo o fisicamente poco creible.
+- Cerca de una derecha del jugador far/lejos de la camara: aparecia una trayectoria rara alrededor del impacto.
+
+Regla agregada:
+
+- Segunda pasada `local_prediction_break`.
+- Rechaza puntos que rompen un puente local coherente entre vecinos validos.
+- No rechaza solo por velocidad; requiere salto grande + baja coherencia local + alto error contra prediccion lineal.
+
+Parametros nuevos:
+
+- `residual_prediction_px`: `120.0`
+- `residual_neighbor_jump_px`: `135.0`
+
+Metricas antes/despues:
+
+| Metrica | Antes | Despues |
+|---|---:|---:|
+| Frames totales | 949 | 949 |
+| Detected | 801 | 799 |
+| Rejected | 3 | 5 |
+| Interpolated | 95 | 95 |
+| Missing | 50 | 50 |
+| Cobertura final | 899 / 949 (94.73%) | 899 / 949 (94.73%) |
+| Saltos rechazados iniciales | 3 | 3 |
+| Segmentos anomalos residuales detectados | 0 | 2 |
+| Gaps interpolados | 39 | 40 |
+| Maximo gap interpolado | 9 | 9 |
+| Maximo salto frame-a-frame | 73.717790 px | 35.363514 px |
+
+Nuevos frames rechazados:
+
+- `81`: `local_prediction_break|filled_by_interpolation`
+- `132`: `local_prediction_break|filled_by_interpolation`
+
+Artefactos de revision generados:
+
+```text
+C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\refinement_review\anomaly_candidates.csv
+C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\refinement_review\before_after_contact_sheet.png
+C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\refinement_review\refined_overlay_excerpt.mp4
+C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\refinement_review\top_jump_frames\
+```
+
+Nuevo gate pendiente:
+
+Revisar el overlay refinado:
+
+```text
+C:\Users\MSI\Desktop\TennisAI\outputs\stage_3\smoothed_trajectory_overlay.mp4
+```
+
+Si persiste duda, revisar el overlay debug y el contact sheet antes/despues. Stage 3 sigue pendiente de validacion humana y Stage 4 no se inicia.

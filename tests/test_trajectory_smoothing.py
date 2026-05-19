@@ -58,6 +58,73 @@ def test_isolated_outlier_between_coherent_points_is_rejected():
     assert report["frames_rejected"] == 1
 
 
+def test_long_segment_outlier_is_rejected_by_local_prediction_break():
+    rows, report = smooth_trajectory(
+        [
+            row(0, 0.0, 0.0),
+            row(1, 10.0, 0.0),
+            row(2, 20.0, 150.0),
+            row(3, 30.0, 0.0),
+            row(4, 40.0, 0.0),
+        ],
+        SmoothingParams(
+            max_jump_px=220.0,
+            isolated_outlier_px=220.0,
+            residual_prediction_px=100.0,
+            residual_neighbor_jump_px=120.0,
+            smoothing_window=1,
+        ),
+    )
+
+    assert rows[2]["source"] == "rejected"
+    assert "local_prediction_break" in rows[2]["reason"]
+    assert rows[2]["x_smooth"] == 20.0
+    assert rows[2]["y_smooth"] == 0.0
+    assert report["residual_anomalies_rejected"] == 1
+
+
+def test_high_speed_but_coherent_motion_is_not_rejected():
+    rows, report = smooth_trajectory(
+        [
+            row(0, 0.0, 0.0),
+            row(1, 100.0, 0.0),
+            row(2, 200.0, 0.0),
+            row(3, 300.0, 0.0),
+            row(4, 400.0, 0.0),
+        ],
+        SmoothingParams(
+            max_jump_px=120.0,
+            residual_prediction_px=80.0,
+            residual_neighbor_jump_px=90.0,
+            smoothing_window=1,
+        ),
+    )
+
+    assert [item["source"] for item in rows] == ["detected"] * 5
+    assert report["frames_rejected"] == 0
+
+
+def test_prediction_break_between_neighbors_is_interpolated():
+    rows, _ = smooth_trajectory(
+        [
+            row(0, 0.0, 0.0),
+            row(1, 10.0, 0.0),
+            row(2, 20.0, 160.0),
+            row(3, 30.0, 0.0),
+        ],
+        SmoothingParams(
+            isolated_outlier_px=220.0,
+            residual_prediction_px=100.0,
+            residual_neighbor_jump_px=120.0,
+            smoothing_window=1,
+        ),
+    )
+
+    assert rows[2]["source"] == "rejected"
+    assert rows[2]["y_smooth"] == 0.0
+    assert rows[2]["reason"].endswith("filled_by_interpolation")
+
+
 def test_trajectory_without_outliers_is_preserved():
     rows, report = smooth_trajectory(
         [row(i, float(i * 10), 5.0) for i in range(5)],
@@ -68,6 +135,21 @@ def test_trajectory_without_outliers_is_preserved():
     assert [item["x_smooth"] for item in rows] == [0.0, 10.0, 20.0, 30.0, 40.0]
     assert report["frames_rejected"] == 0
     assert report["frames_missing"] == 0
+
+
+def test_second_pass_does_not_remove_clean_trajectory():
+    rows, report = smooth_trajectory(
+        [row(i, float(i * 30), float(i * 8)) for i in range(8)],
+        SmoothingParams(
+            max_jump_px=80.0,
+            residual_prediction_px=20.0,
+            residual_neighbor_jump_px=20.0,
+            smoothing_window=1,
+        ),
+    )
+
+    assert [item["source"] for item in rows] == ["detected"] * 8
+    assert report["residual_anomalies_rejected"] == 0
 
 
 def test_smoothed_csv_contains_expected_columns(tmp_path):

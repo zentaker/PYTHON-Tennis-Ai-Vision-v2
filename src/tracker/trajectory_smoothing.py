@@ -24,6 +24,8 @@ class SmoothingParams:
     max_jump_px: float = 220.0
     local_window: int = 7
     isolated_outlier_px: float = 140.0
+    residual_prediction_px: float = 120.0
+    residual_neighbor_jump_px: float = 135.0
     smoothing_window: int = 5
 
 
@@ -125,6 +127,48 @@ def reject_outliers(rows: list[dict], params: SmoothingParams) -> int:
     return rejected
 
 
+def reject_local_prediction_breaks(rows: list[dict], params: SmoothingParams) -> int:
+    """Reject residual points that break an otherwise coherent local bridge."""
+    rejected = 0
+    max_bridge_speed = params.max_jump_px * 0.5
+
+    for index, row in enumerate(rows):
+        if row["source"] != "detected":
+            continue
+
+        prev_index = _nearest_candidate(rows, index, -1, params.local_window)
+        next_index = _nearest_candidate(rows, index, 1, params.local_window)
+        if prev_index is None or next_index is None:
+            continue
+
+        prev_row = rows[prev_index]
+        next_row = rows[next_index]
+        span = next_index - prev_index
+        if span <= 0:
+            continue
+
+        alpha = (index - prev_index) / span
+        expected_x = prev_row["x_smooth"] + alpha * (next_row["x_smooth"] - prev_row["x_smooth"])
+        expected_y = prev_row["y_smooth"] + alpha * (next_row["y_smooth"] - prev_row["y_smooth"])
+        deviation = math.hypot(row["x_smooth"] - expected_x, row["y_smooth"] - expected_y)
+        bridge_speed = _distance(prev_row, next_row) / span
+        prev_distance = _distance(prev_row, row)
+        next_distance = _distance(row, next_row)
+
+        bridge_is_coherent = bridge_speed <= max_bridge_speed
+        point_breaks_bridge = (
+            deviation >= params.residual_prediction_px
+            and prev_distance >= params.residual_neighbor_jump_px
+            and next_distance >= params.residual_neighbor_jump_px
+        )
+
+        if bridge_is_coherent and point_breaks_bridge:
+            _mark_rejected(row, "local_prediction_break")
+            rejected += 1
+
+    return rejected
+
+
 def interpolate_short_gaps(rows: list[dict], params: SmoothingParams) -> list[int]:
     """Linearly fill short gaps between accepted detected points."""
     detected_indices = [index for index, row in enumerate(rows) if row["source"] == "detected"]
@@ -185,7 +229,13 @@ def smooth_segments(rows: list[dict], params: SmoothingParams) -> None:
             rows[row_index]["y_smooth"] = float(np.mean([point[1] for point in window]))
 
 
-def build_quality_report(rows: list[dict], params: SmoothingParams, rejected_jumps: int, interpolated_gaps: list[int]) -> dict:
+def build_quality_report(
+    rows: list[dict],
+    params: SmoothingParams,
+    rejected_jumps: int,
+    residual_rejections: int,
+    interpolated_gaps: list[int],
+) -> dict:
     counts = {"detected": 0, "rejected": 0, "interpolated": 0, "missing": 0}
     for row in rows:
         counts[row["source"]] = counts.get(row["source"], 0) + 1
@@ -208,6 +258,8 @@ def build_quality_report(rows: list[dict], params: SmoothingParams, rejected_jum
         "final_coverage_frames": covered,
         "final_coverage_rate": covered / frames_total if frames_total else 0.0,
         "jumps_rejected": rejected_jumps,
+        "residual_anomalies_rejected": residual_rejections,
+        "segments_anomalous_detected": residual_rejections,
         "gaps_interpolated": len(interpolated_gaps),
         "max_gap_interpolated": max(interpolated_gaps) if interpolated_gaps else 0,
         "warnings": warnings,
@@ -218,9 +270,10 @@ def smooth_trajectory(raw_rows: list[dict], params: SmoothingParams | None = Non
     params = params or SmoothingParams()
     rows = initialize_rows(raw_rows, params)
     rejected_jumps = reject_outliers(rows, params)
+    residual_rejections = reject_local_prediction_breaks(rows, params)
     interpolated_gaps = interpolate_short_gaps(rows, params)
     smooth_segments(rows, params)
-    report = build_quality_report(rows, params, rejected_jumps, interpolated_gaps)
+    report = build_quality_report(rows, params, rejected_jumps, residual_rejections, interpolated_gaps)
     return rows, report
 
 
@@ -256,6 +309,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-jump-px", type=float, default=SmoothingParams.max_jump_px)
     parser.add_argument("--local-window", type=int, default=SmoothingParams.local_window)
     parser.add_argument("--isolated-outlier-px", type=float, default=SmoothingParams.isolated_outlier_px)
+    parser.add_argument("--residual-prediction-px", type=float, default=SmoothingParams.residual_prediction_px)
+    parser.add_argument("--residual-neighbor-jump-px", type=float, default=SmoothingParams.residual_neighbor_jump_px)
     parser.add_argument("--smoothing-window", type=int, default=SmoothingParams.smoothing_window)
     return parser.parse_args()
 
@@ -268,6 +323,8 @@ def main() -> None:
         max_jump_px=args.max_jump_px,
         local_window=args.local_window,
         isolated_outlier_px=args.isolated_outlier_px,
+        residual_prediction_px=args.residual_prediction_px,
+        residual_neighbor_jump_px=args.residual_neighbor_jump_px,
         smoothing_window=args.smoothing_window,
     )
     report = run_stage_3(

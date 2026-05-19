@@ -62,18 +62,21 @@ Estados por frame:
 - `max_jump_px`: `220.0`
 - `local_window`: `7`
 - `isolated_outlier_px`: `140.0`
+- `residual_prediction_px`: `120.0`
+- `residual_neighbor_jump_px`: `135.0`
 - `smoothing_window`: `5`
 
 ## Metricas del run actual
 
 - Frames totales: `949`
-- Frames `detected`: `801`
-- Frames `rejected`: `3`
+- Frames `detected`: `799`
+- Frames `rejected`: `5`
 - Frames `interpolated`: `95`
 - Frames `missing`: `50`
 - Cobertura final: `899 / 949` (`94.73%`)
 - Saltos rechazados: `3`
-- Gaps interpolados: `39`
+- Anomalias residuales rechazadas: `2`
+- Gaps interpolados: `40`
 - Maximo gap interpolado: `9`
 
 Frames rechazados automaticamente:
@@ -82,11 +85,20 @@ Frames rechazados automaticamente:
 - `329`
 - `545`
 
+Frames rechazados por refinamiento posterior a validacion humana:
+
+- `81`
+- `132`
+
 ## Relacion con limitaciones de Stage 2
 
 Stage 2 fue cerrado como visualmente viable con 4 errores/desvios puntuales observados por el usuario, principalmente cerca de impactos del jugador far/lejos de la camara.
 
-La primera version de Stage 3 rechazo automaticamente 3 spikes aislados y relleno esos frames mediante interpolacion local. El cuarto caso observado por el usuario debe revisarse visualmente en el overlay de Stage 3: puede haber sido absorbido por suavizado/interpolacion o puede requerir ajuste de parametros.
+La primera version de Stage 3 rechazo automaticamente 3 spikes aislados y relleno esos frames mediante interpolacion local. Tras validacion humana inicial `C`, se agrego una segunda pasada `local_prediction_break` para eliminar dos artefactos residuales visibles. El maximo salto frame-a-frame bajo de `73.717790 px` a `35.363514 px` sin reducir la cobertura final.
+
+Reporte de refinamiento:
+
+- `docs/stages/stage_3/anomaly_refinement_report.md`
 
 ## Definition of Done
 
