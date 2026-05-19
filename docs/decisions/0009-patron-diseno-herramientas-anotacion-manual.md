@@ -1,6 +1,6 @@
 # ADR-0009: Patrón de diseño para herramientas de anotación manual humana
 
-- **Status:** Propuesta
+- **Status:** Aceptada
 - **Fecha:** 2026-05-19
 - **Stage:** 1
 
@@ -47,4 +47,8 @@ Para herramientas de anotación de POSICIÓN (no eventos, sino x,y de pelota), l
 
 ## Notas
 
-ADR no se auto-acepta. Queda en Propuesta hasta aprobación explícita del usuario. Su aceptación es pre-requisito de iniciar Stage 2.
+ADR aceptado como pre-requisito de iniciar Stage 2.
+
+## Aceptación
+
+Aceptada por el usuario el 2026-05-19 vía aprobación explícita en sesión de planificación.
