@@ -1,8 +1,9 @@
 # STAGE 3 - Trayectoria temporalmente suavizada
 
-**Estado:** Implementada, pendiente de gate visual humano  
+**Estado:** Cerrada exitosa  
 **Nivel:** A  
 **Fecha de implementacion:** 2026-05-19
+**Fecha de cierre:** 2026-05-19
 
 ## Proposito
 
@@ -151,6 +152,21 @@ Veredicto esperado:
 - Los errores de impacto del lado far contaminan el resto de la trayectoria.
 - El output es peor que el overlay crudo.
 
-## Estado actual
+## Cierre
 
-Stage 3 queda implementada y lista para gate visual humano. No se inicio Stage 4.
+Stage 3 fue aprobada por validacion visual humana. El usuario confirmo que la trayectoria suavizada ya es aceptable para continuar.
+
+Resumen de cierre:
+
+- El artefacto del saque quedo corregido.
+- El artefacto residual alrededor del segundo 12 quedo corregido o visualmente aceptable.
+- La trayectoria suavizada pasa el gate visual de Nivel A.
+- No se inicio Stage 4 durante el cierre.
+
+Reporte de cierre:
+
+- `docs/stages/stage_3/exit_report.md`
+
+## Estado final
+
+Stage 3 queda cerrada exitosamente. El siguiente paso es iniciar Stage 4 con un prompt especifico.
