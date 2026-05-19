@@ -2,8 +2,8 @@
 
 **Version:** 0.1  
 **Fecha de inicio:** 2026-05-18  
-**Fecha de cierre:** Pendiente  
-**Estado:** En progreso  
+**Fecha de cierre:** 2026-05-18  
+**Estado:** Cerrada exitosa  
 **Nivel:** A
 
 ## Proposito de la etapa
@@ -110,4 +110,4 @@ Inspeccion visual humana del render.
 
 ## Reporte de cierre
 
-Pendiente.
+Ver `exit_report.md`.

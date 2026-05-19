@@ -1,6 +1,6 @@
 # ADR-0008: Captura de calibración manual vía servidor HTTP local
 
-- **Status:** Propuesta
+- **Status:** Aceptada
 - **Fecha:** 2026-05-19
 - **Stage:** 1
 
@@ -27,4 +27,8 @@ Implementar la captura manual de los 8 puntos de calibración mediante un servid
 
 ## Notas
 
-El servidor escribe `data/reference_clip/court_corners_pixel.json` con método `manual_web_click` y se cierra automáticamente después de una captura exitosa. Este ADR queda en `Propuesta` hasta aprobación explícita del usuario.
+El servidor escribe `data/reference_clip/court_corners_pixel.json` con método `manual_web_click` y se cierra automáticamente después de una captura exitosa.
+
+## Aceptación
+
+Aceptada por el usuario el 2026-05-18 vía aprobación verbal en la sesión de planificación.
