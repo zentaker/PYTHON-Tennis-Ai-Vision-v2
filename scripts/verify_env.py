@@ -97,7 +97,8 @@ def check_reference_assets(failures: list[str]) -> None:
         warn("No se valida clip/frame porque OpenCV no esta disponible")
         return
 
-    clip_path = ROOT / "data/reference_clip/madrid_R1.mp4"
+    clip_path = ROOT / "data/reference_clip/madrid_R1.mov"
+    legacy_clip_path = ROOT / "data/reference_clip/madrid_R1.mp4"
     frame_path = ROOT / "data/reference_clip/reference_frame.png"
     annotation_path = ROOT / "data/reference_clip/manual_annotation.json"
 
@@ -106,11 +107,19 @@ def check_reference_assets(failures: list[str]) -> None:
         success, _frame = capture.read()
         capture.release()
         if success:
+            ok("OpenCV puede leer un frame de madrid_R1.mov")
+        else:
+            fail("OpenCV no pudo leer frames de madrid_R1.mov", failures)
+    elif legacy_clip_path.exists():
+        capture = cv2.VideoCapture(str(legacy_clip_path))
+        success, _frame = capture.read()
+        capture.release()
+        if success:
             ok("OpenCV puede leer un frame de madrid_R1.mp4")
         else:
             fail("OpenCV no pudo leer frames de madrid_R1.mp4", failures)
     else:
-        warn("Clip local no encontrado: data/reference_clip/madrid_R1.mp4")
+        warn("Clip local no encontrado: data/reference_clip/madrid_R1.mov")
 
     if frame_path.exists():
         image = cv2.imread(str(frame_path))
