@@ -1,0 +1,170 @@
+{
+  "H_pixel_to_court": [
+    [
+      0.01584703165493774,
+      -5.5728598606917255e-05,
+      -21.71553210643979
+    ],
+    [
+      0.00014522045966763292,
+      -0.06379284853572997,
+      44.0107398911577
+    ],
+    [
+      -7.871149873888566e-06,
+      0.0013653345580325348,
+      1.0
+    ]
+  ],
+  "H_court_to_pixel": [
+    [
+      63.316993615666846,
+      15.125291263033677,
+      709.2869481888811
+    ],
+    [
+      0.25127806315901446,
+      -8.012156767061661,
+      358.07758429050324
+    ],
+    [
+      0.0001552989230064747,
+      0.011058327952861071,
+      0.5166872035841557
+    ]
+  ],
+  "court_corners_pixel": {
+    "far_left": [
+      835.0,
+      403.0
+    ],
+    "far_right": [
+      1907.0,
+      407.0
+    ],
+    "near_left": [
+      469.0,
+      1176.0
+    ],
+    "near_right": [
+      2278.0,
+      1180.0
+    ],
+    "far_left_service": [
+      933.0,
+      523.0
+    ],
+    "far_right_service": [
+      1811.0,
+      524.0
+    ],
+    "near_left_service": [
+      796.0,
+      916.0
+    ],
+    "near_right_service": [
+      1947.0,
+      916.0
+    ]
+  },
+  "court_corners_court_meters": {
+    "far_left": [
+      -5.485,
+      11.885
+    ],
+    "far_right": [
+      5.485,
+      11.885
+    ],
+    "near_left": [
+      -5.485,
+      -11.885
+    ],
+    "near_right": [
+      5.485,
+      -11.885
+    ],
+    "far_left_service": [
+      -4.115,
+      6.4
+    ],
+    "far_right_service": [
+      4.115,
+      6.4
+    ],
+    "near_left_service": [
+      -4.115,
+      -6.4
+    ],
+    "near_right_service": [
+      4.115,
+      -6.4
+    ]
+  },
+  "court_mode": "doubles",
+  "layout": "doubles",
+  "method": "cv2.findHomography(method=0)",
+  "method_notes": "Standard direct homography solve without RANSAC. The 8 correspondences come from careful manual clicks, not automatic noisy detections, so rejecting points would hide annotation errors instead of surfacing them.",
+  "clip_id": "nivel_a2_01",
+  "frame_path": "data/clips/nivel_a2_01/reference_frame.png",
+  "frame_dimensions": {
+    "width": 2746,
+    "height": 1536
+  },
+  "orientation_validation": {
+    "frame_width": 2746,
+    "frame_height": 1536,
+    "canonical_horizontal": true,
+    "all_points_in_bounds": true,
+    "far_above_near": true,
+    "left_before_right": true,
+    "passed": true
+  },
+  "reprojection_errors_per_point": [
+    {
+      "point": "far_left",
+      "court_to_pixel_error_pixels": 2.2194222570400535,
+      "pixel_to_court_error_meters": 0.055909477930646136
+    },
+    {
+      "point": "far_right",
+      "court_to_pixel_error_pixels": 1.9106821152608797,
+      "pixel_to_court_error_meters": 0.022081304029694195
+    },
+    {
+      "point": "near_left",
+      "court_to_pixel_error_pixels": 5.065362445636516,
+      "pixel_to_court_error_meters": 0.030404700880268108
+    },
+    {
+      "point": "near_right",
+      "court_to_pixel_error_pixels": 7.503713172100025,
+      "pixel_to_court_error_meters": 0.05723585475083594
+    },
+    {
+      "point": "far_left_service",
+      "court_to_pixel_error_pixels": 3.8728896553081786,
+      "pixel_to_court_error_meters": 0.09039412890534815
+    },
+    {
+      "point": "far_right_service",
+      "court_to_pixel_error_pixels": 2.761274927169665,
+      "pixel_to_court_error_meters": 0.03638106401140382
+    },
+    {
+      "point": "near_left_service",
+      "court_to_pixel_error_pixels": 5.7114944157920275,
+      "pixel_to_court_error_meters": 0.04474792661608858
+    },
+    {
+      "point": "near_right_service",
+      "court_to_pixel_error_pixels": 8.598912202503135,
+      "pixel_to_court_error_meters": 0.08901078991726956
+    }
+  ],
+  "reprojection_error_pixels_mean": 4.70546889885131,
+  "reprojection_error_pixels_max": 8.598912202503135,
+  "reprojection_error_meters_mean": 0.05327065588019431,
+  "reprojection_error_meters_max": 0.09039412890534815,
+  "computed_at": "2026-07-14T14:52:02.873667+00:00"
+}

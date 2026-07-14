@@ -1,5 +1,10 @@
 # Replit Smoke Test Report
 
+> **Estado: completada y archivada.** La migracion Replit dejo de ser un blocker y no
+> forma parte de los proximos pasos activos. Los resultados, rutas y fallos descritos
+> abajo corresponden a la ejecucion original y se preservan como evidencia historica.
+> Actualmente macOS se usa para desarrollo ligero y WSL/Linux para WASB.
+
 Date/time: 2026-05-23 02:13:23 -05:00
 
 ## Scope

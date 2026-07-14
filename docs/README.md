@@ -5,13 +5,18 @@ La documentacion de este proyecto es parte del producto. Cada etapa debe dejar e
 ## Indice
 
 - Roadmap general: `../ROADMAP.md`
-- Stage 0: `stages/stage_0/STAGE_0.md`
+- Stage 0 reconciliada: `stages/stage_0/exit_report.md`
+- Stage 3 cerrada: `stages/stage_3/exit_report.md`
+- Stage 4 en progreso: `stages/stage_4/STAGE_4.md`
+- Recuperacion de assets Stage 4: `stages/stage_4/ASSET_RECOVERY.md`
+- Nivel A2 activo: `levels/level_a2/README.md`
+- Candidatos de video: `data/NEW_VIDEO_CANDIDATES.md`
 - Plantilla de etapa: `stages/_template.md`
 - Decisiones tecnicas: `decisions/`
 - Friccion: `friction/FRICTION_LOG.md`
 - Validacion: `validation/VALIDATION_FRAMEWORK.md`
 - Protocolo del agente: `agent_protocol/AGENT_PROTOCOL.md`
-- Reportes finales: `reports/`
+- Operaciones archivadas de Replit: `ops/REPLIT_MIGRATION.md`
 
 ## Reglas
 

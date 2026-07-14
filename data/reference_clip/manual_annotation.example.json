@@ -1,38 +1,26 @@
 {
-  "clip_path": "data/reference_clip/madrid_R1.mp4",
+  "clip_path": "data/reference_clip/madrid_R1.mov",
   "level": "A",
   "fps": 60,
-  "duration_seconds": 14.2,
-  "frames_total": 852,
+  "duration_seconds": 15.816667,
+  "frames_total": 949,
   "court_corners_pixel": {
-    "near_left": [320, 980],
-    "near_right": [1560, 980],
-    "far_left": [610, 280],
-    "far_right": [1280, 280]
+    "far_left": [612, 276],
+    "far_right": [1300, 276],
+    "near_left": [380, 770],
+    "near_right": [1536, 774]
   },
   "service_box_corners_pixel": {
-    "near_left_service": [0, 0],
-    "near_right_service": [0, 0],
-    "far_left_service": [0, 0],
-    "far_right_service": [0, 0]
+    "far_left_service": [672, 352],
+    "far_right_service": [1237, 352],
+    "near_left_service": [586, 603],
+    "near_right_service": [1326, 602]
   },
   "players": {
-    "near": {"label": "jugador_A"},
-    "far": {"label": "jugador_B"}
+    "near": {"label": "unknown"},
+    "far": {"label": "unknown"}
   },
-  "narrative_events": [
-    {
-      "id": "ev_001",
-      "type": "hit",
-      "frame_range": [14, 18],
-      "player": "near",
-      "shot_type": "saque",
-      "shot_direction": "T",
-      "notes": "primer saque del rally"
-    }
-  ],
-  "ball_manual_positions": [
-    {"frame": 20, "x_pixel": 800, "y_pixel": 450, "confidence": "high"}
-  ],
-  "notes": "Camara estatica verificada por inspeccion. Sin paneo."
+  "narrative_events": [],
+  "ball_manual_positions": [],
+  "notes": "Plantilla sin eventos. Completar solo mediante observacion humana del rally."
 }

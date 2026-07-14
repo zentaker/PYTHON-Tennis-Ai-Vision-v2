@@ -113,6 +113,8 @@ Humano.
 
 - Archivo de eventos normalizado.
 - Reporte de comparacion contra anotacion.
+- Timeline y overlay de revision sobre datos reales.
+- Confirmacion de que el numero y orden de eventos coincide con `narrative_events`.
 
 ### Quien valida
 

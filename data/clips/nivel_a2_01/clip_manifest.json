@@ -1,0 +1,22 @@
+{
+  "clip_id": "nivel_a2_01",
+  "source_filename": "source.mp4",
+  "source_extension": ".mp4",
+  "source_sha256": "e2a05a8eda9be4d821ae1acc60355c7c0403e450ac0febd6bb3c6a62e0aa5774",
+  "fps": 50.24630541871921,
+  "frames_total": 527,
+  "duration_seconds": 10.48833333333333,
+  "resolution_width": 2746,
+  "resolution_height": 1536,
+  "codec": "hevc",
+  "camera_mode": "fixed",
+  "status": "stage_2_prepared_external",
+  "container_rotation_degrees": 270,
+  "decoded_width": 1536,
+  "decoded_height": 2746,
+  "canonical_width": 2746,
+  "canonical_height": 1536,
+  "canonical_transform": "rotate_90_ccw",
+  "timing_mode": "variable_frame_rate",
+  "notes": "Clasificacion B. MP4 canonico copiado sin recomprimir. El contenedor declara rotacion 270 grados y OpenCV entrega frames laterales de 1536x2746; los PNG canonicos de Stage 1 se rotan 90 grados en sentido antihorario a 2746x1536. Cadencia variable con intervalos de 16.667 y 33.333 ms. Audio AAC estereo."
+}

@@ -1,0 +1,19 @@
+{
+  "clip_path": "tests/fixtures/synthetic_rally.mov",
+  "level": "A",
+  "fps": 60,
+  "frames_total": 120,
+  "narrative_events": [
+    {
+      "id": "ev_bad",
+      "type": "automatic_guess",
+      "frame_range": [50, 45],
+      "player": "center",
+      "side": "near",
+      "shot_type": "smash",
+      "court_zone": "outside",
+      "source": "manual_annotation",
+      "notes": "Intentionally invalid fixture"
+    }
+  ]
+}

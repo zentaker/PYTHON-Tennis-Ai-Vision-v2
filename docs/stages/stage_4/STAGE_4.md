@@ -1,75 +1,129 @@
-# STAGE 4 - Deteccion de eventos
+# STAGE 4 - Deteccion y normalizacion de eventos
 
-**Estado:** Preparada, no iniciada  
-**Nivel:** A  
+**Estado:** En progreso - codigo implementado, inputs reales pendientes
+**Nivel:** A
 **Fecha de preparacion:** 2026-05-19
+**Fecha de implementacion base:** 2026-07-13
 
 ## Proposito
 
-Convertir la narracion/manual annotation del rally en eventos internos de botes y golpes para alimentar las etapas de visualizacion posteriores.
+Convertir `narrative_events` definidos por una persona en eventos internos normalizados
+para las etapas de visualizacion posteriores.
 
-En Nivel A, Stage 4 no implementa deteccion automatica de eventos. Lee `narrative_events` desde una anotacion manual para aislar la visualizacion del problema de deteccion automatica.
+Stage 4 Nivel A no detecta botes ni golpes. Valida y transforma solamente los eventos
+presentes en `data/reference_clip/manual_annotation.json`; una lista vacia bloquea el
+gate y nunca se rellena con suposiciones.
 
-## Regla de Nivel A
+## Estado de implementacion
 
-Stage 4 Nivel A debe leer `narrative_events` desde:
+Implementado:
+
+- schema y vocabularios en `src/events/event_schema.py`;
+- loader y export a JSON en `src/events/event_loader.py`;
+- overlay de revision en `src/events/render_events_overlay.py`;
+- timeline en `src/events/render_events_timeline.py`;
+- herramienta estatica `tools/manual_event_annotator/index.html`;
+- fixtures sinteticas y tests unitarios sin video real.
+
+Pendiente:
+
+- recuperar el clip y la trayectoria suavizada de la maquina anterior;
+- crear/completar `manual_annotation.json` con conocimiento humano del rally;
+- ejecutar el pipeline sobre esos datos;
+- revisar timeline y overlay;
+- obtener el gate humano.
+
+## Inputs
+
+Obligatorios para el gate real:
 
 ```text
+outputs/stage_3/smoothed_trajectory.csv
 data/reference_clip/manual_annotation.json
+data/reference_clip/homography.json
 ```
 
-Si `manual_annotation.json` no existe, Stage 4 debe iniciar creando/completando ese archivo a partir de conocimiento de dominio y validacion humana.
+Auxiliares para anotacion y validacion:
 
-No se debe avanzar a Stage 5 hasta validar que los eventos fueron leidos sin perdida ni alteracion.
+```text
+data/reference_clip/madrid_R1.mov
+outputs/stage_3/smoothed_trajectory_overlay.mp4
+docs/stages/stage_3/exit_report.md
+```
 
-## Inputs esperados
+La homografia esta versionada. Los demas artefactos reales no existen en el clon actual.
+Ver `ASSET_RECOVERY.md`.
 
-- `outputs/stage_3/smoothed_trajectory.csv`
-- `data/reference_clip/manual_annotation.json`
-- `data/reference_clip/homography.json`
+## Schema normalizado
 
-Inputs auxiliares:
+Cada evento exportado contiene:
 
-- `data/reference_clip/madrid_R1.mov`
-- `outputs/stage_3/smoothed_trajectory_overlay.mp4`
-- `docs/stages/stage_3/exit_report.md`
+```text
+id, type, frame_start, frame_end, frame_mid,
+time_start_seconds, time_end_seconds, time_mid_seconds,
+player, side, shot_type, court_zone, source, notes
+```
 
-## Outputs esperados
+Los tiempos se calculan con el FPS indicado por CLI, por el JSON o, si ambos faltan, con
+el default de 60 FPS. `frame_range` es inclusivo y debe contener enteros no negativos en
+orden. IDs duplicados, eventos fuera de `frames_total` y listas desordenadas se rechazan.
 
-- `outputs/stage_4/events.json`
-- `docs/stages/stage_4/events_report.md`
+## Flujo operativo
 
-Los outputs en `outputs/stage_4/` seran locales e ignorados por Git. La documentacion y scripts asociados si deben versionarse.
+1. Abrir `tools/manual_event_annotator/index.html` en un navegador.
+2. Cargar el video local y confirmar FPS.
+3. Registrar, revisar, editar y ordenar los eventos humanos.
+4. Exportar `manual_annotation.json` y colocarlo en `data/reference_clip/`.
+5. Normalizar:
 
-## Definition of Done preliminar
+```bash
+uv run python -m src.events.event_loader
+```
 
-- Existe `data/reference_clip/manual_annotation.json` completo para Nivel A.
-- El parser lee `narrative_events`.
-- Se genera `outputs/stage_4/events.json`.
-- No hay perdida ni alteracion de eventos respecto al JSON manual.
-- Existe reporte `docs/stages/stage_4/events_report.md`.
-- El usuario valida que los eventos corresponden al rally.
+6. Con datos reales validados, generar timeline y overlay:
+
+```bash
+uv run python -m src.events.render_events_timeline
+uv run python -m src.events.render_events_overlay
+```
+
+## Outputs reales esperados
+
+```text
+outputs/stage_4/events.json
+outputs/stage_4/events_timeline.png
+outputs/stage_4/events_overlay.mp4
+docs/stages/stage_4/events_report.md
+```
+
+Los tres archivos bajo `outputs/` son locales e ignorados por Git. No se generaron en la
+implementacion base porque faltan los inputs reales.
+
+## Definition of Done
+
+- Existe un `manual_annotation.json` humano y no vacio.
+- El loader convierte todos sus eventos sin perdida ni alteracion semantica.
+- Se genera `events.json` con orden y tiempos correctos.
+- Timeline y overlay permiten revisar rangos sobre el rally real.
+- `events_report.md` registra el run real.
+- El usuario confirma que no faltan ni sobran eventos y que los rangos son razonables.
 
 ## Gate
 
-Validacion humana de eventos.
+Pendiente de validacion humana. Stage 4 no se puede cerrar con fixtures.
 
-El usuario debe confirmar que:
+El usuario debe confirmar:
 
-- los botes esperados estan presentes;
-- los golpes esperados estan presentes;
-- los frame ranges son razonables;
+- todos los botes narrados estan presentes;
+- todos los golpes narrados estan presentes;
+- los rangos de frames son razonables;
 - no se inventaron eventos;
-- no faltan eventos narrados.
+- no se perdieron eventos durante la normalizacion.
 
-## Fuera de alcance en Nivel A
+## Fuera de alcance Nivel A
 
-- Deteccion automatica de botes.
-- Deteccion automatica de golpes.
-- Estimacion de altura.
-- Render final de vista superior.
-- Render final de vista lateral.
-
-## Estado actual
-
-Stage 4 queda preparada documentalmente. No se implemento codigo ni se detectaron eventos en esta sesion.
+- deteccion automatica de botes o golpes;
+- regeneracion de WASB o Stage 3;
+- estimacion de altura;
+- vista superior o lateral final;
+- cualquier trabajo de Stage 5.

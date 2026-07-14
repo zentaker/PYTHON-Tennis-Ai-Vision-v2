@@ -1,6 +1,14 @@
 # --- Carpetas binarias del proyecto (contenido no se versiona) ---
 data/*
 !data/README.md
+!data/clips/
+data/clips/*
+!data/clips/*/
+data/clips/*/*
+!data/clips/*/clip_manifest.json
+!data/clips/*/court_corners_pixel.json
+!data/clips/*/homography.json
+!data/clips/*/manual_annotation.json
 !data/reference_clip/
 data/reference_clip/*
 !data/reference_clip/README.md

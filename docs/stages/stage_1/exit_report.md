@@ -14,7 +14,6 @@ Stage 1 produjo la calibración de cancha para el clip Nivel A usando 8 puntos m
 - `data/reference_clip/reference_frame.png`
 - `data/reference_clip/court_corners_pixel.json`
 - `data/reference_clip/homography.json`
-- `outputs/stage_1/calibration_guide.png`
 - `outputs/stage_1/reprojection_error_report.json`
 - `outputs/stage_1/court_2d_top.png`
 - `outputs/stage_1/reference_frame_with_reprojected_court.png`
@@ -73,6 +72,9 @@ Lectura: fricción moderada, con lecciones documentadas.
 - El método de captura por clic en navegador web local funcionó y reemplazó al modo "coordenadas a mano" que era inviable. Documentado en `ADR-0008`.
 - `sudo` password no se persistió: `ffmpeg` quedó como deuda en `F-0005`, no bloqueante.
 - Para puntos manuales cuidadosamente capturados, `cv2.findHomography(method=0)` fue suficiente y evita esconder errores de click mediante RANSAC.
+- La UI web de clic directo sobre `reference_frame.png` es el metodo oficial. El guide
+  aproximado se retiro posteriormente por ser redundante y potencialmente confuso; esto
+  no altera los puntos guardados, la homografia ni el gate firmado.
 
 ## Cambios al roadmap
 

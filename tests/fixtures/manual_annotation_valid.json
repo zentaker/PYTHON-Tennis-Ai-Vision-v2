@@ -1,0 +1,42 @@
+{
+  "clip_path": "tests/fixtures/synthetic_rally.mov",
+  "level": "A",
+  "fps": 60,
+  "duration_seconds": 2.0,
+  "frames_total": 120,
+  "narrative_events": [
+    {
+      "id": "ev_001",
+      "type": "serve",
+      "frame_range": [6, 8],
+      "player": "near",
+      "side": "near",
+      "shot_type": "saque",
+      "court_zone": "zona_saque_derecha",
+      "source": "manual_annotation",
+      "notes": "Synthetic fixture serve"
+    },
+    {
+      "id": "ev_002",
+      "type": "bounce",
+      "frame_range": [40, 40],
+      "player": "unknown",
+      "side": "far",
+      "shot_type": "unknown",
+      "court_zone": "fondo",
+      "source": "manual_annotation",
+      "notes": "Synthetic fixture bounce"
+    },
+    {
+      "id": "ev_003",
+      "type": "hit",
+      "frame_range": [70, 72],
+      "player": "far",
+      "side": "far",
+      "shot_type": "revés",
+      "court_zone": "fondo",
+      "source": "manual_annotation",
+      "notes": "Synthetic fixture hit"
+    }
+  ]
+}

@@ -15,16 +15,16 @@ Dado un frame de referencia del clip, obtener una matriz de homografia H que map
 ```text
 [x] Frame de referencia extraido desde el clip Nivel A
 [x] Modulo de coordenadas de cancha
-[x] ADR-0006 propuesto
+[x] ADR-0006 aceptado
 [x] Script interactivo de calibracion preparado
-[ ] Matriz H persistida en JSON
-[ ] Script de validacion con error de reproyeccion
-[ ] Render de cancha 2D vacia a partir de H
+[x] Matriz H persistida en JSON
+[x] Script de validacion con error de reproyeccion
+[x] Render de cancha 2D vacia a partir de H
 ```
 
 ## Decisiones tomadas (links a ADRs)
 
-- `docs/decisions/0006-sistema-coordenadas-cancha.md` (Propuesta)
+- `docs/decisions/0006-sistema-coordenadas-cancha.md` (Aceptada)
 
 ## Friccion registrada
 
@@ -49,7 +49,7 @@ Se creo `src/court/coordinates.py` con:
 - Dimensiones reales en metros.
 - Puntos de calibracion parametrizados para `doubles` y `singles`.
 
-ADR-0006 queda en estado `Propuesta` hasta aprobacion humana.
+ADR-0006 fue aceptada durante Stage 1.
 
 ## Preparacion 1.3 - Calibracion interactiva
 
@@ -61,11 +61,15 @@ Se creo `src/court/calibrate_interactive.py`.
 
 Resultado WSLg: `cv2.imshow` no inicializo por error Qt/xcb. Se activa modo `1.3-fallback` salvo que se instalen dependencias GUI antes de capturar puntos.
 
-## Guia manual de calibracion
+## Metodo oficial de calibracion
 
-Se genero `outputs/stage_1/calibration_guide.png` con marcadores aproximados para indicar el orden de los 8 puntos. La guia es orientativa y no se usa como ground truth.
+La calibracion oficial usa `src/court/calibrate_web.py`: una UI local en navegador que
+muestra `reference_frame.png` a resolucion real y solicita los ocho puntos en orden, con
+descripcion del punto activo, undo, reset, validacion y guardado del JSON.
 
-La calibracion final usara `layout=doubles`, confirmado por el usuario el 2026-05-19.
+El calibration guide aproximado usado durante la exploracion inicial fue retirado por ser
+redundante y potencialmente confuso. Nunca fue ground truth ni participa en la homografia.
+La calibracion final usa `layout=doubles`, confirmado por el usuario el 2026-05-19.
 
 ## 1.4 - Homografia
 
@@ -96,7 +100,7 @@ Se generaron:
 - `outputs/stage_1/court_2d_top.png`
 - `outputs/stage_1/reference_frame_with_reprojected_court.png`
 
-El gate de Stage 1 queda pendiente de validacion visual humana sobre la reproyeccion.
+El gate visual fue aprobado y queda registrado en `exit_report.md`.
 
 ## Definition of Done
 

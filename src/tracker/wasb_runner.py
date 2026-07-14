@@ -1,30 +1,24 @@
-"""Minimal WASB runner for the Stage 2 visual viability check."""
+"""Orientation-safe, multi-clip WASB runner for external Stage 2 execution."""
 
 from __future__ import annotations
 
 import argparse
 import csv
+import subprocess
 import sys
+import tempfile
 import time
 from collections import deque
+from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Protocol
 
 import cv2
 import numpy as np
-import torch
-from omegaconf import OmegaConf
 
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-WASB_ROOT = PROJECT_ROOT / "third_party" / "WASB-SBDT"
-WASB_SRC = WASB_ROOT / "src"
-
-if str(WASB_SRC) not in sys.path:
-    sys.path.insert(0, str(WASB_SRC))
-
-from dataloaders.dataset_loader import get_transform  # noqa: E402
-from models import build_model  # noqa: E402
-from utils.image import affine_transform  # noqa: E402
+from src.project.clip_manifest import ClipManifest
+from src.video.canonical_frames import CanonicalFrame, iter_canonical_frames
 
 
 INPUT_WIDTH = 512
@@ -33,206 +27,443 @@ FRAMES_IN = 3
 CENTER_CHANNEL = 1
 IMAGENET_MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32).reshape(3, 1, 1)
 IMAGENET_STD = np.array([0.229, 0.224, 0.225], dtype=np.float32).reshape(3, 1, 1)
+CSV_COLUMNS = [
+    "frame_id",
+    "timestamp_seconds",
+    "x_pixel",
+    "y_pixel",
+    "confidence",
+    "detected",
+    "canonical_width",
+    "canonical_height",
+]
 
 
-def load_wasb_model(weights_path: Path, device: torch.device) -> torch.nn.Module:
-    """Load the official WASB HRNet architecture and checkpoint."""
-    if not weights_path.exists():
-        raise FileNotFoundError(f"WASB weights not found: {weights_path}")
-    if not WASB_SRC.exists():
-        raise FileNotFoundError(f"WASB source tree not found: {WASB_SRC}")
+class Predictor(Protocol):
+    """Lightweight interface implemented by the real WASB model and test doubles."""
 
-    model_cfg = OmegaConf.load(WASB_SRC / "configs" / "model" / "wasb.yaml")
-    cfg = OmegaConf.create({"model": model_cfg})
-    model = build_model(cfg)
-    checkpoint = torch.load(weights_path, map_location=device, weights_only=False)
-    state_dict = checkpoint["model_state_dict"]
-    model.load_state_dict(state_dict)
-    model.to(device)
-    model.eval()
-    return model
+    def __call__(self, frames_bgr: Sequence[np.ndarray]) -> tuple[float, float, float]: ...
 
 
-def _preprocess_frame(frame_bgr: np.ndarray) -> tuple[torch.Tensor, np.ndarray]:
-    frame_rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
-    trans_input = get_transform(frame_rgb, (INPUT_WIDTH, INPUT_HEIGHT))
-    trans_output_inv = get_transform(frame_rgb, (INPUT_WIDTH, INPUT_HEIGHT), inv=1)
-    warped = cv2.warpAffine(frame_rgb, trans_input, (INPUT_WIDTH, INPUT_HEIGHT), flags=cv2.INTER_LINEAR)
-    image = warped.astype(np.float32) / 255.0
-    image = image.transpose(2, 0, 1)
-    image = (image - IMAGENET_MEAN) / IMAGENET_STD
-    return torch.from_numpy(image), trans_output_inv
+@dataclass(frozen=True)
+class Detection:
+    """One prediction expressed in canonical pixel coordinates."""
+
+    frame_id: int
+    timestamp_seconds: float
+    x_pixel: float
+    y_pixel: float
+    confidence: float
+    detected: bool
+    canonical_width: int
+    canonical_height: int
 
 
-def _detect_center_channel(
-    model: torch.nn.Module,
-    frames: list[np.ndarray],
-    device: torch.device,
-) -> tuple[float, float, float]:
-    tensors = []
-    inverse_transform = None
-    for frame in frames:
-        tensor, inverse_transform = _preprocess_frame(frame)
-        tensors.append(tensor)
+class WasbPredictor:
+    """Heavy WASB adapter; instantiated only by the real external CLI."""
 
-    input_tensor = torch.cat(tensors, dim=0).unsqueeze(0).to(device)
-    with torch.inference_mode():
-        heatmaps = model(input_tensor)[0].sigmoid().detach().cpu().numpy()[0]
+    def __init__(
+        self,
+        model: Any,
+        device: Any,
+        torch_module: Any,
+        get_transform: Any,
+        affine_transform: Any,
+    ) -> None:
+        self.model = model
+        self.device = device
+        self.torch = torch_module
+        self.get_transform = get_transform
+        self.affine_transform = affine_transform
 
-    heatmap = heatmaps[CENTER_CHANNEL]
-    flat_index = int(np.argmax(heatmap))
-    y_heat, x_heat = np.unravel_index(flat_index, heatmap.shape)
-    confidence = float(heatmap[y_heat, x_heat])
-    xy = affine_transform(np.array([float(x_heat), float(y_heat)], dtype=np.float32), inverse_transform)
-    return float(xy[0]), float(xy[1]), confidence
+    def _preprocess_frame(self, frame_bgr: np.ndarray) -> tuple[Any, np.ndarray]:
+        frame_rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
+        trans_input = self.get_transform(frame_rgb, (INPUT_WIDTH, INPUT_HEIGHT))
+        trans_output_inv = self.get_transform(
+            frame_rgb,
+            (INPUT_WIDTH, INPUT_HEIGHT),
+            inv=1,
+        )
+        warped = cv2.warpAffine(
+            frame_rgb,
+            trans_input,
+            (INPUT_WIDTH, INPUT_HEIGHT),
+            flags=cv2.INTER_LINEAR,
+        )
+        image = warped.astype(np.float32) / 255.0
+        image = image.transpose(2, 0, 1)
+        image = (image - IMAGENET_MEAN) / IMAGENET_STD
+        return self.torch.from_numpy(image), trans_output_inv
 
-
-def infer_clip(
-    video_path: Path,
-    model: torch.nn.Module,
-    device: torch.device,
-    output_csv: Path,
-) -> dict[str, float]:
-    """Run sliding-window WASB inference and write per-frame detections."""
-    output_csv.parent.mkdir(parents=True, exist_ok=True)
-    cap = cv2.VideoCapture(str(video_path))
-    if not cap.isOpened():
-        raise RuntimeError(f"Could not open video: {video_path}")
-
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    detections = 0
-    confidence_sum = 0.0
-    start = time.perf_counter()
-
-    ok, first_frame = cap.read()
-    if not ok:
-        raise RuntimeError(f"Could not read first frame: {video_path}")
-
-    frame_buffer: deque[np.ndarray] = deque([first_frame.copy(), first_frame.copy()], maxlen=FRAMES_IN)
-    frame_id = 0
-
-    with output_csv.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=["frame_id", "x_pixel", "y_pixel", "confidence"])
-        writer.writeheader()
-
-        current = first_frame
-        while True:
-            ok, next_frame = cap.read()
-            if not ok:
-                next_frame = current.copy()
-                end_after_this = True
-            else:
-                end_after_this = False
-
-            frame_buffer.append(next_frame.copy())
-            x_pixel, y_pixel, confidence = _detect_center_channel(model, list(frame_buffer), device)
-            writer.writerow(
-                {
-                    "frame_id": frame_id,
-                    "x_pixel": f"{x_pixel:.3f}",
-                    "y_pixel": f"{y_pixel:.3f}",
-                    "confidence": f"{confidence:.6f}",
-                }
-            )
-            if confidence >= 0.5:
-                detections += 1
-            confidence_sum += confidence
-
-            frame_id += 1
-            current = next_frame
-            if end_after_this:
-                break
-
-    cap.release()
-    elapsed = time.perf_counter() - start
-    processed_frames = frame_id
-    return {
-        "total_frames": float(total_frames or processed_frames),
-        "processed_frames": float(processed_frames),
-        "detected_frames": float(detections),
-        "detection_rate": detections / processed_frames if processed_frames else 0.0,
-        "mean_confidence": confidence_sum / processed_frames if processed_frames else 0.0,
-        "elapsed_seconds": elapsed,
-        "fps": processed_frames / elapsed if elapsed else 0.0,
-    }
+    def __call__(self, frames_bgr: Sequence[np.ndarray]) -> tuple[float, float, float]:
+        tensors = []
+        inverse_transform = None
+        for frame in frames_bgr:
+            tensor, inverse_transform = self._preprocess_frame(frame)
+            tensors.append(tensor)
+        input_tensor = self.torch.cat(tensors, dim=0).unsqueeze(0).to(self.device)
+        with self.torch.inference_mode():
+            heatmaps = self.model(input_tensor)[0].sigmoid().detach().cpu().numpy()[0]
+        heatmap = heatmaps[CENTER_CHANNEL]
+        flat_index = int(np.argmax(heatmap))
+        y_heat, x_heat = np.unravel_index(flat_index, heatmap.shape)
+        xy = self.affine_transform(
+            np.array([float(x_heat), float(y_heat)], dtype=np.float32),
+            inverse_transform,
+        )
+        return float(xy[0]), float(xy[1]), float(heatmap[y_heat, x_heat])
 
 
-def render_overlay(video_path: Path, detections_csv: Path, output_mp4: Path) -> None:
-    output_mp4.parent.mkdir(parents=True, exist_ok=True)
-    detections: dict[int, tuple[float, float, float]] = {}
-    with detections_csv.open("r", newline="", encoding="utf-8") as handle:
-        reader = csv.DictReader(handle)
-        for row in reader:
-            detections[int(row["frame_id"])] = (
-                float(row["x_pixel"]),
-                float(row["y_pixel"]),
-                float(row["confidence"]),
-            )
+def load_wasb_predictor(
+    checkpoint_path: Path,
+    wasb_root: Path,
+    device_name: str,
+) -> WasbPredictor:
+    """Import PyTorch/WASB lazily and load the requested checkpoint."""
+    if not checkpoint_path.is_file():
+        raise FileNotFoundError(f"WASB checkpoint not found: {checkpoint_path}")
+    wasb_src = wasb_root / "src"
+    if not wasb_src.is_dir():
+        raise FileNotFoundError(f"WASB source tree not found: {wasb_src}")
+    if str(wasb_src) not in sys.path:
+        sys.path.insert(0, str(wasb_src))
 
-    cap = cv2.VideoCapture(str(video_path))
-    if not cap.isOpened():
-        raise RuntimeError(f"Could not open video: {video_path}")
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
-    writer = cv2.VideoWriter(str(output_mp4), cv2.VideoWriter_fourcc(*"mp4v"), fps, (width, height))
-    if not writer.isOpened():
-        raise RuntimeError(f"Could not open output video writer: {output_mp4}")
+    try:
+        import torch
+        from omegaconf import OmegaConf
 
-    frame_id = 0
-    while True:
-        ok, frame = cap.read()
-        if not ok:
-            break
-        detection = detections.get(frame_id)
-        if detection is not None:
-            x_pixel, y_pixel, confidence = detection
-            if np.isfinite(x_pixel) and np.isfinite(y_pixel):
-                color = (0, 0, 255) if confidence >= 0.5 else (0, 255, 255)
-                cv2.circle(frame, (int(round(x_pixel)), int(round(y_pixel))), 8, color, 2)
-        writer.write(frame)
-        frame_id += 1
+        from dataloaders.dataset_loader import get_transform
+        from models import build_model
+        from utils.image import affine_transform
+    except ImportError as exc:
+        raise RuntimeError(
+            "Tracker dependencies are unavailable. Install the tracker extra on Linux/WSL/GPU."
+        ) from exc
 
-    cap.release()
-    writer.release()
-
-    check = cv2.VideoCapture(str(output_mp4))
-    ok, _ = check.read()
-    check.release()
-    if not ok:
-        raise RuntimeError(f"Overlay MP4 was written but could not be read: {output_mp4}")
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run WASB on a video and render detection overlay.")
-    parser.add_argument("--video", type=Path, default=PROJECT_ROOT / "data" / "reference_clip" / "madrid_R1.mov")
-    parser.add_argument("--weights", type=Path, default=PROJECT_ROOT / "models" / "wasb" / "wasb_tennis_best.pth.tar")
-    parser.add_argument("--csv", type=Path, default=PROJECT_ROOT / "data" / "reference_clip" / "wasb_detections.csv")
-    parser.add_argument("--overlay", type=Path, default=PROJECT_ROOT / "outputs" / "stage_2" / "wasb_detections_overlay.mp4")
-    parser.add_argument("--device", choices=["auto", "cuda", "cpu"], default="auto")
-    return parser.parse_args()
-
-
-def main() -> None:
-    args = parse_args()
-    if args.device == "auto":
+    if device_name == "auto":
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     else:
-        device = torch.device(args.device)
+        device = torch.device(device_name)
     if device.type == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA requested but torch.cuda.is_available() is False")
 
-    model = load_wasb_model(args.weights, device)
-    metrics = infer_clip(args.video, model, device, args.csv)
-    render_overlay(args.video, args.csv, args.overlay)
-    print(f"device={device}")
+    model_cfg = OmegaConf.load(wasb_src / "configs" / "model" / "wasb.yaml")
+    cfg = OmegaConf.create({"model": model_cfg})
+    model = build_model(cfg)
+    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
+    model.load_state_dict(checkpoint["model_state_dict"])
+    model.to(device)
+    model.eval()
+    return WasbPredictor(model, device, torch, get_transform, affine_transform)
+
+
+def _centered_windows(
+    frames: Iterable[CanonicalFrame],
+) -> Iterable[tuple[CanonicalFrame, list[np.ndarray]]]:
+    """Yield one three-frame predictor window for every logical input frame."""
+    iterator = iter(frames)
+    try:
+        current = next(iterator)
+    except StopIteration as exc:
+        raise ValueError("No canonical frames were decoded") from exc
+
+    buffer: deque[np.ndarray] = deque(
+        [current.image_bgr.copy(), current.image_bgr.copy()],
+        maxlen=FRAMES_IN,
+    )
+    while True:
+        try:
+            following = next(iterator)
+        except StopIteration:
+            following = None
+        next_image = current.image_bgr if following is None else following.image_bgr
+        buffer.append(next_image.copy())
+        yield current, list(buffer)
+        if following is None:
+            break
+        current = following
+
+
+def validate_detection(
+    detection: Detection,
+    confidence_threshold: float,
+) -> None:
+    """Reject invalid high-confidence predictions instead of emitting bad coordinates."""
+    if not np.isfinite(detection.confidence) or not 0.0 <= detection.confidence <= 1.0:
+        raise ValueError(f"Invalid confidence at frame {detection.frame_id}")
+    if detection.confidence < confidence_threshold:
+        return
+    if not np.isfinite(detection.x_pixel) or not np.isfinite(detection.y_pixel):
+        raise ValueError(f"Non-finite detected point at frame {detection.frame_id}")
+    if not (
+        0 <= detection.x_pixel < detection.canonical_width
+        and 0 <= detection.y_pixel < detection.canonical_height
+    ):
+        raise ValueError(f"Detected point outside canonical bounds at frame {detection.frame_id}")
+
+
+def infer_canonical_frames(
+    frames: Iterable[CanonicalFrame],
+    predictor: Predictor,
+    output_csv: Path,
+    *,
+    confidence_threshold: float,
+    expected_frames: int,
+    canonical_width: int,
+    canonical_height: int,
+) -> dict[str, float]:
+    """Predict exactly once per canonical frame and write the Stage 2 CSV."""
+    if not 0.0 <= confidence_threshold <= 1.0:
+        raise ValueError("confidence_threshold must be between 0 and 1")
+    output_csv.parent.mkdir(parents=True, exist_ok=True)
+    processed = 0
+    detected_count = 0
+    confidence_sum = 0.0
+    started_at = time.perf_counter()
+
+    with output_csv.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=CSV_COLUMNS)
+        writer.writeheader()
+        for record, window in _centered_windows(frames):
+            if record.frame_id != processed:
+                raise ValueError(
+                    f"Non-sequential frame_id: expected {processed}, got {record.frame_id}"
+                )
+            if record.image_bgr.shape[:2] != (canonical_height, canonical_width):
+                raise ValueError(
+                    f"Frame {record.frame_id} is not canonical: {record.image_bgr.shape[:2]}"
+                )
+            x_pixel, y_pixel, confidence = predictor(window)
+            detected = bool(confidence >= confidence_threshold)
+            detection = Detection(
+                frame_id=record.frame_id,
+                timestamp_seconds=record.timestamp_seconds,
+                x_pixel=float(x_pixel),
+                y_pixel=float(y_pixel),
+                confidence=float(confidence),
+                detected=detected,
+                canonical_width=canonical_width,
+                canonical_height=canonical_height,
+            )
+            validate_detection(detection, confidence_threshold)
+            writer.writerow(
+                {
+                    "frame_id": detection.frame_id,
+                    "timestamp_seconds": f"{detection.timestamp_seconds:.9f}",
+                    "x_pixel": f"{detection.x_pixel:.3f}",
+                    "y_pixel": f"{detection.y_pixel:.3f}",
+                    "confidence": f"{detection.confidence:.6f}",
+                    "detected": str(detection.detected).lower(),
+                    "canonical_width": canonical_width,
+                    "canonical_height": canonical_height,
+                }
+            )
+            processed += 1
+            detected_count += int(detected)
+            confidence_sum += confidence
+
+    if processed != expected_frames:
+        raise ValueError(f"Expected {expected_frames} CSV rows, wrote {processed}")
+    elapsed = time.perf_counter() - started_at
+    return {
+        "processed_frames": float(processed),
+        "detected_frames": float(detected_count),
+        "detection_rate": detected_count / processed if processed else 0.0,
+        "mean_confidence": confidence_sum / processed if processed else 0.0,
+        "elapsed_seconds": elapsed,
+        "inference_fps": processed / elapsed if elapsed else 0.0,
+    }
+
+
+def read_detection_csv(path: Path) -> list[Detection]:
+    """Read and validate the orientation-aware Stage 2 CSV."""
+    rows: list[Detection] = []
+    with path.open("r", newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        missing = [name for name in CSV_COLUMNS if name not in (reader.fieldnames or [])]
+        if missing:
+            raise ValueError(f"Missing detection CSV columns: {missing}")
+        for row in reader:
+            rows.append(
+                Detection(
+                    frame_id=int(row["frame_id"]),
+                    timestamp_seconds=float(row["timestamp_seconds"]),
+                    x_pixel=float(row["x_pixel"]),
+                    y_pixel=float(row["y_pixel"]),
+                    confidence=float(row["confidence"]),
+                    detected=row["detected"].lower() == "true",
+                    canonical_width=int(row["canonical_width"]),
+                    canonical_height=int(row["canonical_height"]),
+                )
+            )
+    return rows
+
+
+def draw_detection(frame_bgr: np.ndarray, detection: Detection) -> np.ndarray:
+    """Draw one canonical-space detection without changing frame orientation."""
+    output = frame_bgr.copy()
+    if output.shape[:2] != (detection.canonical_height, detection.canonical_width):
+        raise ValueError("Overlay frame dimensions do not match detection canonical space")
+    if detection.detected:
+        cv2.circle(
+            output,
+            (int(round(detection.x_pixel)), int(round(detection.y_pixel))),
+            8,
+            (0, 0, 255),
+            2,
+            cv2.LINE_AA,
+        )
+    cv2.putText(
+        output,
+        f"frame {detection.frame_id} | t={detection.timestamp_seconds:.3f}s",
+        (24, 38),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.8,
+        (255, 255, 255),
+        2,
+        cv2.LINE_AA,
+    )
+    return output
+
+
+def write_vfr_concat_file(
+    image_paths: Sequence[Path],
+    timestamps: Sequence[float],
+    output_path: Path,
+) -> None:
+    """Write an ffconcat list whose per-frame durations preserve VFR intervals."""
+    if len(image_paths) != len(timestamps) or not image_paths:
+        raise ValueError("Image paths and timestamps must have the same non-zero length")
+    lines = ["ffconcat version 1.0"]
+    for index, image_path in enumerate(image_paths):
+        escaped_path = str(image_path.resolve()).replace("'", "'\\''")
+        lines.append(f"file '{escaped_path}'")
+        if index + 1 < len(timestamps):
+            duration = timestamps[index + 1] - timestamps[index]
+            if duration <= 0:
+                raise ValueError("Overlay timestamps must be strictly increasing")
+            lines.append(f"duration {duration:.9f}")
+    output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def render_vfr_overlay(
+    video_path: Path,
+    manifest: ClipManifest,
+    detections_csv: Path,
+    output_overlay: Path,
+    *,
+    ffmpeg_binary: str = "ffmpeg",
+) -> None:
+    """Render canonical PNG frames and encode a timestamp-driven VFR review overlay."""
+    detections = read_detection_csv(detections_csv)
+    if len(detections) != manifest.frames_total:
+        raise ValueError(
+            f"Expected {manifest.frames_total} detections for overlay, found {len(detections)}"
+        )
+    output_overlay.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="wasb_overlay_") as temp_directory:
+        temp_path = Path(temp_directory)
+        image_paths: list[Path] = []
+        timestamps: list[float] = []
+        for record, detection in zip(iter_canonical_frames(video_path, manifest), detections):
+            if record.frame_id != detection.frame_id:
+                raise ValueError("Detection/frame ID mismatch while rendering overlay")
+            if not np.isclose(
+                record.timestamp_seconds,
+                detection.timestamp_seconds,
+                rtol=0.0,
+                atol=5e-10,
+            ):
+                raise ValueError("Detection/frame timestamp mismatch while rendering overlay")
+            output_frame = draw_detection(record.image_bgr, detection)
+            image_path = temp_path / f"frame_{record.frame_id:06d}.png"
+            if not cv2.imwrite(str(image_path), output_frame):
+                raise RuntimeError(f"Could not write temporary overlay frame: {image_path}")
+            image_paths.append(image_path)
+            timestamps.append(record.timestamp_seconds)
+
+        concat_path = temp_path / "frames.ffconcat"
+        write_vfr_concat_file(image_paths, timestamps, concat_path)
+        command = [
+            ffmpeg_binary,
+            "-y",
+            "-v",
+            "error",
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            str(concat_path),
+            "-fps_mode",
+            "vfr",
+            "-c:v",
+            "libx264",
+            "-pix_fmt",
+            "yuv420p",
+            str(output_overlay),
+        ]
+        try:
+            subprocess.run(command, check=True)
+        except FileNotFoundError as exc:
+            raise RuntimeError(f"ffmpeg not found: {ffmpeg_binary}") from exc
+        except subprocess.CalledProcessError as exc:
+            raise RuntimeError("ffmpeg failed to encode the VFR overlay") from exc
+
+    check = cv2.VideoCapture(str(output_overlay))
+    if not check.isOpened():
+        raise RuntimeError(f"Could not open encoded overlay: {output_overlay}")
+    width = int(check.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(check.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    frame_count = int(check.get(cv2.CAP_PROP_FRAME_COUNT))
+    check.release()
+    if (width, height) != (manifest.canonical_width, manifest.canonical_height):
+        raise RuntimeError(f"Overlay has unexpected dimensions: {width}x{height}")
+    if frame_count != manifest.frames_total:
+        raise RuntimeError(
+            f"Overlay frame count changed: expected {manifest.frames_total}, got {frame_count}"
+        )
+
+
+def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--video", type=Path, required=True)
+    parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--checkpoint", type=Path, required=True)
+    parser.add_argument("--wasb-root", type=Path, required=True)
+    parser.add_argument("--output-csv", type=Path, required=True)
+    parser.add_argument("--output-overlay", type=Path, required=True)
+    parser.add_argument("--confidence-threshold", type=float, default=0.5)
+    parser.add_argument("--device", choices=("auto", "cuda", "cpu"), default="auto")
+    return parser.parse_args(argv)
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = parse_args(argv)
+    manifest = ClipManifest.read(args.manifest)
+    if args.video.suffix.lower() not in {".mp4", ".mov"}:
+        raise ValueError(f"Unsupported video extension: {args.video.suffix}")
+    predictor = load_wasb_predictor(args.checkpoint, args.wasb_root, args.device)
+    metrics = infer_canonical_frames(
+        iter_canonical_frames(args.video, manifest),
+        predictor,
+        args.output_csv,
+        confidence_threshold=args.confidence_threshold,
+        expected_frames=manifest.frames_total,
+        canonical_width=manifest.canonical_width,
+        canonical_height=manifest.canonical_height,
+    )
+    render_vfr_overlay(args.video, manifest, args.output_csv, args.output_overlay)
     print(f"video={args.video}")
-    print(f"weights={args.weights}")
-    print(f"csv={args.csv}")
-    print(f"overlay={args.overlay}")
+    print(f"manifest={args.manifest}")
+    print(f"checkpoint={args.checkpoint}")
+    print(f"wasb_root={args.wasb_root}")
+    print(f"output_csv={args.output_csv}")
+    print(f"output_overlay={args.output_overlay}")
     for key, value in metrics.items():
         print(f"{key}={value}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

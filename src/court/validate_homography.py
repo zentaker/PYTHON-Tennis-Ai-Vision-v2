@@ -55,8 +55,11 @@ def validate_homography_payload(payload: dict[str, object]) -> dict[str, object]
 
     return {
         "computed_at": datetime.now(timezone.utc).isoformat(),
+        "clip_id": payload.get("clip_id"),
         "court_mode": payload["court_mode"],
         "method": payload["method"],
+        "frame_dimensions": payload.get("frame_dimensions"),
+        "orientation_validation": payload.get("orientation_validation"),
         "pixel_to_court_error_meters_mean": float(errors_m.mean()),
         "pixel_to_court_error_meters_max": float(errors_m.max()),
         "court_to_pixel_error_pixels_mean": float(errors_px.mean()),

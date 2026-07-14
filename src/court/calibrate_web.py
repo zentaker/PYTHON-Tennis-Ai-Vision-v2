@@ -126,14 +126,12 @@ def validate_calibration_points(
 def calibration_payload(
     points: dict[str, tuple[int, int]],
     image_path: Path,
-    guide_path: Path,
     layout: CalibrationLayout,
     method: str = "manual_web_click",
 ) -> dict[str, object]:
     """Build the JSON payload persisted after successful browser clicks."""
     return {
         "image_path": str(image_path),
-        "guide_path": str(guide_path),
         "layout": layout,
         "method": method,
         "point_order": list(CALIBRATION_POINT_ORDER),
@@ -148,11 +146,10 @@ def write_calibration_json(
     output_path: Path,
     points: dict[str, tuple[int, int]],
     image_path: Path,
-    guide_path: Path,
     layout: CalibrationLayout,
 ) -> None:
     """Persist a successful browser calibration JSON file."""
-    payload = calibration_payload(points, image_path, guide_path, layout)
+    payload = calibration_payload(points, image_path, layout)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
@@ -175,8 +172,6 @@ def render_html(width: int, height: int) -> str:
     header {{ position: sticky; top: 0; z-index: 10; background: #111; border-bottom: 1px solid #333; padding: 12px 16px; }}
     .current {{ font-size: 18px; font-weight: 700; margin-bottom: 4px; }}
     .description {{ color: #d6d6d6; margin-bottom: 10px; }}
-    .guide {{ display: flex; align-items: center; gap: 12px; }}
-    .guide img {{ width: 320px; height: auto; border: 1px solid #555; }}
     .controls {{ padding: 12px 16px; display: flex; gap: 10px; align-items: center; }}
     button {{ padding: 8px 12px; font-size: 14px; cursor: pointer; }}
     #status {{ color: #9fd6ff; }}
@@ -190,10 +185,6 @@ def render_html(width: int, height: int) -> str:
   <header>
     <div id="current" class="current"></div>
     <div id="description" class="description"></div>
-    <div class="guide">
-      <img src="/calibration_guide.png" alt="Guía de calibración">
-      <div>Usá la guía chica solo como referencia. Hacé los clics sobre la imagen grande de abajo.</div>
-    </div>
   </header>
   <div class="controls">
     <button id="undo">Repetir último punto</button>
@@ -304,13 +295,11 @@ class CalibrationServer(ThreadingHTTPServer):
         server_address: tuple[str, int],
         handler_class: type[BaseHTTPRequestHandler],
         image_path: Path,
-        guide_path: Path,
         output_path: Path,
         layout: CalibrationLayout,
     ) -> None:
         super().__init__(server_address, handler_class)
         self.image_path = image_path
-        self.guide_path = guide_path
         self.output_path = output_path
         self.layout = layout
         self.image_width, self.image_height = image_size(image_path)
@@ -339,9 +328,6 @@ class CalibrationRequestHandler(BaseHTTPRequestHandler):
         if self.path == "/reference_frame.png":
             self.serve_file(self.server.image_path)
             return
-        if self.path == "/calibration_guide.png":
-            self.serve_file(self.server.guide_path)
-            return
         self.send_error(HTTPStatus.NOT_FOUND, "Not found")
 
     def do_POST(self) -> None:
@@ -367,7 +353,6 @@ class CalibrationRequestHandler(BaseHTTPRequestHandler):
             self.server.output_path,
             points,
             self.server.image_path,
-            self.server.guide_path,
             self.server.layout,
         )
         response = json.dumps(
@@ -389,7 +374,6 @@ def run_server(
     host: str,
     port: int,
     image_path: Path,
-    guide_path: Path,
     output_path: Path,
     layout: CalibrationLayout,
 ) -> None:
@@ -398,7 +382,6 @@ def run_server(
         (host, port),
         CalibrationRequestHandler,
         image_path,
-        guide_path,
         output_path,
         layout,
     )
@@ -416,7 +399,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--image", type=Path, default=Path("data/reference_clip/reference_frame.png"))
-    parser.add_argument("--guide", type=Path, default=Path("outputs/stage_1/calibration_guide.png"))
     parser.add_argument("--output", type=Path, default=Path("data/reference_clip/court_corners_pixel.json"))
     parser.add_argument("--layout", choices=("doubles", "singles"), default="doubles")
     return parser.parse_args()
@@ -424,7 +406,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    run_server(args.host, args.port, args.image, args.guide, args.output, args.layout)
+    run_server(args.host, args.port, args.image, args.output, args.layout)
     return 0
 
 

@@ -1,131 +1,133 @@
 # ROADMAP - Tennis Vision AI v2
 
-**Version:** 0.2  
-**Fecha de creacion:** 2026-05-18  
-**Estado:** Borrador inicial - revisar antes de cerrar Stage 0
+**Version:** 0.3
+**Fecha de creacion:** 2026-05-18
+**Fecha de reconciliacion:** 2026-07-13
+**Estado:** Activo - Stage 4 Nivel A en progreso
 
-## 1. Objetivo del proyecto
+La implementacion transversal de Stage 4 esta disponible, pero la pasada de datos activa
+es Nivel A2 y se encuentra en Stage 1, pendiente de calibracion humana. La pasada Madrid R1
+permanece cerrada como evidencia historica.
 
-Construir un sistema que, dado un video de broadcast de tenis con camara fija, genere dos representaciones 2D del rally:
+## 1. Objetivo
 
-- Vista superior: trayectoria de la pelota proyectada sobre el plano de la cancha.
-- Vista lateral: trayectoria con altura inferida fisicamente entre botes consecutivos.
+Construir un sistema que, dado un video de broadcast de tenis con camara fija, genere:
 
-El sistema opera sobre clips reales de torneos ATP/WTA y se valida en tres niveles progresivos de generalizacion.
+- una vista superior con la trayectoria proyectada sobre la cancha;
+- una vista lateral con altura inferida fisicamente entre botes consecutivos.
 
-## 2. Modelo operativo: agente + usuario
+## 2. Progreso
 
-### Rol del agente
+- [x] Stage 0 - Fundacion y entorno reproducible.
+- [x] Stage 1 - Calibracion de cancha.
+- [x] Stage 2 - Deteccion de pelota con WASB, con limitaciones conocidas.
+- [x] Stage 3 - Trayectoria suavizada y gate visual.
+- [ ] Stage 4 - Eventos. En progreso para Nivel A.
+- [ ] Stage 5 - Vista superior 2D. No iniciada.
+- [ ] Stage 6 - Vista lateral 2D. No iniciada.
+- [ ] Stage 7 - Metricas y validacion final. No iniciada.
 
-- Operacion de consola y filesystem dentro del entorno de trabajo.
-- Instalacion de dependencias mediante gestores de paquetes.
-- Edicion de archivos, commits, estructura de repositorio.
-- Ejecucion de scripts y tests.
-- Llenado de plantillas de documentacion.
-- Reporte al usuario al final de cada subseccion con evidencia.
+Stage 0 se considera funcionalmente cerrada. Su cierre documental fue reconciliado
+retrospectivamente despues de confirmar en Git el avance y los gates posteriores.
 
-### Rol del usuario
-
-- Pasos one-off que requieran GUI nativo o privilegios de administrador.
-- Validacion humana en cada gate.
-- Decision final en cualquier pivote.
-- Anotacion manual y conocimiento de dominio.
-- Aprobar ADRs antes de marcarlos como `Aceptada`.
-
-## 3. Principios operativos
-
-1. Una etapa, un artefacto, un gate.
-2. Validacion humana explicita en cada gate.
-3. Friccion se mide, no se padece.
-4. Modelos plug-and-play o nada.
-5. El sistema legacy es referencia negativa.
-6. El usuario es persona de dominio, no ingeniero de ML.
-7. Validacion en tres niveles de generalizacion: A, B, C.
-8. Agente conduce, usuario valida.
-
-## 4. Niveles de generalizacion
+## 3. Niveles de generalizacion
 
 ### Nivel A - Sandbox supervisado
 
 - Clip: Madrid Open, rally R1.
-- Inputs: narracion completa del rally.
-- Prueba: tracking, proyeccion y render cuando los eventos son dados como input.
+- Inputs: narracion y eventos anotados manualmente.
+- Prueba: tracking, proyeccion y render con eventos dados como input.
+- Stage 4: normaliza `narrative_events`; no detecta eventos automaticamente.
 
 ### Nivel B - Generalizacion dentro de escena
 
 - Clip: Madrid Open, rally R2.
-- Inputs: ninguno adicional.
+- Inputs adicionales: ninguno.
 - Prueba: deteccion automatica de eventos y generalizacion a rally no visto.
+- Stage 4: debe detectar golpes y botes automaticamente.
 
 ### Nivel C - Generalizacion a escena distinta
 
 - Clip: Hamburg Open.
-- Inputs: court corners nuevos.
-- Prueba: generalizacion real a camara, iluminacion y fondo distintos.
+- Inputs adicionales: nuevos court corners.
+- Prueba: generalizacion a otra camara, iluminacion y fondo.
+- Stage 4: debe conservar la deteccion automatica de eventos.
 
-## 5. Etapas
+## 4. Etapas y gates
 
 ### Stage 0 - Fundacion
 
-Entorno reproducible, documentacion viva, dataset de prueba con ground truth, bitacoras y modelo operativo.
+Entorno, estructura, documentacion, ADRs, bitacora y modelo operativo reproducibles.
 
-Gate: `scripts/verify_env.py` corre sin fallas criticas y el usuario puede reabrir el repo sin mirar el chat.
+Estado: cerrada funcionalmente; reconciliacion documental completada en v0.3.
 
 ### Stage 1 - Calibracion de cancha
 
-Calcular homografia H desde pixeles de cancha a coordenadas reales en metros.
+Homografia pixel -> coordenadas reales obtenida mediante UI web de clic directo.
 
-Gate: inspeccion visual humana del render y error de reproyeccion dentro de tolerancia.
+Estado: cerrada. Gate numerico y visual aprobado.
 
 ### Stage 2 - Deteccion de pelota
 
-Instalar y correr WASB-SBDT con pesos preentrenados de tenis.
+WASB-SBDT con pesos preentrenados produjo detecciones y overlay del clip Nivel A.
 
-Gate: video con deteccion sobreimpresa y metricas contra ground truth.
+Estado: cerrada con limitaciones conocidas y validacion visual humana.
 
 ### Stage 3 - Trayectoria temporalmente suavizada
 
-Convertir detecciones por frame en trayectoria continua con Kalman, rechazo de outliers e interpolacion corta.
+Rechazo de outliers, interpolacion corta y media movil sobre detecciones 2D.
 
-Gate: validacion visual de trayectoria sin discontinuidades.
+Estado: cerrada y taggeada como `v1.3.0`. Gate visual aprobado.
 
-### Stage 4 - Deteccion de eventos
+### Stage 4 - Deteccion y normalizacion de eventos
 
-Nivel A lee `narrative_events`; niveles B/C detectan botes y golpes automaticamente.
+Nivel A lee y valida `narrative_events` de `manual_annotation.json`, sin inventar ni
+detectar eventos. Niveles B/C incorporaran deteccion automatica de botes y golpes.
 
-Gate: eventos generados sin perdida en Nivel A; precision/recall en B/C.
+Estado: en progreso. Gate Nivel A: conversion sin perdida y validacion humana.
 
 ### Stage 5 - Vista superior 2D
 
-Proyectar la trayectoria a cancha y renderizar.
+Proyectar la trayectoria sobre la cancha y renderizarla.
 
-Gate: validacion visual de lado correcto, cruces de red coherentes y trayectoria dentro de cancha.
+Estado: no iniciada. Gate: lado, cruces de red y bounds coherentes.
 
-### Stage 6 - Vista lateral 2D con altura inferida
+### Stage 6 - Vista lateral 2D
 
-Renderizar parabolas entre botes usando fisica basica.
+Renderizar parabolas entre botes con altura explicitamente inferida.
 
-Gate: parabolas conectan botes y alturas fisicas plausibles.
+Estado: no iniciada. Gate: continuidad y alturas fisicamente plausibles.
 
-### Stage 7 - Metricas y validacion final del nivel
+### Stage 7 - Metricas y validacion final
 
-Reporte final del nivel contra ground truth y estimacion honesta de generalizacion.
+Consolidar metricas, ejemplos, limitaciones y decision sobre el siguiente nivel.
 
-Gate: lectura humana y decision de pasar al siguiente nivel.
+Estado: no iniciada. Gate: aprobacion humana del reporte final.
 
-## 6. Gobernanza de cambios
+## 5. Modelo operativo
 
-Cualquier modificacion al roadmap requiere ADR, incremento de version y registro de friccion si fue forzada por blocker.
+El agente implementa, valida y documenta. El usuario aporta conocimiento de dominio,
+anotacion manual, artefactos no versionados y la decision en cada gate humano.
 
-## 7. Criterios de fracaso del proyecto completo
+Principios:
 
-- Friccion acumulada mayor a 40 horas sin completar Stage 2 en Nivel A.
-- Ningun detector de pelota alcanza tasa mayor o igual a 50% en Stage 2 Nivel A.
-- Stage 1 no logra homografia con error menor a 10 px tras dos intentos completos.
+1. Una etapa, un artefacto, un gate.
+2. No mover criterios silenciosamente.
+3. No inventar datos para completar evidencia.
+4. Modelos plug-and-play o decision explicita de pivote.
+5. Friccion mayor a 15 minutos se registra.
+6. Stage 5 no comienza hasta cerrar el gate de Stage 4.
 
-## 8. Referencias rapidas
+## 6. Gobernanza
 
-- Stage 0: `docs/stages/stage_0/STAGE_0.md`
+Los cambios de alcance o tecnologia requieren ADR. Los artefactos pesados permanecen
+fuera de Git y deben transferirse con un inventario verificable entre maquinas.
+
+## 7. Referencias
+
+- Stage 0: `docs/stages/stage_0/exit_report.md`
+- Stage 3: `docs/stages/stage_3/exit_report.md`
+- Stage 4: `docs/stages/stage_4/STAGE_4.md`
+- Validacion: `docs/validation/VALIDATION_FRAMEWORK.md`
 - Friccion: `docs/friction/FRICTION_LOG.md`
 - Decisiones: `docs/decisions/`
-- Legacy: `legacy/POSTMORTEM.md`

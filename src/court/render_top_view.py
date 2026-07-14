@@ -15,6 +15,7 @@ import numpy as np
 if __package__ in (None, ""):
     sys.path.append(str(Path(__file__).resolve().parents[2]))
 
+from src.court.calibrate_interactive import draw_points
 from src.court.coordinates import COURT_DIMENSIONS
 from src.court.homography import apply_homography
 
@@ -130,10 +131,10 @@ def render_reprojected_court_on_frame(
     inverse_h = np.linalg.inv(np.array(payload["H_pixel_to_court"], dtype=np.float64))
 
     overlay = frame.copy()
-    for index, (_name, start, end) in enumerate(court_line_segments()):
+    for _name, start, end in court_line_segments():
         court_points = sample_segment(start, end, samples=140)
         pixel_points = apply_homography(inverse_h, court_points)
-        color = (255, 255, 0) if index % 2 == 0 else (255, 0, 255)
+        color = (0, 64, 255) if _name.startswith("net_") else (0, 255, 255)
         draw_polyline(overlay, pixel_points, color=color, thickness=3)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -141,35 +142,70 @@ def render_reprojected_court_on_frame(
         raise RuntimeError(f"Could not write reprojected court image: {output_path}")
 
 
+def render_calibration_clicks_preview(
+    frame_path: Path,
+    corners_path: Path,
+    output_path: Path,
+) -> None:
+    """Render the eight browser-selected calibration points and their labels."""
+    frame = cv2.imread(str(frame_path))
+    if frame is None:
+        raise FileNotFoundError(f"Could not open frame: {frame_path}")
+    payload = json.loads(corners_path.read_text(encoding="utf-8"))
+    raw_points = payload["court_corners_pixel"]
+    points = {name: (int(value[0]), int(value[1])) for name, value in raw_points.items()}
+    preview = draw_points(frame, points)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    if not cv2.imwrite(str(output_path), preview):
+        raise RuntimeError(f"Could not write calibration preview: {output_path}")
+
+
 def render_all(
     frame_path: Path,
     homography_path: Path,
     top_output: Path,
     reprojected_output: Path,
+    corners_path: Path | None = None,
+    clicks_output: Path | None = None,
 ) -> None:
     """Render both Stage 1 evidence images."""
     render_court_2d_top(top_output)
     render_reprojected_court_on_frame(frame_path, homography_path, reprojected_output)
+    if corners_path is not None and clicks_output is not None:
+        render_calibration_clicks_preview(frame_path, corners_path, clicks_output)
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--frame", type=Path, default=Path("data/reference_clip/reference_frame.png"))
     parser.add_argument("--homography", type=Path, default=Path("data/reference_clip/homography.json"))
+    parser.add_argument("--corners", type=Path)
     parser.add_argument("--top-output", type=Path, default=Path("outputs/stage_1/court_2d_top.png"))
     parser.add_argument(
         "--reprojected-output",
         type=Path,
         default=Path("outputs/stage_1/reference_frame_with_reprojected_court.png"),
     )
+    parser.add_argument("--clicks-output", type=Path)
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    render_all(args.frame, args.homography, args.top_output, args.reprojected_output)
+    if (args.corners is None) != (args.clicks_output is None):
+        raise ValueError("--corners and --clicks-output must be provided together")
+    render_all(
+        args.frame,
+        args.homography,
+        args.top_output,
+        args.reprojected_output,
+        args.corners,
+        args.clicks_output,
+    )
     print(f"Top view written to {args.top_output}")
     print(f"Reprojected court written to {args.reprojected_output}")
+    if args.clicks_output is not None:
+        print(f"Calibration clicks preview written to {args.clicks_output}")
     return 0
 
 

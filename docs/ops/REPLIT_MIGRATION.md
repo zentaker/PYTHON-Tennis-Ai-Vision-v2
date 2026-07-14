@@ -1,5 +1,10 @@
 # Replit Migration Notes
 
+> **Estado: completada y archivada.** Replit ya no es un blocker ni un proximo paso
+> activo. El contenido siguiente se conserva como evidencia historica de la migracion.
+> El entorno activo es macOS para desarrollo ligero; WSL/Linux sigue siendo necesario
+> para WASB e inferencia pesada.
+
 ## Purpose
 
 Replit is an auxiliary environment for Tennis Vision AI v2. It is not a replacement for the local heavy environment used for video processing, WASB, checkpoints, outputs, or large third-party code.

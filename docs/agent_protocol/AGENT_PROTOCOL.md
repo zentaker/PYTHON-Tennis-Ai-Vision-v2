@@ -1,18 +1,22 @@
 # Agent Protocol
 
-## Raiz de trabajo
+## Raiz de trabajo activa
 
-El agente trabaja directamente en:
+El agente resuelve la raiz desde el checkout Git y no crea una carpeta contenedora. El
+checkout activo reconciliado es:
 
 ```text
-C:\Users\MSI\Desktop\TennisAI
+/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2
 ```
 
-No debe crear una carpeta adicional para contener el proyecto. En WSL, la ruta esperada es:
+La ruta historica WSL de la maquina usada para WASB fue:
 
 ```text
 /mnt/c/Users/MSI/Desktop/TennisAI
 ```
+
+Esa ruta se conserva como evidencia historica, no como requisito para desarrollo ligero
+en macOS. WSL/Linux sigue siendo el entorno de inferencia pesada.
 
 ## Reglas de operacion
 

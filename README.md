@@ -1,120 +1,122 @@
 # Tennis Vision AI v2
 
-Proyecto para análisis de video de broadcast de tenis con generación progresiva de:
+Proyecto para analizar video de broadcast de tenis y generar progresivamente:
 
-- Vista superior 2D de la trayectoria de la pelota sobre la cancha.
-- Vista lateral 2D con altura inferida físicamente entre botes.
+- una vista superior 2D de la trayectoria de la pelota sobre la cancha;
+- una vista lateral 2D con altura inferida fisicamente entre botes.
 
 ## Estado actual
 
-Stage 1 cerrado. Stage 2 en preparación.
+Stage 3 esta cerrada y validada. Stage 4 Nivel A esta en implementacion y usa eventos
+anotados manualmente; no intenta detectar golpes o botes automaticamente.
 
-- Stage 0: fundación, entorno y documentación base.
-- Stage 1: calibración de cancha cerrada con gate visual firmado.
-- Stage 2: detección de pelota, pendiente de prompt y revisión previa.
+La pasada historica Madrid R1 se conserva como Nivel A. La pasada activa Nivel A2 vuelve
+a Stage 1 con un clip MP4 nuevo; esta preparada y pendiente de aprobacion humana del frame
+de referencia. Ver [docs/levels/level_a2/README.md](docs/levels/level_a2/README.md).
 
-Roadmap completo: [ROADMAP.md](ROADMAP.md)
+| Stage | Estado |
+| --- | --- |
+| 0 - Fundacion | Cerrada funcionalmente; cierre documental reconciliado |
+| 1 - Calibracion | Cerrada con gate visual firmado |
+| 2 - Deteccion WASB | Cerrada con limitaciones conocidas |
+| 3 - Suavizado temporal | Cerrada y validada visualmente (`v1.3.0`) |
+| 4 - Eventos Nivel A | En progreso |
+| 5 - Vista superior | No iniciada |
+| 6 - Vista lateral | No iniciada |
+| 7 - Validacion final | No iniciada |
 
-## Setup
+Roadmap completo: [ROADMAP.md](ROADMAP.md).
 
-Entorno objetivo:
+## Setup ligero en macOS
 
-- WSL2 Ubuntu 24.04
-- Python 3.11
-- `uv`
-
-Desde la raíz del repo en WSL:
-
-```bash
-cd /mnt/c/Users/MSI/Desktop/TennisAI
-```
-
-Instalar `uv` si no existe:
+El desarrollo de Stage 4, la documentacion y los tests no requieren tracker, PyTorch ni
+WASB. Se necesita Python 3.11 y `uv`:
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source "$HOME/.local/bin/env"
+uv python install 3.11
+uv sync --extra dev --locked --python 3.11
+uv run pytest
 ```
 
-Crear entorno e instalar dependencias:
+No ejecutar `uv sync --extra tracker` en macOS Intel. El lock actual incluye una version
+de PyTorch sin distribucion para esa plataforma y Stage 4 no la necesita.
+
+## Entorno pesado WSL/Linux
+
+WSL2 Ubuntu 24.04 x86_64 sigue siendo el entorno canonico para WASB, checkpoints e
+inferencia pesada. Con los artefactos locales restaurados:
 
 ```bash
-uv venv --python 3.11
-source .venv/bin/activate
-UV_LINK_MODE=copy uv pip install -e ".[dev]"
-uv lock
+uv python install 3.11
+uv sync --extra dev --extra tracker --locked --python 3.11
+uv run python scripts/verify_env.py
 ```
 
-Verificar entorno:
-
-```bash
-python scripts/verify_env.py
-```
-
-Nota: si se trabaja desde Codex, los comandos `wsl.exe` deben ejecutarse fuera del sandbox cuando necesiten ver las distros WSL del usuario Windows.
+`scripts/verify_env.py` conserva el gate historico de WSL2/Linux y por eso no termina en
+verde en macOS aunque el entorno ligero sea correcto.
 
 ## Estructura del proyecto
 
 ```text
-docs/                 Documentación viva, stages, ADRs, validación y fricción
-src/                  Código fuente del pipeline
-scripts/              Utilitarios operativos
-data/                 Datos locales no versionados
+docs/                 Documentacion viva, stages, ADRs, validacion y friccion
+src/                  Codigo fuente del pipeline
+scripts/              Utilitarios operativos y smoke tests
+tools/                Herramientas estaticas que no requieren Python
+data/                 Datos locales y metadata versionada
 models/               Pesos/modelos locales no versionados
 outputs/              Salidas generadas no versionadas
+third_party/          Codigo externo local no versionado
 legacy/               Postmortem del proyecto anterior
 ```
 
 Entradas principales:
 
 - [docs/README.md](docs/README.md)
-- [docs/stages/stage_1/exit_report.md](docs/stages/stage_1/exit_report.md)
+- [docs/stages/stage_3/exit_report.md](docs/stages/stage_3/exit_report.md)
+- [docs/stages/stage_4/STAGE_4.md](docs/stages/stage_4/STAGE_4.md)
+- [docs/validation/VALIDATION_FRAMEWORK.md](docs/validation/VALIDATION_FRAMEWORK.md)
 - [docs/decisions/](docs/decisions/)
-- [docs/friction/FRICTION_LOG.md](docs/friction/FRICTION_LOG.md)
 
-## Datos requeridos para reproducir
+## Artefactos locales
 
-El video de referencia no está incluido en el repositorio por motivos de derechos.
+Git contiene codigo, tests, documentacion y la calibracion JSON. Por motivos de derechos,
+tamanio y reproducibilidad entre plataformas, no contiene:
 
-Para reproducir Stage 1 o preparar Stage 2, un colaborador debe conseguir por separado el clip Nivel A y colocarlo en:
+- `data/reference_clip/madrid_R1.mov`;
+- `data/reference_clip/reference_frame.png`;
+- CSV de detecciones;
+- outputs de Stage 1-4;
+- checkpoints, modelos ni `third_party/WASB-SBDT`.
+
+Para continuar Stage 4 Nivel A se necesitan localmente:
 
 ```text
-data/reference_clip/madrid_R1.mov
-```
-
-Los JSON de calibración de Stage 1 sí están en el repo y se cargan automáticamente:
-
-```text
-data/reference_clip/court_corners_pixel.json
+outputs/stage_3/smoothed_trajectory.csv
+data/reference_clip/manual_annotation.json
 data/reference_clip/homography.json
 ```
 
-El frame de referencia y los renders son derivados del video y se regeneran localmente:
+El ultimo archivo ya esta versionado. El video y el overlay suavizado son auxiliares para
+la anotacion y el gate humano.
 
-```text
-data/reference_clip/reference_frame.png
-outputs/stage_1/
-```
+## Replit
 
-Los pesos de modelos se descargarán automáticamente en Stage 2 al primer uso, pendiente de implementación.
+La migracion a Replit se completo y queda archivada como evidencia operativa historica.
+No es un blocker ni un proximo paso activo:
 
-## Test de reproducibilidad
+- [docs/ops/REPLIT_MIGRATION.md](docs/ops/REPLIT_MIGRATION.md)
+- [docs/ops/REPLIT_SMOKE_TEST_REPORT.md](docs/ops/REPLIT_SMOKE_TEST_REPORT.md)
 
-Primer paso de validación tras clonar y preparar el entorno:
+## Reglas del repositorio
 
-```bash
-python scripts/verify_env.py
-```
-
-Después de colocar `data/reference_clip/madrid_R1.mov`, Stage 1 puede regenerar `reference_frame.png`, reportes y renders usando los JSON de calibración versionados.
+- No commitear videos, outputs, modelos, checkpoints, datasets, `third_party` ni secretos.
+- No inventar eventos o datos para hacer pasar un gate.
+- Cualquier decision tecnica relevante se documenta como ADR.
+- Cada stage conserva su artefacto, evidencia y gate humano.
 
 ## Aviso legal
 
-Este repositorio contiene scripts y documentación para análisis de video de broadcast deportivo. El video de referencia (Madrid Open, TennisTV/ATP) no se incluye en el repo por motivos de derechos. Los frames derivados que aparecen en `outputs/` se usan únicamente con fines de investigación técnica personal.
-
-## Reglas de repositorio
-
-- No commitear videos, pesos de modelos, datasets, salidas generadas ni secretos.
-- `data/`, `models/`, `outputs/` son carpetas locales.
-- Cualquier decisión técnica relevante se documenta como ADR.
-- Stage 2 no debe comenzar hasta validar ADR-0007 y ADR-0009.
+El video de referencia de Madrid Open/TennisTV/ATP no se distribuye con el repositorio.
+Los frames y renders locales se usan exclusivamente para investigacion tecnica personal.

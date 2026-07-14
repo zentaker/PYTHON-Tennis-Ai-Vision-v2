@@ -1,6 +1,5 @@
 {
   "image_path": "data/reference_clip/reference_frame.png",
-  "guide_path": "outputs/stage_1/calibration_guide.png",
   "layout": "doubles",
   "method": "manual_web_click",
   "point_order": [

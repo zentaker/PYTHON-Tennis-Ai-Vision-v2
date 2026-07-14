@@ -84,7 +84,6 @@ def test_write_calibration_json_records_manual_web_method(tmp_path: Path) -> Non
         output_path,
         VALID_POINTS,
         Path("data/reference_clip/reference_frame.png"),
-        Path("outputs/stage_1/calibration_guide.png"),
         "doubles",
     )
 
@@ -92,13 +91,13 @@ def test_write_calibration_json_records_manual_web_method(tmp_path: Path) -> Non
     assert payload["method"] == "manual_web_click"
     assert payload["layout"] == "doubles"
     assert payload["court_corners_pixel"]["near_right"] == [1540, 770]
+    assert "guide_path" not in payload
 
 
 def test_calibration_payload_includes_point_order() -> None:
     payload = calibration_payload(
         VALID_POINTS,
         Path("frame.png"),
-        Path("guide.png"),
         "doubles",
     )
 
@@ -118,3 +117,5 @@ def test_render_html_uses_unscaled_image_dimensions() -> None:
     assert 'width="1920"' in html
     assert 'height="1080"' in html
     assert "max-width: none" in html
+    assert "calibration_guide" not in html
+    assert "Guía de calibración" not in html
