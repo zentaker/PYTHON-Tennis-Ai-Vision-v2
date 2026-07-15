@@ -1,7 +1,7 @@
 # Nivel A2 - `nivel_a2_01`
 
-**Estado:** Stage 1 cerrada; Stage 2 ejecutada técnicamente y Stage 3 implementada,
-ambas pendientes de gate visual humano
+**Estado:** Stage 1, Stage 2 y Stage 3 cerradas exitosamente; Stage 4 iniciando
+anotación humana
 **Fecha de actualización:** 2026-07-15
 
 ## Clip seleccionado
@@ -43,10 +43,11 @@ sin modificar el MP4.
 | --- | --- |
 | 0 | Heredada y cerrada |
 | 1 | Cerrada exitosa; gates numerico y visual aprobados |
-| 2 | Ejecutada técnicamente; pendiente de gate visual humano |
-| 3 | Baseline implementada; pendiente de gate visual humano |
-| 4 | No iniciada para A2 |
-| 5-7 | Pendientes |
+| 2 | Cerrada exitosamente; gate visual humano A |
+| 3 | Cerrada exitosamente; gate visual humano A |
+| 4 | Iniciando anotación humana; esperando `manual_annotation.json` |
+| 5 | No iniciada |
+| 6-7 | Pendientes |
 
 ## Frames para revision humana
 
@@ -97,22 +98,37 @@ las lineas reproyectadas coinciden con la cancha. El gate numerico paso con medi
 - Preflight local: `scripts/stage2_a2_preflight.py`.
 - Runner: `src/tracker/wasb_runner.py`.
 - Ejecución técnica final: `docs/levels/level_a2/stage_2_runpod_execution_report.md`.
-- Exit report provisional: `docs/levels/level_a2/stage_2_exit_report.md`.
+- Exit report final: `docs/levels/level_a2/stage_2_exit_report.md`.
 
 La ejecución CUDA procesó `527/527` frames y generó `527` registros y un overlay
-canónico `2746x1536` de `527` frames. Este resultado no equivale a aprobación visual.
+canónico `2746x1536` de `527` frames. El usuario aprobó el gate visual con veredicto
+`A`; Stage 2 está cerrada y no necesita repetirse para este clip.
 
 ## Stage 3 A2
 
 - Plan y diferencias frente a Madrid: `docs/levels/level_a2/stage_3_plan.md`.
 - Baseline real: `docs/levels/level_a2/stage_3_baseline_report.md`.
+- Exit report final: `docs/levels/level_a2/stage_3_exit_report.md`.
 - CSV local: `outputs/nivel_a2_01/stage_3/smoothed_trajectory.csv`.
 - Overlays locales: `outputs/nivel_a2_01/stage_3/smoothed_trajectory_overlay.mp4` y
   `outputs/nivel_a2_01/stage_3/trajectory_debug_overlay.mp4`.
 - Hoja de contacto local:
   `outputs/nivel_a2_01/stage_3/stage_3_review_contact_sheet.png`.
 
-Stage 3 preserva los `527` timestamps VFR y la orientación canónica `2746x1536`. La
-baseline es material para revisión; no está visualmente aprobada.
+Stage 3 preserva los `527` timestamps VFR y la orientación canónica `2746x1536`. El
+usuario aprobó la trayectoria con veredicto `A`; Stage 3 está cerrada exitosamente sin
+ocultar su cobertura de `76.2808%`, `19` frames interpolados y `125` missing.
 
-WASB no se ejecutó en macOS durante esta pasada. Stage 4 y Stage 5 no se iniciaron.
+## Stage 4 A2
+
+- Herramienta: `tools/manual_event_annotator/index.html`.
+- Guía: `docs/levels/level_a2/stage_4_annotation_guide.md`.
+- Ruta final de la anotación humana:
+  `data/clips/nivel_a2_01/manual_annotation.json`.
+
+El usuario debe cargar manualmente `source.mp4` y `frame_timestamps.json`, anotar los
+eventos y exportar el JSON. No se crearon anotaciones ni outputs de Stage 4 durante la
+preparación.
+
+WASB no se ejecutó en macOS durante esta pasada. Stage 4 espera la anotación humana y
+Stage 5 no se inició.

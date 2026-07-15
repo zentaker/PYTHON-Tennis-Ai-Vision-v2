@@ -5,6 +5,21 @@
 **Fecha de preparacion:** 2026-05-19
 **Fecha de implementacion base:** 2026-07-13
 
+## Estado operativo Nivel A2
+
+Desde 2026-07-15, Stage 1–3 de `nivel_a2_01` están cerradas y la preparación A2 se
+encuentra en `WAITING_FOR_MANUAL_ANNOTATION`. El video y el sidecar VFR están disponibles
+localmente; ya no aplica a A2 la recuperación de assets descrita para el entorno
+histórico Madrid.
+
+El anotador fue auditado para `527` frames, navegación mediante timestamps VFR y export
+de frames/tiempos explícitos. Guía específica:
+`docs/levels/level_a2/stage_4_annotation_guide.md`.
+
+No existe aún `data/clips/nivel_a2_01/manual_annotation.json`; por ello no se ejecutó el
+loader ni se generaron outputs Stage 4. La compatibilidad y el cierre históricos de
+Madrid permanecen separados del gate A2.
+
 ## Proposito
 
 Convertir `narrative_events` definidos por una persona en eventos internos normalizados

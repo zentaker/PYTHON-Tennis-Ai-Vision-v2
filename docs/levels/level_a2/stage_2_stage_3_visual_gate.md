@@ -2,16 +2,23 @@
 
 **Fecha de preparación:** 2026-07-15
 
-## Estado, alcance y ausencia de veredicto
+## Veredicto humano definitivo
 
-- Stage 2: `TECHNICALLY_EXECUTED_PENDING_HUMAN_VISUAL_GATE`.
-- Stage 3: `IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`.
+- Stage 2: `A — APROBADA`; estado final `CLOSED_SUCCESSFULLY`.
+- Stage 3: `A — APROBADA`; estado final `CLOSED_SUCCESSFULLY`.
 - Commit usado para preparar este paquete:
   `bbd6429203f40c3d98902f4f6d3be815ade27995`.
+- Commit publicado del paquete de gate:
+  `618cf54eb00fc9cf082fb21c95f7a4719fa8a379`.
+- Fecha del veredicto: `2026-07-15`.
 
-Este documento organiza evidencia para revisión humana. No afirma que Stage 2 o Stage 3
-sean buenas, malas o estén cerradas. No se recalculó Stage 3, no se cambiaron parámetros
-y no se ejecutó WASB.
+> El usuario revisó el video comparativo y confirmó que el tracking de la pelota es
+> correcto y que Stage 2 obtuvo su objetivo.
+
+El usuario también confirmó que la trayectoria suavizada es visualmente correcta y
+usable para continuar. Los gaps y métricas documentados permanecen visibles y no se
+interpretan como cobertura total. No se recalculó Stage 3, no se cambiaron parámetros y
+no se ejecutó WASB para registrar el veredicto.
 
 ## Material que debe revisarse
 
@@ -215,21 +222,22 @@ como error.
 
 ### Stage 2
 
-- [ ] A = detección raw suficiente para continuar.
+- [x] A = detección raw suficiente para continuar.
 - [ ] B = detección raw insuficiente.
 - [ ] C = usable con errores localizados.
 
 ### Stage 3
 
-- [ ] A = suavizado claramente mejor y usable.
+- [x] A = suavizado claramente mejor y usable.
 - [ ] B = suavizado peor o inventa trayectoria.
 - [ ] C = requiere ajuste localizado.
 
 ### Observaciones
 
-- timestamp:
-- problema:
-- comportamiento esperado:
+- timestamp: revisión del video comparativo completo.
+- problema: los errores y gaps ya documentados no impiden cumplir el objetivo del clip.
+- comportamiento esperado: tracking correcto de la pelota y suavizado usable para
+  continuar.
 
-Hasta que una persona complete este formulario, Stage 2 y Stage 3 permanecen pendientes
-y Stage 4/5 no deben comenzar.
+Gate completado por el usuario con veredicto `A/A`. Stage 2 y Stage 3 quedan cerradas
+exitosamente. Stage 4 inicia únicamente su fase de anotación humana; Stage 5 no comenzó.

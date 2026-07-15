@@ -1,7 +1,11 @@
 # Reporte de ejecución RunPod — Stage 2 A2
 
 **Fecha:** 2026-07-15  
-**Estado:** `TECHNICALLY_EXECUTED_PENDING_HUMAN_VISUAL_GATE`
+**Estado de la ejecución:** `TECHNICALLY_EXECUTED_PENDING_HUMAN_VISUAL_GATE`
+
+> Cierre posterior: el usuario aprobó Stage 2 con veredicto `A` el 2026-07-15.
+> El estado final es `CLOSED_SUCCESSFULLY`; ver
+> `docs/levels/level_a2/stage_2_exit_report.md`.
 
 ## Resultado final
 
@@ -74,8 +78,9 @@ el reporte generado.
 Las distancias y velocidades son métricas técnicas; no prueban por sí solas que el
 punto siga visualmente la pelota.
 
-## Gate pendiente
+## Gate visual posterior
 
-Stage 2 queda ejecutada técnicamente, no cerrada. Una persona debe revisar
-`outputs/nivel_a2_01/stage_2/wasb_detections_overlay.mp4` y emitir el gate visual. Stage
-3 no fue ejecutada en el Pod y Stage 4/5 no fueron iniciadas.
+Al terminar esta ejecución, Stage 2 quedó pendiente de revisión. Posteriormente el
+usuario revisó el comparativo completo y emitió veredicto `A`; Stage 2 está cerrada
+exitosamente. Stage 3 no fue ejecutada en el Pod y Stage 4/5 no fueron iniciadas durante
+esta ejecución remota.

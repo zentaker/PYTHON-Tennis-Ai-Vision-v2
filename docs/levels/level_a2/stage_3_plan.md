@@ -1,7 +1,10 @@
 # Plan de adaptación Stage 3 — Nivel A2
 
-**Estado:** `IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`
+**Estado histórico del plan:** `IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`
 **Fecha baseline:** 2026-07-15
+
+> Cierre posterior: el usuario aprobó Stage 3 con veredicto `A`. Estado final:
+> `CLOSED_SUCCESSFULLY`; ver `docs/levels/level_a2/stage_3_exit_report.md`.
 
 ## Objetivo
 

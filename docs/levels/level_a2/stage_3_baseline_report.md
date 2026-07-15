@@ -1,7 +1,11 @@
 # Reporte baseline — Stage 3 A2
 
 **Fecha:** 2026-07-15
-**Estado:** `IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`
+**Estado de esta baseline:** `IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`
+
+> Cierre posterior: el usuario aprobó esta baseline con veredicto `A` el 2026-07-15.
+> El estado final de Stage 3 es `CLOSED_SUCCESSFULLY`; ver
+> `docs/levels/level_a2/stage_3_exit_report.md`.
 
 ## Resultado
 
@@ -65,4 +69,5 @@ termina en el timestamp del último frame (`10.471668 s`), coherente con el side
 - No se implementó física 3D ni detección de eventos.
 - Stage 4 y Stage 5 no fueron iniciadas.
 
-Stage 3 permanece pendiente de veredicto humano explícito.
+Esta sección registra el estado existente al producir la baseline. El veredicto humano
+posterior fue `A`; Stage 3 quedó cerrada exitosamente sin recalcular sus resultados.
