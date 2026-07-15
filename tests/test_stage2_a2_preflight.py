@@ -2,12 +2,30 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import cv2
 import numpy as np
 
-from scripts.stage2_a2_preflight import run_preflight
+from scripts.stage2_a2_preflight import check_cuda_runtime, run_preflight
 from src.project.clip_manifest import ClipManifest
+
+
+def test_cuda_runtime_uses_supported_nvidia_smi_format(monkeypatch) -> None:
+    captured_command: list[str] = []
+
+    def fake_run(command, **_kwargs):
+        captured_command.extend(command)
+        return SimpleNamespace(returncode=0, stdout="NVIDIA RTX A5000\n", stderr="")
+
+    monkeypatch.setattr("scripts.stage2_a2_preflight.shutil.which", lambda _name: "nvidia-smi")
+    monkeypatch.setattr("scripts.stage2_a2_preflight.subprocess.run", fake_run)
+
+    result = check_cuda_runtime()
+
+    assert captured_command == ["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"]
+    assert result["available"] is True
+    assert result["gpus"] == ["NVIDIA RTX A5000"]
 
 
 def test_preflight_validates_metadata_without_model(monkeypatch, tmp_path: Path) -> None:

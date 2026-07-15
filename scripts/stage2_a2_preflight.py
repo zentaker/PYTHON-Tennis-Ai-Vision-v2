@@ -42,7 +42,7 @@ def check_cuda_runtime() -> dict[str, object]:
     if executable is None:
         return {"available": False, "reason": "nvidia-smi not found"}
     result = subprocess.run(
-        [executable, "--query-gpu=name", "--format=csv=noheader"],
+        [executable, "--query-gpu=name", "--format=csv,noheader"],
         capture_output=True,
         text=True,
         check=False,
