@@ -1,69 +1,81 @@
 # Reporte de ejecución RunPod — Stage 2 A2
 
 **Fecha:** 2026-07-15  
-**Estado:** `BLOCKED_CONNECTION`
+**Estado:** `TECHNICALLY_EXECUTED_PENDING_HUMAN_VISUAL_GATE`
 
-## Alcance de esta pasada
+## Resultado final
 
-Se auditó y preparó la integración Mac → RunPod para el Pod temporal con RTX A4500 y
-SSH proxy básico. No se ejecutó inferencia, Stage 3 ni Stage 5.
+La conexión SSH directa, el bootstrap y el preflight terminaron correctamente. La
+inferencia WASB se ejecutó una vez en CUDA y produjo los tres artefactos esperados. El
+estado histórico `BLOCKED_CONNECTION` queda reemplazado por este resultado real.
 
-## Estado local
+No se considera cerrada Stage 2: falta revisar visualmente el overlay completo.
 
-- Git limpio al inicio, `main` y `origin/main` en
-  `e9fe90822c1d87d1530bf7b56c40943ce13e6842`.
-- Baseline: 111 tests, Ruff y compileall correctos; smoke test correcto.
-- Video: `data/clips/nivel_a2_01/source.mp4`, 24,944,366 bytes.
-- SHA-256 local:
+## Entorno y procedencia
+
+- Repositorio remoto: `/workspace/PYTHON-Tennis-Ai-Vision-v2`.
+- Commit exacto: `421fe01a3721ffcdc38f89a37316a9277797e5f3`.
+- GPU: NVIDIA RTX A5000.
+- VRAM: `24,564 MiB`.
+- Driver NVIDIA: `580.159.04`.
+- CUDA: `13.0`; PyTorch `2.12.0+cu130`; `torch.cuda.is_available() = true`.
+- WASB-SBDT commit: `923462cacdeb3353b84ddebdedb3f4b7a8553b0f`.
+- Checkpoint: `models/wasb/wasb_tennis_best.pth.tar`, `6,102,633` bytes.
+- SHA-256 checkpoint:
+  `9d391239ab10c733f8e5bfadf16ab72838e7a8ebc88e8ae2038501c03d42b4bb`.
+- Bootstrap: OK.
+- Preflight: OK, incluidos `527/527` frames, timeline VFR monótona y orientación
+  canónica.
+
+El log final local es
+`outputs/nivel_a2_01/stage_2/logs/stage2_20260715T071607Z_421fe01a3721.log`.
+`inference_report.json` registra commit, GPU, CUDA y frames, pero no incorpora campos
+propios para los SHA del video/checkpoint ni para el commit de WASB-SBDT; esos datos se
+reconcilian con el preflight y el inventario de activos de la ejecución, sin reescribir
+el reporte generado.
+
+## Input verificado
+
+- Video: `data/clips/nivel_a2_01/source.mp4`.
+- Tamaño: `24,944,366` bytes.
+- SHA-256:
   `e2a05a8eda9be4d821ae1acc60355c7c0403e450ac0febd6bb3c6a62e0aa5774`.
-- Sidecar: 527 timestamps válidos, rango `0.000000–10.471667 s`, estrictamente
-  monótonos.
+- Timeline: `527` timestamps, IDs `0–526`, estrictamente monótonos.
+- Orientación canónica: `2746x1536`, transformación `rotate_90_ccw`.
 
-## Conexión
+## Ejecución y artefactos
 
-Se recuperó la identidad histórica cuya pública coincide con el fingerprint esperado
-`SHA256:LSId5ppgJuAlLK24MjEqHvEIqT05118sFnO7DCFW9gg`. El servidor reconoció esa pública,
-pero la privada está cifrada con una passphrase que no existe en el agente ni en
-Keychain. El original cifrado fue preservado sin mostrar su contenido.
+- Frames procesados: `527/527`.
+- Registros CSV: `527`.
+- Tiempo de inferencia: `50.849159 s` (`10.363986 fps`).
+- Device: `cuda`.
+- CSV: `data/clips/nivel_a2_01/wasb_detections.csv`.
+- Overlay: `outputs/nivel_a2_01/stage_2/wasb_detections_overlay.mp4`.
+- Reporte: `outputs/nivel_a2_01/stage_2/inference_report.json`.
+- Overlay validado: `527` frames, `2746x1536`, duración `10.471668 s`, legible por
+  FFprobe y OpenCV.
 
-Se generó una identidad Ed25519 específica en `~/.ssh/runpod_tennis_ai`, con permisos
-`600`; su pública tiene fingerprint
-`SHA256:VlyYRggSyC1rFBopP2/0MykiwLdx+3ujt6Tk8w5i80E`. La conexión queda pendiente de
-registrar esa pública en la cuenta/Pod mediante la interfaz web de RunPod.
+## Resumen técnico de detecciones
 
-Por ello permanecen sin verificar directamente:
+- `detected=true`: `383/527` (`72.6755%`).
+- Confidence media: `0.651804`; mediana: `0.839530`.
+- Percentiles confidence: p10 `0.052530`, p25 `0.272923`, p75 `0.896439`, p90
+  `0.926728`.
+- Gaps consecutivos sin detección: `12`.
+- Gap máximo: frames `0–80`, `81` frames, span de timestamps `1.588333 s`.
+- Frames de menor confidence: `1, 15, 14, 17, 11, 16, 6, 3, 8, 4`.
+- Mayores saltos crudos entre detecciones:
+  - `351→363`: `207.234 px`, `828.936 px/s`;
+  - `435→436`: `75.849 px`, `4550.820 px/s`;
+  - `487→505`: `65.247 px`, `177.946 px/s`;
+  - `287→288`: `61.151 px`, `1834.499 px/s`;
+  - `288→289`: `60.678 px`, `3640.840 px/s`.
 
-- GPU, VRAM, driver y CUDA del Pod;
-- escritura en `/workspace`;
-- checkout remoto;
-- presencia remota de WASB-SBDT y checkpoint;
-- SHA-256 remoto del video.
+Las distancias y velocidades son métricas técnicas; no prueban por sí solas que el
+punto siga visualmente la pelota.
 
-## Transferencia
+## Gate pendiente
 
-`runpodctl 2.7.1-06a0a26` quedó instalado en `~/.local/bin` desde el release oficial de
-`runpod/runpodctl`. El binario Intel macOS se verificó contra el checksum oficial; SHA-256
-`150566e84157d78fc25e39d73520aed0a879d24023a67a9d3fc41776dd34c1b3`. No se configuró
-API key, ni se usaron SCP o rsync.
-
-## Cambios preparados localmente
-
-- Helper `scripts/gpu/runpod_ssh.sh` para `proxy` y `exposed_tcp`.
-- Configuración privada proxy con permisos `600`, fuera del repositorio.
-- Downloader con rutas separadas `runpodctl` y SCP, backups y SHA-256.
-- Bootstrap/environment gate explícito para 527 timestamps VFR.
-- Tests del proxy sin puerto, TCP con puerto, configuración incompleta y garantía de que
-  proxy no invoca SCP.
-
-El soporte proxy/runpodctl fue publicado en GitHub. El ajuste posterior para aceptar el
-alias privado `tennis-runpod-a2` se publicó en
-`0ac9a8afcf23afe651bf817454365f34f08473c1`.
-
-## Gate
-
-No se cumplen las condiciones de `READY_FOR_INFERENCE`. La próxima pasada debe:
-
-1. registrar en RunPod la pública de `~/.ssh/runpod_tennis_ai.pub`;
-2. repetir SSH, verificar `runpodctl` remoto y continuar con checkout/activos/bootstrap.
-
-No se produjo CSV, overlay, reporte de inferencia ni bundle de resultados.
+Stage 2 queda ejecutada técnicamente, no cerrada. Una persona debe revisar
+`outputs/nivel_a2_01/stage_2/wasb_detections_overlay.mp4` y emitir el gate visual. Stage
+3 no fue ejecutada en el Pod y Stage 4/5 no fueron iniciadas.

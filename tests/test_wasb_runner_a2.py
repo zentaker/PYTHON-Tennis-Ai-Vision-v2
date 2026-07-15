@@ -14,10 +14,10 @@ from src.tracker.wasb_runner import (
     parse_args,
     read_detection_csv,
     write_inference_report,
-    write_vfr_concat_file,
 )
 from src.video.canonical_frames import CanonicalFrame
 from src.project.clip_manifest import ClipManifest
+from src.video.vfr_overlay import write_vfr_concat_file
 
 
 class FakePredictor:

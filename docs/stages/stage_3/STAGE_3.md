@@ -170,3 +170,19 @@ Reporte de cierre:
 ## Estado final
 
 Stage 3 queda cerrada exitosamente. El siguiente paso es iniciar Stage 4 con un prompt especifico.
+
+## Evolución multiclip (Nivel A2)
+
+El cierre anterior corresponde exclusivamente al clip histórico Madrid. Desde
+2026-07-15, la misma implementación admite también rutas explícitas, CSV enriquecido,
+timestamps VFR y orientación canónica, manteniendo el fallback original por frame y los
+defaults Madrid.
+
+Para `nivel_a2_01`, Stage 3 tiene una baseline técnica separada y **no está cerrada**:
+
+- plan: `docs/levels/level_a2/stage_3_plan.md`;
+- reporte: `docs/levels/level_a2/stage_3_baseline_report.md`;
+- estado: `IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`.
+
+Esta evolución no modifica el veredicto ni los artefactos históricos Madrid y no inicia
+Stage 4 para A2.

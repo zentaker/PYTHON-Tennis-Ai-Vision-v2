@@ -5,9 +5,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-import subprocess
 import sys
-import tempfile
 import time
 from collections import deque
 from collections.abc import Iterable, Sequence
@@ -20,6 +18,7 @@ import numpy as np
 
 from src.project.clip_manifest import ClipManifest
 from src.video.canonical_frames import CanonicalFrame, iter_canonical_frames
+from src.video.vfr_overlay import render_canonical_vfr_overlay
 
 
 INPUT_WIDTH = 512
@@ -416,28 +415,6 @@ def draw_detection(frame_bgr: np.ndarray, detection: Detection) -> np.ndarray:
     return output
 
 
-def write_vfr_concat_file(
-    image_paths: Sequence[Path],
-    timestamps: Sequence[float],
-    output_path: Path,
-) -> None:
-    """Write an ffconcat list whose per-frame durations preserve VFR intervals."""
-    if len(image_paths) != len(timestamps) or not image_paths:
-        raise ValueError("Image paths and timestamps must have the same non-zero length")
-    lines = ["ffconcat version 1.0"]
-    for index, image_path in enumerate(image_paths):
-        escaped_path = str(image_path.resolve()).replace("'", "'\\''")
-        lines.append(f"file '{escaped_path}'")
-        # PNG inputs default to 25 Hz, which collapses sub-40 ms VFR intervals.
-        lines.append("option framerate 1000000")
-        if index + 1 < len(timestamps):
-            duration = timestamps[index + 1] - timestamps[index]
-            if duration <= 0:
-                raise ValueError("Overlay timestamps must be strictly increasing")
-            lines.append(f"duration {duration:.9f}")
-    output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-
 def render_vfr_overlay(
     video_path: Path,
     manifest: ClipManifest,
@@ -452,70 +429,30 @@ def render_vfr_overlay(
         raise ValueError(
             f"Expected {manifest.frames_total} detections for overlay, found {len(detections)}"
         )
-    output_overlay.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="wasb_overlay_") as temp_directory:
-        temp_path = Path(temp_directory)
-        image_paths: list[Path] = []
-        timestamps: list[float] = []
-        for record, detection in zip(iter_canonical_frames(video_path, manifest), detections):
-            if record.frame_id != detection.frame_id:
-                raise ValueError("Detection/frame ID mismatch while rendering overlay")
-            if not np.isclose(
-                record.timestamp_seconds,
-                detection.timestamp_seconds,
-                rtol=0.0,
-                atol=5e-10,
-            ):
-                raise ValueError("Detection/frame timestamp mismatch while rendering overlay")
-            output_frame = draw_detection(record.image_bgr, detection)
-            image_path = temp_path / f"frame_{record.frame_id:06d}.png"
-            if not cv2.imwrite(str(image_path), output_frame):
-                raise RuntimeError(f"Could not write temporary overlay frame: {image_path}")
-            image_paths.append(image_path)
-            timestamps.append(record.timestamp_seconds)
+    detections_by_frame = {item.frame_id: item for item in detections}
 
-        concat_path = temp_path / "frames.ffconcat"
-        write_vfr_concat_file(image_paths, timestamps, concat_path)
-        command = [
-            ffmpeg_binary,
-            "-nostdin",
-            "-y",
-            "-v",
-            "error",
-            "-f",
-            "concat",
-            "-safe",
-            "0",
-            "-i",
-            str(concat_path),
-            "-fps_mode",
-            "vfr",
-            "-c:v",
-            "libx264",
-            "-pix_fmt",
-            "yuv420p",
-            str(output_overlay),
-        ]
-        try:
-            subprocess.run(command, check=True)
-        except FileNotFoundError as exc:
-            raise RuntimeError(f"ffmpeg not found: {ffmpeg_binary}") from exc
-        except subprocess.CalledProcessError as exc:
-            raise RuntimeError("ffmpeg failed to encode the VFR overlay") from exc
+    def render(record: CanonicalFrame) -> np.ndarray:
+        detection = detections_by_frame.get(record.frame_id)
+        if detection is None:
+            raise ValueError("Detection/frame ID mismatch while rendering overlay")
+        if not np.isclose(
+            record.timestamp_seconds,
+            detection.timestamp_seconds,
+            rtol=0.0,
+            atol=5e-10,
+        ):
+            raise ValueError("Detection/frame timestamp mismatch while rendering overlay")
+        return draw_detection(record.image_bgr, detection)
 
-    check = cv2.VideoCapture(str(output_overlay))
-    if not check.isOpened():
-        raise RuntimeError(f"Could not open encoded overlay: {output_overlay}")
-    width = int(check.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(check.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    frame_count = int(check.get(cv2.CAP_PROP_FRAME_COUNT))
-    check.release()
-    if (width, height) != (manifest.canonical_width, manifest.canonical_height):
-        raise RuntimeError(f"Overlay has unexpected dimensions: {width}x{height}")
-    if frame_count != manifest.frames_total:
-        raise RuntimeError(
-            f"Overlay frame count changed: expected {manifest.frames_total}, got {frame_count}"
-        )
+    render_canonical_vfr_overlay(
+        iter_canonical_frames(video_path, manifest),
+        output_overlay,
+        render,
+        expected_frames=manifest.frames_total,
+        expected_width=manifest.canonical_width,
+        expected_height=manifest.canonical_height,
+        ffmpeg_binary=ffmpeg_binary,
+    )
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:

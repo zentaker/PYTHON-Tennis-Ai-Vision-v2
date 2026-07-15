@@ -1,7 +1,8 @@
 # Nivel A2 - `nivel_a2_01`
 
-**Estado:** Stage 1 cerrada; Stage 2 preparada para ejecución externa
-**Fecha de preparacion:** 2026-07-14
+**Estado:** Stage 1 cerrada; Stage 2 ejecutada técnicamente y Stage 3 implementada,
+ambas pendientes de gate visual humano
+**Fecha de actualización:** 2026-07-15
 
 ## Clip seleccionado
 
@@ -42,9 +43,9 @@ sin modificar el MP4.
 | --- | --- |
 | 0 | Heredada y cerrada |
 | 1 | Cerrada exitosa; gates numerico y visual aprobados |
-| 2 | Preflight aprobado; pendiente de ejecucion externa |
-| 3 | No iniciada |
-| 4 | Implementacion disponible; pendiente de resultados A2 |
+| 2 | Ejecutada técnicamente; pendiente de gate visual humano |
+| 3 | Baseline implementada; pendiente de gate visual humano |
+| 4 | No iniciada para A2 |
 | 5-7 | Pendientes |
 
 ## Frames para revision humana
@@ -87,7 +88,7 @@ las lineas reproyectadas coinciden con la cancha. El gate numerico paso con medi
 `4.705469 px` y maximo `8.598912 px`. Ver
 `docs/levels/level_a2/stage_1_exit_report.md`.
 
-## Preparacion Stage 2
+## Stage 2 A2
 
 - Plan: `docs/levels/level_a2/stage_2_plan.md`.
 - Preflight aprobado: `docs/levels/level_a2/stage_2_preflight_report.md`.
@@ -95,5 +96,23 @@ las lineas reproyectadas coinciden con la cancha. El gate numerico paso con medi
 - Inventario de handoff: `docs/levels/level_a2/STAGE_2_EXTERNAL_HANDOFF.md`.
 - Preflight local: `scripts/stage2_a2_preflight.py`.
 - Runner: `src/tracker/wasb_runner.py`.
+- Ejecución técnica final: `docs/levels/level_a2/stage_2_runpod_execution_report.md`.
+- Exit report provisional: `docs/levels/level_a2/stage_2_exit_report.md`.
 
-No se ejecuto WASB en macOS. No se iniciaron Stage 3, Stage 4 real ni Stage 5.
+La ejecución CUDA procesó `527/527` frames y generó `527` registros y un overlay
+canónico `2746x1536` de `527` frames. Este resultado no equivale a aprobación visual.
+
+## Stage 3 A2
+
+- Plan y diferencias frente a Madrid: `docs/levels/level_a2/stage_3_plan.md`.
+- Baseline real: `docs/levels/level_a2/stage_3_baseline_report.md`.
+- CSV local: `outputs/nivel_a2_01/stage_3/smoothed_trajectory.csv`.
+- Overlays locales: `outputs/nivel_a2_01/stage_3/smoothed_trajectory_overlay.mp4` y
+  `outputs/nivel_a2_01/stage_3/trajectory_debug_overlay.mp4`.
+- Hoja de contacto local:
+  `outputs/nivel_a2_01/stage_3/stage_3_review_contact_sheet.png`.
+
+Stage 3 preserva los `527` timestamps VFR y la orientación canónica `2746x1536`. La
+baseline es material para revisión; no está visualmente aprobada.
+
+WASB no se ejecutó en macOS durante esta pasada. Stage 4 y Stage 5 no se iniciaron.
