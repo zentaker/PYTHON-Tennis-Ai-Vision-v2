@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anotador de eventos de tenis</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Anotador de eventos de tenis</h1>
+      <p id="status" class="status">Preparando video…</p>
+    </div>
+    <div id="saveStatus" class="save-status">Sin cambios</div>
+  </header>
+
+  <main>
+    <section class="viewer-card">
+      <div class="frame-heading">
+        <strong id="frameCounter">FRAME 000 / 526</strong>
+        <span id="timestamp">00:00.000000</span>
+        <span id="duration">0.000 ms</span>
+      </div>
+
+      <div id="frameViewport" class="frame-viewport">
+        <div id="zoomContent" class="zoom-content">
+          <img id="frameImage" alt="Frame actual">
+          <span id="ballMarker" class="ball-marker" hidden></span>
+        </div>
+      </div>
+
+      <div id="frameStrip" class="frame-strip" aria-label="Frames cercanos"></div>
+
+      <div class="transport">
+        <button data-nav="-10">« -10</button>
+        <button data-nav="-1">‹ -1</button>
+        <button id="playPause">Play</button>
+        <button data-nav="1">+1 ›</button>
+        <button data-nav="10">+10 »</button>
+      </div>
+
+      <input id="frameSlider" type="range" min="0" max="526" value="0" aria-label="Frame">
+      <div class="jump-row">
+        <label for="jumpFrame">Ir al frame</label>
+        <input id="jumpFrame" type="number" min="0" max="526" value="0">
+        <button id="jumpButton">Ir</button>
+      </div>
+
+      <div class="viewer-tools">
+        <span>Zoom:</span>
+        <button data-zoom="1">Ajustar</button>
+        <button data-zoom="1">100%</button>
+        <button data-zoom="1.5">150%</button>
+        <button data-zoom="2">200%</button>
+        <button data-zoom="3">300%</button>
+        <label class="toggle"><input id="trackingToggle" type="checkbox"> Mostrar pelota trackeada</label>
+        <label class="toggle"><input id="compareToggle" type="checkbox"> Comparar impacto</label>
+      </div>
+    </section>
+
+    <section id="comparison" class="comparison" hidden>
+      <h2>Comparar impacto</h2>
+      <div id="comparisonFrames" class="comparison-grid"></div>
+    </section>
+
+    <section id="ballInspector" class="comparison" hidden>
+      <h2>Ampliación alrededor de la pelota</h2>
+      <div id="ballFrames" class="comparison-grid"></div>
+    </section>
+
+    <section class="annotation-card">
+      <div class="selection-controls">
+        <button id="markStart">Marcar inicio <kbd>I</kbd></button>
+        <button id="markEnd">Marcar fin <kbd>O</kbd></button>
+        <button id="clearSelection">Limpiar selección <kbd>Esc</kbd></button>
+      </div>
+      <div id="selectionSummary" class="selection-summary">Sin selección: el evento usará el frame actual.</div>
+
+      <div class="event-buttons">
+        <button data-preset="serve_near">Saque jugador cercano</button>
+        <button data-preset="serve_far">Saque jugador lejano</button>
+        <button data-preset="hit_near">Golpe jugador cercano</button>
+        <button data-preset="hit_far">Golpe jugador lejano</button>
+        <button data-preset="bounce_near">Bote lado cercano</button>
+        <button data-preset="bounce_far">Bote lado lejano</button>
+        <button data-preset="bounce_unknown">Bote indeterminado</button>
+        <button data-preset="unknown">Evento desconocido</button>
+      </div>
+      <p id="message" class="message"></p>
+    </section>
+
+    <section class="events-card">
+      <div class="events-heading">
+        <h2>Eventos anotados</h2>
+        <div>
+          <button id="undoButton">Deshacer</button>
+          <button id="exportButton" class="primary">Finalizar y guardar anotación</button>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>#</th><th>Tipo</th><th>Jugador/lado</th><th>Frames</th><th>Cantidad</th><th>Tiempo</th><th>Acciones</th></tr></thead>
+          <tbody id="eventRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="editDialog">
+    <form id="editForm" method="dialog">
+      <h2>Editar detalles</h2>
+      <input id="editId" type="hidden">
+      <div class="form-grid">
+        <label>Tipo<select id="editType"><option>serve</option><option>hit</option><option>bounce</option><option>unknown</option></select></label>
+        <label>Jugador<select id="editPlayer"><option>near</option><option>far</option><option>unknown</option></select></label>
+        <label>Lado<select id="editSide"><option>near</option><option>far</option><option>unknown</option></select></label>
+        <label>Tipo de golpe<select id="editShot"><option>saque</option><option>derecha</option><option>revés</option><option>derecha_invertida</option><option>revés_invertido</option><option>slice</option><option>volea</option><option>dejada</option><option>globo</option><option>unknown</option></select></label>
+        <label>Zona<select id="editZone"><option>zona_saque_derecha</option><option>zona_saque_izquierda</option><option>fondo</option><option>media</option><option>aprox_red</option><option>red</option><option>unknown</option></select></label>
+        <label>Frame inicial<input id="editStart" type="number" min="0" max="526"></label>
+        <label>Frame final<input id="editEnd" type="number" min="0" max="526"></label>
+        <label class="wide">Notas<textarea id="editNotes" rows="3"></textarea></label>
+      </div>
+      <div class="dialog-actions"><button id="cancelEdit" type="button">Cancelar</button><button class="primary" type="submit">Guardar cambios</button></div>
+    </form>
+  </dialog>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>

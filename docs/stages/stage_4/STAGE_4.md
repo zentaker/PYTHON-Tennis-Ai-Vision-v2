@@ -7,14 +7,15 @@
 
 ## Estado operativo Nivel A2
 
-Desde 2026-07-15, Stage 1–3 de `nivel_a2_01` están cerradas y la preparación A2 se
-encuentra en `WAITING_FOR_MANUAL_ANNOTATION`. El video y el sidecar VFR están disponibles
-localmente; ya no aplica a A2 la recuperación de assets descrita para el entorno
-histórico Madrid.
+Desde 2026-07-15, Stage 1–3 de `nivel_a2_01` están cerradas y Stage 4 se encuentra en
+`ANNOTATOR_IMPLEMENTATION_IN_PROGRESS`. El nuevo anotador local pasó su self-test real
+`30/30`: 527 frames exactos, IDs `0–526`, timestamps estrictos y resolución
+`2746×1536`. La guía de uso está en
+`docs/levels/level_a2/stage_4_annotation_guide.md` y el diseño verificado en
+`docs/levels/level_a2/stage_4_annotator_redesign.md`.
 
-El anotador fue auditado para `527` frames, navegación mediante timestamps VFR y export
-de frames/tiempos explícitos. Guía específica:
-`docs/levels/level_a2/stage_4_annotation_guide.md`.
+La aplicación recibe el video por CLI y oculta todos los inputs técnicos. La página
+estática histórica quedó retirada porque no garantizaba navegación frame-accurate.
 
 No existe aún `data/clips/nivel_a2_01/manual_annotation.json`; por ello no se ejecutó el
 loader ni se generaron outputs Stage 4. La compatibilidad y el cierre históricos de
@@ -37,13 +38,14 @@ Implementado:
 - loader y export a JSON en `src/events/event_loader.py`;
 - overlay de revision en `src/events/render_events_overlay.py`;
 - timeline en `src/events/render_events_timeline.py`;
-- herramienta estatica `tools/manual_event_annotator/index.html`;
+- aplicación local frame-accurate `tools/event_annotator_app/`;
+- autosave, restore, undo y export validado;
+- self-test real de 30 criterios;
 - fixtures sinteticas y tests unitarios sin video real.
 
 Pendiente:
 
-- recuperar el clip y la trayectoria suavizada de la maquina anterior;
-- crear/completar `manual_annotation.json` con conocimiento humano del rally;
+- completar `manual_annotation.json` con conocimiento humano del rally A2;
 - ejecutar el pipeline sobre esos datos;
 - revisar timeline y overlay;
 - obtener el gate humano.
@@ -83,19 +85,25 @@ Los tiempos se calculan con el FPS indicado por CLI, por el JSON o, si ambos fal
 el default de 60 FPS. `frame_range` es inclusivo y debe contener enteros no negativos en
 orden. IDs duplicados, eventos fuera de `frames_total` y listas desordenadas se rechazan.
 
-## Flujo operativo
+## Flujo operativo A2
 
-1. Abrir `tools/manual_event_annotator/index.html` en un navegador.
-2. Cargar el video local y confirmar FPS.
-3. Registrar, revisar, editar y ordenar los eventos humanos.
-4. Exportar `manual_annotation.json` y colocarlo en `data/reference_clip/`.
-5. Normalizar:
+1. Iniciar la aplicación con el video canónico ya preparado:
+
+```bash
+uv run python -m tools.event_annotator_app \
+  --video data/clips/nivel_a2_01/source.mp4 \
+  --clip-id nivel_a2_01
+```
+
+2. Navegar por imágenes cacheadas, marcar eventos y finalizar la anotación desde la
+   interfaz local. No se seleccionan archivos técnicos.
+3. Normalizar después de obtener la anotación humana real:
 
 ```bash
 uv run python -m src.events.event_loader
 ```
 
-6. Con datos reales validados, generar timeline y overlay:
+4. Con datos reales validados, generar timeline y overlay:
 
 ```bash
 uv run python -m src.events.render_events_timeline

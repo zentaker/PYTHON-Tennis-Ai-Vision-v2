@@ -1,30 +1,23 @@
-# Guia de anotacion manual - Stage 4 Nivel A
+# Guía histórica de anotación manual — Stage 4 Nivel A
+
+> **Retirada para Nivel A2.** La herramienta estática descrita en este documento no es
+> ejecutable y no debe abrirse. No garantizaba navegación frame-accurate.
+
+Para `nivel_a2_01`, usar exclusivamente la guía actual:
+`docs/levels/level_a2/stage_4_annotation_guide.md`.
+
+El resto de este documento conserva el contexto histórico del clip Madrid; no es una
+instrucción operativa para A2.
 
 ## Objetivo
 
 Crear `data/reference_clip/manual_annotation.json` a partir de observacion humana del
 rally. La herramienta no analiza el video ni propone eventos.
 
-## Abrir la herramienta
+## Procedimiento histórico
 
-Abrir directamente en un navegador:
-
-```text
-tools/manual_event_annotator/index.html
-```
-
-No requiere servidor, CDN, OpenCV ni conexion a Internet.
-
-## Procedimiento
-
-1. Seleccionar `madrid_R1.mov` desde el control de archivo.
-2. Confirmar FPS; el valor esperado del run anterior es 60.
-3. Reproducir, pausar o usar los botones/teclas de avance frame a frame.
-4. Para cada evento humano, capturar frame inicial y final.
-5. Seleccionar tipo, player, side, shot type y court zone.
-6. Guardar. Los eventos pueden editarse o eliminarse y se muestran cronologicamente.
-7. Revisar la tabla completa antes de exportar.
-8. Exportar `manual_annotation.json` y moverlo a `data/reference_clip/`.
+El flujo anterior dependía de selección manual de archivos y FPS nominal. Queda
+documentado únicamente para explicar por qué fue reemplazado; no debe utilizarse.
 
 ## Vocabularios
 

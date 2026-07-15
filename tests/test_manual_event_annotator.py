@@ -1,28 +1,43 @@
 from pathlib import Path
 
 
-ANNOTATOR = Path("tools/manual_event_annotator/index.html")
+LEGACY = Path("tools/manual_event_annotator/index.html")
+FRONTEND = Path("tools/event_annotator_app/static/index.html")
+JAVASCRIPT = Path("tools/event_annotator_app/static/app.js")
 
 
-def test_a2_annotator_uses_real_vfr_sidecar_and_exports_explicit_coordinates() -> None:
-    html = ANNOTATOR.read_text(encoding="utf-8")
+def test_rejected_annotator_is_deprecated_and_not_executable() -> None:
+    html = LEGACY.read_text(encoding="utf-8")
 
-    assert 'id="timestampsFile"' in html
-    assert "payload.frames.length !== 527" in html
-    assert "frameTimeline[middle].timestamp_seconds" in html
-    assert "video.currentTime = timeForFrame(target)" in html
-    assert "video.currentTime * fps()" not in html
-    assert "frame_start: start" in html
-    assert "frame_end: end" in html
-    assert "time_start_seconds: timeForFrame(start)" in html
-    assert "time_end_seconds: timeForFrame(end)" in html
-    assert 'clip_id: "nivel_a2_01"' in html
-    assert 'level: "A2"' in html
-    assert 'timing_mode: "variable_frame_rate"' in html
+    assert "Herramienta retirada" in html
+    assert "deprecado" in html
+    assert 'type="file"' not in html
+    assert "HTMLVideoElement" not in html
 
 
-def test_a2_annotator_refuses_event_creation_and_export_without_sidecar() -> None:
-    html = ANNOTATOR.read_text(encoding="utf-8")
+def test_verified_frontend_hides_technical_file_controls() -> None:
+    html = FRONTEND.read_text(encoding="utf-8")
 
-    assert "Cargá frame_timestamps.json antes de guardar." in html
-    assert "Cargá el sidecar VFR antes de exportar A2." in html
+    assert "Anotador de eventos de tenis" in html
+    assert 'type="file"' not in html
+    assert "frame_timestamps" not in html
+    assert "Sidecar" not in html
+    assert "FPS" not in html
+    assert "Manifest" not in html
+    assert "SHA" not in html
+    assert "FRAME 000 / 526" in html
+    assert "Marcar inicio" in html
+    assert "Marcar fin" in html
+    assert "Finalizar y guardar anotación" in html
+
+
+def test_frontend_navigation_uses_exact_cached_frame_endpoints() -> None:
+    javascript = JAVASCRIPT.read_text(encoding="utf-8")
+
+    assert "HTMLVideoElement" not in javascript
+    assert "currentTime" not in javascript
+    assert "* fps" not in javascript
+    assert "function frameUrl(frameId) { return `/api/frames/${frameId}`; }" in javascript
+    assert "state.current + Number(button.dataset.nav)" in javascript
+    assert "if (state.loading || !state.session) return false" in javascript
+    assert "for (let offset = -10; offset <= 10; offset += 1)" in javascript
