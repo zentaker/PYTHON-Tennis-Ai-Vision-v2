@@ -428,6 +428,8 @@ def write_vfr_concat_file(
     for index, image_path in enumerate(image_paths):
         escaped_path = str(image_path.resolve()).replace("'", "'\\''")
         lines.append(f"file '{escaped_path}'")
+        # PNG inputs default to 25 Hz, which collapses sub-40 ms VFR intervals.
+        lines.append("option framerate 1000000")
         if index + 1 < len(timestamps):
             duration = timestamps[index + 1] - timestamps[index]
             if duration <= 0:
@@ -476,6 +478,7 @@ def render_vfr_overlay(
         write_vfr_concat_file(image_paths, timestamps, concat_path)
         command = [
             ffmpeg_binary,
+            "-nostdin",
             "-y",
             "-v",
             "error",

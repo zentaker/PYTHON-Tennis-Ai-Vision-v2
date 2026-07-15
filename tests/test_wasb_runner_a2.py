@@ -161,6 +161,7 @@ def test_vfr_concat_file_preserves_variable_durations(tmp_path: Path) -> None:
     assert "duration 0.016666667" in contents
     assert "duration 0.033333333" in contents
     assert contents.count("file '") == 3
+    assert contents.count("option framerate 1000000") == 3
 
 
 def test_cli_accepts_explicit_a2_mp4_paths() -> None:
