@@ -4,7 +4,7 @@ La documentacion de este proyecto es parte del producto. Cada etapa debe dejar e
 
 ## Indice
 
-- Roadmap general: `../ROADMAP.md`
+- Roadmap general: `../ROADMAP.md`h
 - Stage 0 reconciliada: `stages/stage_0/exit_report.md`
 - Stage 3 cerrada: `stages/stage_3/exit_report.md`
 - Stage 4 en progreso: `stages/stage_4/STAGE_4.md`
