@@ -24,7 +24,7 @@ SSH_ARGS=(-o BatchMode=yes -o StrictHostKeyChecking=accept-new -i "$SSH_KEY")
 case "$SSH_MODE" in
   proxy)
     SSH_TARGET="${RUNPOD_SSH_TARGET:-}"
-    [[ "$SSH_TARGET" =~ ^[A-Za-z0-9_.-]+@ssh\.runpod\.io$ ]] \
+    [[ "$SSH_TARGET" =~ ^([A-Za-z0-9_.-]+@ssh\.runpod\.io|[A-Za-z0-9][A-Za-z0-9_.-]*)$ ]] \
       || { echo "ERROR: invalid or missing proxy RUNPOD_SSH_TARGET." >&2; exit 2; }
     ;;
   exposed_tcp)

@@ -97,6 +97,28 @@ def test_ssh_helper_builds_proxy_without_port(tmp_path: Path) -> None:
     assert "-p" not in arguments
 
 
+def test_ssh_helper_accepts_private_config_alias(tmp_path: Path) -> None:
+    fake_bin, key = _fake_ssh(tmp_path)
+    env = {
+        **os.environ,
+        "PATH": f"{fake_bin}:{os.environ['PATH']}",
+        "RUNPOD_ENV_FILE": str(tmp_path / "missing.env"),
+        "RUNPOD_SSH_MODE": "proxy",
+        "RUNPOD_SSH_TARGET": "tennis-runpod-a2",
+        "RUNPOD_SSH_KEY": str(key),
+    }
+
+    result = subprocess.run(
+        ["bash", "scripts/gpu/runpod_ssh.sh", "hostname"],
+        check=True,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+
+    assert "tennis-runpod-a2" in result.stdout.splitlines()
+
+
 def test_ssh_helper_builds_exposed_tcp_with_port(tmp_path: Path) -> None:
     fake_bin, key = _fake_ssh(tmp_path)
     env = {
