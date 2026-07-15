@@ -107,6 +107,40 @@ require_file "video" "$REPO_DIR/data/clips/nivel_a2_01/source.mp4"
 require_file "manifest" "$REPO_DIR/data/clips/nivel_a2_01/clip_manifest.json"
 require_file "homography" "$REPO_DIR/data/clips/nivel_a2_01/homography.json"
 require_file "court_corners" "$REPO_DIR/data/clips/nivel_a2_01/court_corners_pixel.json"
+require_file "frame_timestamps" "$REPO_DIR/data/clips/nivel_a2_01/frame_timestamps.json"
+
+if [[ -f "$REPO_DIR/data/clips/nivel_a2_01/frame_timestamps.json" ]] \
+  && [[ -f "$REPO_DIR/data/clips/nivel_a2_01/clip_manifest.json" ]] \
+  && command -v uv >/dev/null 2>&1; then
+  if TIMESTAMP_REPORT="$(uv run --frozen python - <<'PY'
+from pathlib import Path
+
+from src.project.clip_manifest import ClipManifest
+from src.video.frame_timestamps import FrameTimestampSidecar, validate_sidecar_against_manifest
+
+root = Path("data/clips/nivel_a2_01")
+manifest = ClipManifest.read(root / "clip_manifest.json")
+sidecar = FrameTimestampSidecar.read(root / "frame_timestamps.json")
+validate_sidecar_against_manifest(sidecar, manifest)
+timestamps = [frame.timestamp_seconds for frame in sidecar.frames]
+if sidecar.frame_count != 527 or timestamps[0] != 0.0:
+    raise SystemExit(1)
+if round(timestamps[-1], 6) != 10.471667:
+    raise SystemExit(1)
+if not all(current > previous for previous, current in zip(timestamps, timestamps[1:])):
+    raise SystemExit(1)
+print(
+    f"PASS count={sidecar.frame_count} range={timestamps[0]:.6f}–"
+    f"{timestamps[-1]:.6f}s monotonic=true"
+)
+PY
+)"; then
+    report "timestamp_timeline" "$TIMESTAMP_REPORT"
+  else
+    report "timestamp_timeline" "FAIL"
+    FAILURES=$((FAILURES + 1))
+  fi
+fi
 
 if [[ "$FAILURES" -ne 0 ]]; then
   report "result" "FAIL ($FAILURES missing or invalid requirements)"

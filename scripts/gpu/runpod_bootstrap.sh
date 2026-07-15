@@ -65,6 +65,7 @@ for required in \
   data/clips/nivel_a2_01/clip_manifest.json \
   data/clips/nivel_a2_01/homography.json \
   data/clips/nivel_a2_01/court_corners_pixel.json \
+  data/clips/nivel_a2_01/frame_timestamps.json \
   models/wasb/wasb_tennis_best.pth.tar; do
   [[ -f "$required" ]] || { echo "ERROR: missing $REPO_DIR/$required" >&2; exit 1; }
 done

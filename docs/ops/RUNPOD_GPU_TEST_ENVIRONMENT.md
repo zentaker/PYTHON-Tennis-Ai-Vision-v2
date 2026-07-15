@@ -1,6 +1,6 @@
 # Entorno temporal RunPod para pruebas GPU de Stage 2 A2
 
-**Última auditoría:** 2026-07-14
+**Última auditoría:** 2026-07-15
 
 ## Alcance y fuente de verdad
 
@@ -23,6 +23,10 @@ Los videos, checkpoints, `third_party`, outputs y logs siguen ignorados por Git.
 - Red: habilitar IP pública y TCP 22 si se usarán `scp`/`rsync`.
 - No abrir puertos HTTP ni desplegar endpoints.
 
+La primera ejecución real usa una **RTX A4500** con la plantilla RunPod PyTorch 2.8.0.
+La GPU debe confirmarse siempre con `nvidia-smi`; el nombre seleccionado en la consola no
+sustituye el gate de runtime.
+
 RunPod distingue el SSH básico por proxy del SSH completo por IP pública: el primero no
 soporta SCP/SFTP, mientras que el segundo sí. La guía oficial explica ambas opciones:
 [Connect to a Pod with SSH](https://docs.runpod.io/pods/configuration/use-ssh).
@@ -32,6 +36,17 @@ queda sin espacio, aumentar el volumen; RunPod permite aumentarlo, pero no reduc
 documentación de tipos y persistencia está en
 [Storage options](https://docs.runpod.io/pods/storage/types).
 
+### Modos soportados por los scripts
+
+| Modo | Terminal | Transferencia | Puerto SSH |
+| --- | --- | --- | --- |
+| `proxy` | `usuario@ssh.runpod.io` | `runpodctl` | No se usa |
+| `exposed_tcp` | host/IP pública | SCP | Puerto público obligatorio |
+
+`scripts/gpu/runpod_ssh.sh` es el único constructor de comandos SSH. En proxy añade
+`BatchMode=yes` y `StrictHostKeyChecking=accept-new`, usa el target privado configurado y
+no añade `-p`. Nunca se debe intentar SCP o rsync a través del proxy básico.
+
 ## 1. Crear y asegurar el Pod
 
 1. En RunPod, abrir **Pods → Deploy**.
@@ -40,8 +55,7 @@ documentación de tipos y persistencia está en
 4. Configurar el almacenamiento indicado arriba con `/workspace` persistente.
 5. Añadir únicamente la **clave pública** SSH a RunPod. La clave privada permanece en el
    Mac.
-6. Para transferencias, habilitar IP pública y TCP 22 y copiar de la consola el host y
-   puerto asignados.
+6. Elegir SSH proxy + `runpodctl`, o habilitar IP pública/TCP 22 si se necesita SCP.
 7. Conectar y ejecutar `nvidia-smi` antes de copiar activos.
 
 No guardar host, puerto, tokens ni claves en Git. Copiar el ejemplo a una ubicación
@@ -61,6 +75,18 @@ set -a
 source "$HOME/.config/tennis-vision-ai/stage2_a2.env"
 set +a
 ```
+
+Configuración proxy mínima en el archivo privado:
+
+```bash
+RUNPOD_SSH_MODE="proxy"
+RUNPOD_SSH_TARGET="USUARIO_TEMPORAL@ssh.runpod.io"
+RUNPOD_SSH_KEY="$HOME/.ssh/id_ed25519"
+RUNPOD_TRANSFER_MODE="runpodctl"
+```
+
+La llave debe existir localmente, tener permisos restrictivos y su clave pública debe
+estar registrada en la cuenta RunPod. No se copia la llave privada al Pod.
 
 ## 2. Publicar y clonar el código
 
@@ -99,9 +125,35 @@ models/wasb/wasb_tennis_best.pth.tar
 third_party/WASB-SBDT
 ```
 
-Los tres JSON pequeños pueden venir del checkout, pero se incluyen en el inventario para
-que el gate remoto compruebe su presencia. El MP4, checkpoint y WASB-SBDT se transfieren
-fuera de Git. Desde el Mac, usando el host/puerto público que muestra RunPod:
+Los tres JSON pequeños vienen del checkout, pero se incluyen en el inventario para que
+el gate remoto compruebe su presencia. El MP4, checkpoint y WASB-SBDT se transfieren
+fuera de Git.
+
+### Proxy SSH con runpodctl
+
+`runpodctl` debe existir en ambos extremos. En macOS se instala, si falta, con:
+
+```bash
+brew install runpod/runpodctl/runpodctl
+runpodctl version
+```
+
+Homebrew puede exigir aceptar primero la licencia de Xcode en una terminal administrada
+por el usuario. No se usa API key para `runpodctl send/receive`.
+
+Enviar el MP4 desde el Mac:
+
+```bash
+runpodctl send data/clips/nivel_a2_01/source.mp4
+```
+
+El código temporal se introduce inmediatamente en `runpodctl receive` dentro del Pod y
+no se guarda en configuración, logs o documentación. Después se exige SHA-256 remoto
+`e2a05a8eda9be4d821ae1acc60355c7c0403e450ac0febd6bb3c6a62e0aa5774`.
+
+### TCP expuesto con SCP
+
+Desde el Mac, usando el host/puerto público que muestra RunPod:
 
 ```bash
 ssh -p "$RUNPOD_SSH_PORT" -i "$RUNPOD_SSH_KEY" \
@@ -118,14 +170,14 @@ scp -P "$RUNPOD_SSH_PORT" -i "$RUNPOD_SSH_KEY" \
   models/wasb/wasb_tennis_best.pth.tar \
   "$RUNPOD_SSH_USER@$RUNPOD_HOST:/workspace/PYTHON-Tennis-Ai-Vision-v2/models/wasb/"
 
-rsync -az --delete -e "ssh -p $RUNPOD_SSH_PORT -i $RUNPOD_SSH_KEY" \
+rsync -az -e "ssh -p $RUNPOD_SSH_PORT -i $RUNPOD_SSH_KEY" \
   third_party/WASB-SBDT/ \
   "$RUNPOD_SSH_USER@$RUNPOD_HOST:/workspace/PYTHON-Tennis-Ai-Vision-v2/third_party/WASB-SBDT/"
 ```
 
-`--delete` queda limitado al destino `third_party/WASB-SBDT/`; no usarlo sobre el repo
-completo. Si los activos solo existen en otra máquina autorizada, transferirlos desde esa
-máquina y verificar sus checksums antes del bootstrap.
+No usar `--delete` sobre el repo o sobre activos remotos ignorados. Si los activos solo
+existen en otra máquina autorizada, transferirlos desde esa máquina y verificar sus
+checksums antes del bootstrap.
 
 ## 4. Bootstrap reproducible, sin inferencia
 
@@ -143,6 +195,8 @@ El bootstrap:
 - ejecuta `uv sync --frozen --extra dev --extra tracker` y comprueba que `uv.lock` no
   cambió;
 - verifica FFmpeg/FFprobe, PyTorch CUDA y todos los activos;
+- valida `frame_timestamps.json`: 527 registros, rango `0.000000–10.471667 s` y
+  monotonía estricta;
 - ejecuta tests ligeros y el preflight A2 con decodificación de los 527 frames;
 - guarda `outputs/nivel_a2_01/stage_2/logs/bootstrap_preflight.json`;
 - **no invoca `wasb_runner` y no inicia inferencia**.
@@ -159,6 +213,10 @@ Con el bootstrap en verde y el commit publicado en GitHub:
 
 ```bash
 cd /Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2
+# Proxy configurado en el archivo privado:
+./scripts/gpu/run_stage2_a2_remote.sh "$RUNPOD_COMMIT_SHA"
+
+# Alternativa TCP expuesta compatible con el flujo anterior:
 ./scripts/gpu/run_stage2_a2_remote.sh "$RUNPOD_HOST" "$RUNPOD_COMMIT_SHA"
 ```
 
@@ -186,11 +244,27 @@ outputs/nivel_a2_01/stage_2/logs/stage2_<UTC>_<SHA>.log
 
 ## 6. Recuperar y verificar resultados
 
-Desde el Mac:
+Con TCP expuesto, desde el Mac:
 
 ```bash
 ./scripts/gpu/download_stage2_results.sh "$RUNPOD_HOST"
 ```
+
+Con proxy, primero se crea en el Pod el bundle
+`/workspace/stage2_a2_results_<SHA>.tar.gz`, se calcula su SHA-256 y se ejecuta
+`runpodctl send`. En el Mac, el código y checksum se mantienen solo en variables
+efímeras:
+
+```bash
+read -r -s RUNPOD_TRANSFER_CODE
+export RUNPOD_TRANSFER_CODE
+export RUNPOD_BUNDLE_SHA256="SHA256_REPORTADO_POR_EL_POD"
+./scripts/gpu/download_stage2_results.sh
+unset RUNPOD_TRANSFER_CODE RUNPOD_BUNDLE_SHA256
+```
+
+El downloader proxy rechaza rutas inesperadas dentro del tar, verifica el checksum antes
+de extraer y no contiene ninguna llamada SCP en ese camino.
 
 El downloader consulta el SHA-256 remoto, descarga únicamente CSV, MP4, JSON y logs a
 un archivo temporal, compara el checksum y solo entonces lo instala localmente. Si ya

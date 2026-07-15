@@ -3,6 +3,12 @@
 
 set -euo pipefail
 
+CONFIG_FILE="${RUNPOD_ENV_FILE:-$HOME/.config/tennis-vision-ai/stage2_a2.env}"
+if [[ "${RUNPOD_REMOTE_EXECUTION:-0}" != "1" && -f "$CONFIG_FILE" ]]; then
+  # shellcheck disable=SC1090
+  source "$CONFIG_FILE"
+fi
+
 REPO_DIR="${RUNPOD_REPO_DIR:-/workspace/PYTHON-Tennis-Ai-Vision-v2}"
 THRESHOLD="${RUNPOD_CONFIDENCE_THRESHOLD:-0.5}"
 EXPECTED_REPO_DIR="/workspace/PYTHON-Tennis-Ai-Vision-v2"
@@ -15,37 +21,41 @@ validate_sha() {
 }
 
 if [[ "${RUNPOD_REMOTE_EXECUTION:-0}" != "1" ]]; then
-  if [[ "$#" -ne 2 ]]; then
-    echo "Usage: $0 <RUNPOD_HOST> <COMMIT_SHA>" >&2
-    exit 2
-  fi
-  HOST="$1"
-  COMMIT_SHA="$2"
+  SSH_MODE="${RUNPOD_SSH_MODE:-exposed_tcp}"
+  case "$#" in
+    0) COMMIT_SHA="${RUNPOD_COMMIT_SHA:-}" ;;
+    1) COMMIT_SHA="$1" ;;
+    2)
+      [[ "$SSH_MODE" == "exposed_tcp" ]] \
+        || { echo "ERROR: proxy mode does not accept a host argument." >&2; exit 2; }
+      export RUNPOD_HOST="$1"
+      COMMIT_SHA="$2"
+      ;;
+    *)
+      echo "Usage: $0 [COMMIT_SHA] or $0 <RUNPOD_HOST> <COMMIT_SHA>" >&2
+      exit 2
+      ;;
+  esac
   validate_sha "$COMMIT_SHA"
-  SSH_USER="${RUNPOD_SSH_USER:-root}"
-  SSH_PORT="${RUNPOD_SSH_PORT:-22}"
-  SSH_KEY="${RUNPOD_SSH_KEY:-$HOME/.ssh/id_ed25519}"
-  [[ "$SSH_PORT" =~ ^[0-9]+$ ]] || { echo "ERROR: invalid RUNPOD_SSH_PORT." >&2; exit 2; }
-  [[ "$HOST" =~ ^[A-Za-z0-9_.@:-]+$ && "$HOST" != -* ]] \
-    || { echo "ERROR: invalid RUNPOD_HOST." >&2; exit 2; }
   [[ "$THRESHOLD" =~ ^(0(\.[0-9]+)?|1(\.0+)?)$ ]] \
     || { echo "ERROR: confidence threshold must be between 0 and 1." >&2; exit 2; }
   [[ "$REPO_DIR" == "$EXPECTED_REPO_DIR" ]] \
     || { echo "ERROR: remote repository must be $EXPECTED_REPO_DIR." >&2; exit 2; }
-  [[ -f "$SSH_KEY" ]] || { echo "ERROR: SSH key not found: $SSH_KEY" >&2; exit 1; }
-  if [[ "$HOST" != *@* ]]; then
-    HOST="$SSH_USER@$HOST"
+  if [[ "$SSH_MODE" == "proxy" && "${RUNPOD_TRANSFER_MODE:-}" != "runpodctl" ]]; then
+    echo "ERROR: proxy mode requires RUNPOD_TRANSFER_MODE=runpodctl." >&2
+    exit 2
   fi
-  echo "Remote host: $HOST"
   echo "Exact commit: $COMMIT_SHA"
   echo "No ignored assets will be deleted by this workflow."
   LOCAL_REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+  SSH_HELPER="$LOCAL_REPO_DIR/scripts/gpu/runpod_ssh.sh"
+  [[ -x "$SSH_HELPER" ]] || { echo "ERROR: SSH helper is not executable." >&2; exit 1; }
   git -C "$LOCAL_REPO_DIR" cat-file -e "${COMMIT_SHA}^{commit}"
   git -C "$LOCAL_REPO_DIR" cat-file -e \
     "${COMMIT_SHA}:scripts/gpu/run_stage2_a2_remote.sh"
   git -C "$LOCAL_REPO_DIR" show \
     "${COMMIT_SHA}:scripts/gpu/run_stage2_a2_remote.sh" | \
-    ssh -p "$SSH_PORT" -i "$SSH_KEY" -o BatchMode=yes "$HOST" \
+    "$SSH_HELPER" \
     "RUNPOD_REMOTE_EXECUTION=1 RUNPOD_REPO_DIR='$REPO_DIR' RUNPOD_CONFIDENCE_THRESHOLD='$THRESHOLD' bash -s -- '$COMMIT_SHA'"
   exit 0
 fi
@@ -176,5 +186,13 @@ sha256sum \
   "$OUTPUT_DIR/wasb_detections_overlay.mp4" \
   "$OUTPUT_DIR/inference_report.json" \
   "$LOG_PATH"
+BUNDLE_PATH="/workspace/stage2_a2_results_${COMMIT_SHA:0:12}.tar.gz"
+tar -czf "$BUNDLE_PATH" -C "$REPO_DIR" \
+  data/clips/nivel_a2_01/wasb_detections.csv \
+  outputs/nivel_a2_01/stage_2/wasb_detections_overlay.mp4 \
+  outputs/nivel_a2_01/stage_2/inference_report.json \
+  outputs/nivel_a2_01/stage_2/logs
+echo "result_bundle=$BUNDLE_PATH"
+sha256sum "$BUNDLE_PATH"
 echo "completed_at_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 echo "Stage 2 complete. Stage 3 was NOT executed."
