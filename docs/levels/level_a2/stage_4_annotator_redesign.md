@@ -1,6 +1,6 @@
 # Rediseño del anotador de Stage 4 — Nivel A2
 
-**Estado:** `ANNOTATOR_IMPLEMENTATION_IN_PROGRESS`
+**Estado:** `IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`
 
 **Fecha:** 2026-07-15
 
@@ -136,5 +136,6 @@ pasaría a una hoja simple producida en un editor de video con tiempo inicial, t
 final, evento, jugador, lado y notas. El sistema convertiría esos tiempos a frames con
 el índice interno.
 
-Stage 4 sigue abierta hasta recibir y validar la anotación humana real. Stage 5 no ha
-comenzado.
+La anotación humana real fue completada y procesada posteriormente; ver
+`stage_4_execution_report.md`. Stage 4 sigue abierta hasta el gate visual de los outputs.
+Stage 5 no ha comenzado.

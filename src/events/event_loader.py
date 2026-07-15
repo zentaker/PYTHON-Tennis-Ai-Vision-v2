@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 from typing import Any, Mapping
@@ -15,11 +16,13 @@ from src.events.event_schema import (
     normalize_narrative_event,
     validate_fps,
 )
+from src.video.frame_timestamps import FrameTimestampSidecar
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_ANNOTATION = PROJECT_ROOT / "data" / "reference_clip" / "manual_annotation.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "outputs" / "stage_4" / "events.json"
+TIMESTAMP_TOLERANCE_SECONDS = 0.000001
 
 
 class MissingNarrativeEventsError(EventValidationError):
@@ -30,8 +33,7 @@ def load_annotation(path: Path) -> dict[str, Any]:
     """Load a manual annotation JSON object with actionable errors."""
     if not path.exists():
         raise FileNotFoundError(
-            f"Manual annotation not found: {path}. "
-            "Create it with tools/manual_event_annotator/index.html."
+            f"Manual annotation not found: {path}. Create it with tools/event_annotator_app."
         )
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
@@ -61,6 +63,8 @@ def normalize_annotation(
     payload: Mapping[str, Any],
     *,
     fps: float | None = None,
+    frame_timestamps: FrameTimestampSidecar | None = None,
+    clip_id: str | None = None,
 ) -> tuple[float, list[NormalizedEvent]]:
     """Normalize all supplied events while preserving their declared order."""
     raw_events = payload.get("narrative_events")
@@ -73,6 +77,17 @@ def normalize_annotation(
 
     resolved_fps = _annotation_fps(payload, fps)
     total_frames = _frames_total(payload)
+    if clip_id is not None and payload.get("clip_id") != clip_id:
+        raise EventValidationError(f"annotation clip_id must be {clip_id}")
+    if frame_timestamps is not None:
+        if clip_id is not None and frame_timestamps.clip_id != clip_id:
+            raise EventValidationError("frame timestamp clip_id does not match --clip-id")
+        if payload.get("clip_id") != frame_timestamps.clip_id:
+            raise EventValidationError("annotation clip_id does not match frame timestamps")
+        if total_frames != frame_timestamps.frame_count:
+            raise EventValidationError("annotation frames_total does not match frame timestamps")
+        if payload.get("timing_mode") != frame_timestamps.timing_mode:
+            raise EventValidationError("annotation timing_mode does not match frame timestamps")
     events: list[NormalizedEvent] = []
     seen_ids: set[str] = set()
     previous_start = -1
@@ -94,6 +109,27 @@ def normalize_annotation(
                 f"event {event.id} ends at frame {event.frame_end}, "
                 f"outside frames_total={total_frames}"
             )
+        if frame_timestamps is not None:
+            if not isinstance(raw_event, Mapping) or not {
+                "time_start_seconds",
+                "time_end_seconds",
+            }.issubset(raw_event):
+                raise EventValidationError(
+                    f"narrative_events[{index}] must include explicit VFR timestamps"
+                )
+            expected_start = frame_timestamps.frames[event.frame_start].timestamp_seconds
+            expected_end = frame_timestamps.frames[event.frame_end].timestamp_seconds
+            start_error = abs(event.time_start_seconds - expected_start)
+            end_error = abs(event.time_end_seconds - expected_end)
+            if (
+                not math.isfinite(start_error)
+                or not math.isfinite(end_error)
+                or start_error >= TIMESTAMP_TOLERANCE_SECONDS
+                or end_error >= TIMESTAMP_TOLERANCE_SECONDS
+            ):
+                raise EventValidationError(
+                    f"event {event.id} timestamps do not match frame_timestamps.json"
+                )
 
         seen_ids.add(event.id)
         previous_start = event.frame_start
@@ -106,10 +142,22 @@ def load_normalized_events(
     annotation_path: Path,
     *,
     fps: float | None = None,
+    frame_timestamps_path: Path | None = None,
+    clip_id: str | None = None,
 ) -> tuple[float, list[NormalizedEvent]]:
     """Load a file and return its validated FPS and normalized events."""
     payload = load_annotation(annotation_path)
-    return normalize_annotation(payload, fps=fps)
+    frame_timestamps = (
+        FrameTimestampSidecar.read(frame_timestamps_path)
+        if frame_timestamps_path is not None
+        else None
+    )
+    return normalize_annotation(
+        payload,
+        fps=fps,
+        frame_timestamps=frame_timestamps,
+        clip_id=clip_id,
+    )
 
 
 def export_events(
@@ -118,6 +166,10 @@ def export_events(
     *,
     fps: float,
     annotation_path: Path,
+    clip_id: str | None = None,
+    timing_mode: str | None = None,
+    frames_total: int | None = None,
+    frame_timestamps_path: Path | None = None,
 ) -> dict[str, object]:
     """Write the normalized Stage 4 payload after successful validation."""
     if not events:
@@ -129,6 +181,14 @@ def export_events(
         "event_count": len(events),
         "events": [event.to_dict() for event in events],
     }
+    if clip_id is not None:
+        payload["clip_id"] = clip_id
+    if timing_mode is not None:
+        payload["timing_mode"] = timing_mode
+    if frames_total is not None:
+        payload["frames_total"] = frames_total
+    if frame_timestamps_path is not None:
+        payload["frame_timestamps"] = str(frame_timestamps_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
@@ -142,14 +202,33 @@ def run_stage_4(
     output_path: Path,
     *,
     fps: float | None = None,
+    frame_timestamps_path: Path | None = None,
+    clip_id: str | None = None,
 ) -> dict[str, object]:
     """Normalize a real annotation and export Stage 4 events."""
-    resolved_fps, events = load_normalized_events(annotation_path, fps=fps)
+    annotation = load_annotation(annotation_path)
+    frame_timestamps = (
+        FrameTimestampSidecar.read(frame_timestamps_path)
+        if frame_timestamps_path is not None
+        else None
+    )
+    resolved_fps, events = normalize_annotation(
+        annotation,
+        fps=fps,
+        frame_timestamps=frame_timestamps,
+        clip_id=clip_id,
+    )
     return export_events(
         output_path,
         events,
         fps=resolved_fps,
         annotation_path=annotation_path,
+        clip_id=clip_id or (frame_timestamps.clip_id if frame_timestamps else None),
+        timing_mode=frame_timestamps.timing_mode if frame_timestamps else None,
+        frames_total=frame_timestamps.frame_count
+        if frame_timestamps
+        else _frames_total(annotation),
+        frame_timestamps_path=frame_timestamps_path,
     )
 
 
@@ -157,6 +236,12 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--annotation", type=Path, default=DEFAULT_ANNOTATION)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument(
+        "--frame-timestamps",
+        type=Path,
+        help="Validated per-frame VFR timestamp sidecar",
+    )
+    parser.add_argument("--clip-id", help="Require this exact annotation and sidecar clip ID")
     parser.add_argument(
         "--fps",
         type=float,
@@ -168,7 +253,13 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     try:
-        payload = run_stage_4(args.annotation, args.output, fps=args.fps)
+        payload = run_stage_4(
+            args.annotation,
+            args.output,
+            fps=args.fps,
+            frame_timestamps_path=args.frame_timestamps,
+            clip_id=args.clip_id,
+        )
     except (FileNotFoundError, EventValidationError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2

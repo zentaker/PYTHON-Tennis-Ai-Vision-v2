@@ -1,6 +1,6 @@
 # STAGE 4 - Deteccion y normalizacion de eventos
 
-**Estado:** En progreso - codigo implementado, inputs reales pendientes
+**Estado:** `IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`
 **Nivel:** A
 **Fecha de preparacion:** 2026-05-19
 **Fecha de implementacion base:** 2026-07-13
@@ -8,7 +8,7 @@
 ## Estado operativo Nivel A2
 
 Desde 2026-07-15, Stage 1–3 de `nivel_a2_01` están cerradas y Stage 4 se encuentra en
-`ANNOTATOR_IMPLEMENTATION_IN_PROGRESS`. El nuevo anotador local pasó su self-test real
+`IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`. El nuevo anotador local pasó su self-test real
 `30/30`: 527 frames exactos, IDs `0–526`, timestamps estrictos y resolución
 `2746×1536`. La guía de uso está en
 `docs/levels/level_a2/stage_4_annotation_guide.md` y el diseño verificado en
@@ -17,9 +17,10 @@ Desde 2026-07-15, Stage 1–3 de `nivel_a2_01` están cerradas y Stage 4 se encu
 La aplicación recibe el video por CLI y oculta todos los inputs técnicos. La página
 estática histórica quedó retirada porque no garantizaba navegación frame-accurate.
 
-No existe aún `data/clips/nivel_a2_01/manual_annotation.json`; por ello no se ejecutó el
-loader ni se generaron outputs Stage 4. La compatibilidad y el cierre históricos de
-Madrid permanecen separados del gate A2.
+La anotación humana final de A2 contiene 9 eventos. El loader VFR la normalizó sin
+pérdidas y se generaron overlay canónico, timeline y contact sheet. El reporte completo
+está en `docs/levels/level_a2/stage_4_execution_report.md`. El cierre histórico de Madrid
+permanece compatible y separado del gate A2.
 
 ## Proposito
 
@@ -36,8 +37,10 @@ Implementado:
 
 - schema y vocabularios en `src/events/event_schema.py`;
 - loader y export a JSON en `src/events/event_loader.py`;
-- overlay de revision en `src/events/render_events_overlay.py`;
-- timeline en `src/events/render_events_timeline.py`;
+- overlay CFR histórico y canónico VFR en `src/events/render_events_overlay.py`;
+- timeline VFR en `src/events/render_events_timeline.py`;
+- contact sheet en `src/events/render_events_contact_sheet.py`;
+- runner reproducible A2 en `src/events/run_stage4_a2.py`;
 - aplicación local frame-accurate `tools/event_annotator_app/`;
 - autosave, restore, undo y export validado;
 - self-test real de 30 criterios;
@@ -45,10 +48,8 @@ Implementado:
 
 Pendiente:
 
-- completar `manual_annotation.json` con conocimiento humano del rally A2;
-- ejecutar el pipeline sobre esos datos;
-- revisar timeline y overlay;
-- obtener el gate humano.
+- revisar overlay, timeline y contact sheet;
+- obtener el gate visual humano.
 
 ## Inputs
 
@@ -81,9 +82,10 @@ time_start_seconds, time_end_seconds, time_mid_seconds,
 player, side, shot_type, court_zone, source, notes
 ```
 
-Los tiempos se calculan con el FPS indicado por CLI, por el JSON o, si ambos faltan, con
-el default de 60 FPS. `frame_range` es inclusivo y debe contener enteros no negativos en
-orden. IDs duplicados, eventos fuera de `frames_total` y listas desordenadas se rechazan.
+Para A2, los tiempos explícitos se verifican contra el índice VFR y nunca se calculan con
+FPS nominal. El modo CFR histórico conserva su conversión por FPS para Madrid.
+`frame_range` es inclusivo y debe contener enteros no negativos en orden. IDs duplicados,
+eventos fuera de `frames_total` y listas desordenadas se rechazan.
 
 ## Flujo operativo A2
 
@@ -97,30 +99,24 @@ uv run python -m tools.event_annotator_app \
 
 2. Navegar por imágenes cacheadas, marcar eventos y finalizar la anotación desde la
    interfaz local. No se seleccionan archivos técnicos.
-3. Normalizar después de obtener la anotación humana real:
+3. Normalizar y generar todo el material A2:
 
 ```bash
-uv run python -m src.events.event_loader
-```
-
-4. Con datos reales validados, generar timeline y overlay:
-
-```bash
-uv run python -m src.events.render_events_timeline
-uv run python -m src.events.render_events_overlay
+uv run python -m src.events.run_stage4_a2
 ```
 
 ## Outputs reales esperados
 
 ```text
-outputs/stage_4/events.json
-outputs/stage_4/events_timeline.png
-outputs/stage_4/events_overlay.mp4
-docs/stages/stage_4/events_report.md
+outputs/nivel_a2_01/stage_4/events.json
+outputs/nivel_a2_01/stage_4/events_timeline.png
+outputs/nivel_a2_01/stage_4/events_overlay.mp4
+outputs/nivel_a2_01/stage_4/events_contact_sheet.png
+outputs/nivel_a2_01/stage_4/events_report.json
 ```
 
-Los tres archivos bajo `outputs/` son locales e ignorados por Git. No se generaron en la
-implementacion base porque faltan los inputs reales.
+Los archivos bajo `outputs/` son locales e ignorados por Git. Fueron generados y
+validados, pero todavía esperan revisión visual humana.
 
 ## Definition of Done
 

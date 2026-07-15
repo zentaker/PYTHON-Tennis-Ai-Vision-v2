@@ -1,13 +1,20 @@
-"""Render normalized Stage 4 events over the reference video."""
+"""Render historical CFR or canonical VFR Stage 4 event overlays."""
 
 from __future__ import annotations
 
 import argparse
 import json
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
 import cv2
+import numpy as np
+
+from src.project.clip_manifest import ClipManifest
+from src.video.canonical_frames import CanonicalFrame, iter_canonical_frames
+from src.video.frame_timestamps import FrameTimestampSidecar, validate_sidecar_against_manifest
+from src.video.vfr_overlay import render_canonical_vfr_overlay
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -30,15 +37,99 @@ def load_event_rows(path: Path) -> list[dict[str, Any]]:
     return events
 
 
-def render_events_overlay(video_path: Path, events_path: Path, output_path: Path) -> None:
-    """Render event ranges without changing their timing or classification."""
-    if not video_path.exists():
-        raise FileNotFoundError(f"Reference video not found: {video_path}")
-    events = load_event_rows(events_path)
+def _event_phase(event: dict[str, Any], frame_id: int) -> str:
+    start = int(event["frame_start"])
+    end = int(event["frame_end"])
+    if start == end:
+        return "POINT EVENT"
+    if frame_id == start:
+        return "START"
+    if frame_id == end:
+        return "END"
+    return "ACTIVE"
+
+
+def draw_events_frame(
+    frame_bgr: np.ndarray,
+    *,
+    frame_id: int,
+    timestamp_seconds: float,
+    events: Sequence[dict[str, Any]],
+) -> np.ndarray:
+    """Draw frame identity, rally state, totals, and complete active-event evidence."""
+    frame = frame_bgr.copy()
+    height, width = frame.shape[:2]
+    active = [
+        event
+        for event in events
+        if int(event["frame_start"]) <= frame_id <= int(event["frame_end"])
+    ]
+    first_frame = min(int(event["frame_start"]) for event in events)
+    last_frame = max(int(event["frame_end"]) for event in events)
+    if frame_id < first_frame:
+        rally_state = "BEFORE FIRST EVENT"
+    elif frame_id > last_frame:
+        rally_state = "AFTER LAST EVENT"
+    else:
+        rally_state = "RALLY ACTIVE"
+
+    cv2.rectangle(frame, (0, 0), (width, 106), (0, 0, 0), -1)
+    cv2.putText(
+        frame,
+        f"FRAME {frame_id:03d} / timestamp VFR {timestamp_seconds:.6f} s",
+        (24, 40),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.82,
+        (255, 255, 255),
+        2,
+        cv2.LINE_AA,
+    )
+    cv2.putText(
+        frame,
+        f"RALLY: {rally_state}  |  EVENTS REGISTERED: {len(events)}",
+        (24, 82),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.72,
+        (220, 220, 220),
+        2,
+        cv2.LINE_AA,
+    )
+
+    for row_index, event in enumerate(active):
+        event_type = str(event["type"])
+        color = EVENT_COLORS.get(event_type, EVENT_COLORS["unknown"])
+        phase = _event_phase(event, frame_id)
+        label = (
+            f"{phase}  {event['id']} | {event_type} | player={event['player']} "
+            f"| side={event['side']} | frames {event['frame_start']}-{event['frame_end']} "
+            f"| time {float(event['time_start_seconds']):.6f}-"
+            f"{float(event['time_end_seconds']):.6f} s"
+        )
+        top = 126 + row_index * 62
+        cv2.rectangle(frame, (18, top), (width - 18, top + 48), (0, 0, 0), -1)
+        cv2.rectangle(frame, (18, top), (width - 18, top + 48), color, 3)
+        cv2.putText(
+            frame,
+            label,
+            (32, top + 33),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.65,
+            color,
+            2,
+            cv2.LINE_AA,
+        )
+    return frame
+
+
+def _render_legacy_cfr_overlay(
+    video_path: Path,
+    events: Sequence[dict[str, Any]],
+    output_path: Path,
+) -> dict[str, float | int | str]:
+    """Keep the historical Madrid OpenCV CFR path for backward compatibility."""
     capture = cv2.VideoCapture(str(video_path))
     if not capture.isOpened():
         raise RuntimeError(f"Could not open video: {video_path}")
-
     width = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = capture.get(cv2.CAP_PROP_FPS) or 60.0
@@ -58,45 +149,15 @@ def render_events_overlay(video_path: Path, events_path: Path, output_path: Path
         ok, frame = capture.read()
         if not ok:
             break
-
-        active = [
-            event
-            for event in events
-            if int(event["frame_start"]) <= frame_id <= int(event["frame_end"])
-        ]
-        cv2.putText(
-            frame,
-            f"frame {frame_id} | {frame_id / fps:.3f}s",
-            (24, 38),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.75,
-            (255, 255, 255),
-            2,
-            cv2.LINE_AA,
-        )
-        for row_index, event in enumerate(active):
-            event_type = str(event["type"])
-            color = EVENT_COLORS.get(event_type, EVENT_COLORS["unknown"])
-            label = (
-                f"{event['id']} | {event_type} | {event['player']} | "
-                f"{event['shot_type']} | {event['court_zone']}"
-            )
-            y = 78 + row_index * 38
-            cv2.rectangle(frame, (18, y - 27), (width - 18, y + 8), (0, 0, 0), -1)
-            cv2.putText(
+        writer.write(
+            draw_events_frame(
                 frame,
-                label,
-                (28, y),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.68,
-                color,
-                2,
-                cv2.LINE_AA,
+                frame_id=frame_id,
+                timestamp_seconds=frame_id / fps,
+                events=events,
             )
-
-        writer.write(frame)
+        )
         frame_id += 1
-
     capture.release()
     writer.release()
 
@@ -105,6 +166,54 @@ def render_events_overlay(video_path: Path, events_path: Path, output_path: Path
     check.release()
     if not readable:
         raise RuntimeError(f"Overlay was written but cannot be read: {output_path}")
+    return {
+        "mode": "legacy_cfr",
+        "frames": frame_id,
+        "width": width,
+        "height": height,
+        "duration_seconds": frame_id / fps,
+    }
+
+
+def render_events_overlay(
+    video_path: Path,
+    events_path: Path,
+    output_path: Path,
+    *,
+    manifest: ClipManifest | None = None,
+    timestamps: Sequence[float] | None = None,
+) -> dict[str, float | int | str]:
+    """Render a legacy CFR overlay or an orientation-safe timestamp-driven VFR one."""
+    if not video_path.exists():
+        raise FileNotFoundError(f"Reference video not found: {video_path}")
+    events = load_event_rows(events_path)
+    if manifest is None:
+        return _render_legacy_cfr_overlay(video_path, events, output_path)
+    if timestamps is None:
+        raise ValueError("Canonical VFR rendering requires explicit timestamps")
+    if len(timestamps) != manifest.frames_total:
+        raise ValueError("Timestamp count does not match manifest frames_total")
+    for event in events:
+        if not 0 <= int(event["frame_start"]) <= int(event["frame_end"]) < manifest.frames_total:
+            raise ValueError(f"Event {event['id']} is outside the manifest frame range")
+
+    def render(record: CanonicalFrame) -> np.ndarray:
+        return draw_events_frame(
+            record.image_bgr,
+            frame_id=record.frame_id,
+            timestamp_seconds=record.timestamp_seconds,
+            events=events,
+        )
+
+    metadata = render_canonical_vfr_overlay(
+        iter_canonical_frames(video_path, manifest, timestamps=timestamps),
+        output_path,
+        render,
+        expected_frames=manifest.frames_total,
+        expected_width=manifest.canonical_width,
+        expected_height=manifest.canonical_height,
+    )
+    return {"mode": "canonical_vfr", **metadata}
 
 
 def parse_args() -> argparse.Namespace:
@@ -124,13 +233,31 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=PROJECT_ROOT / "outputs" / "stage_4" / "events_overlay.mp4",
     )
+    parser.add_argument("--manifest", type=Path)
+    parser.add_argument("--frame-timestamps", type=Path)
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    render_events_overlay(args.video, args.events, args.output)
-    print(f"Event overlay written to {args.output}")
+    if (args.manifest is None) != (args.frame_timestamps is None):
+        raise SystemExit("ERROR: --manifest and --frame-timestamps must be supplied together")
+    manifest = ClipManifest.read(args.manifest) if args.manifest else None
+    timestamps = None
+    if args.frame_timestamps:
+        sidecar = FrameTimestampSidecar.read(args.frame_timestamps)
+        if manifest is None:
+            raise SystemExit("ERROR: manifest is required for VFR rendering")
+        validate_sidecar_against_manifest(sidecar, manifest)
+        timestamps = [frame.timestamp_seconds for frame in sidecar.frames]
+    metadata = render_events_overlay(
+        args.video,
+        args.events,
+        args.output,
+        manifest=manifest,
+        timestamps=timestamps,
+    )
+    print(f"Event overlay written to {args.output}: {metadata}")
     return 0
 
 
