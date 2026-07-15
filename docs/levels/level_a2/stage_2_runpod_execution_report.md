@@ -1,7 +1,7 @@
 # Reporte de ejecución RunPod — Stage 2 A2
 
 **Fecha:** 2026-07-15  
-**Estado:** `BLOCKED_CONNECTION` / `BLOCKED_TRANSFER`
+**Estado:** `BLOCKED_CONNECTION`
 
 ## Alcance de esta pasada
 
@@ -21,9 +21,15 @@ SSH proxy básico. No se ejecutó inferencia, Stage 3 ni Stage 5.
 
 ## Conexión
 
-La conexión proxy llegó al endpoint SSH, pero no pudo autenticarse porque la ruta de
-llave configurada no existe en este Mac. Solo existe `known_hosts` bajo `~/.ssh`; no se
-leyó contenido de ninguna llave ni se probaron identidades alternativas.
+Se recuperó la identidad histórica cuya pública coincide con el fingerprint esperado
+`SHA256:LSId5ppgJuAlLK24MjEqHvEIqT05118sFnO7DCFW9gg`. El servidor reconoció esa pública,
+pero la privada está cifrada con una passphrase que no existe en el agente ni en
+Keychain. El original cifrado fue preservado sin mostrar su contenido.
+
+Se generó una identidad Ed25519 específica en `~/.ssh/runpod_tennis_ai`, con permisos
+`600`; su pública tiene fingerprint
+`SHA256:VlyYRggSyC1rFBopP2/0MykiwLdx+3ujt6Tk8w5i80E`. La conexión queda pendiente de
+registrar esa pública en la cuenta/Pod mediante la interfaz web de RunPod.
 
 Por ello permanecen sin verificar directamente:
 
@@ -35,9 +41,10 @@ Por ello permanecen sin verificar directamente:
 
 ## Transferencia
 
-`runpodctl` no estaba instalado. El intento autorizado de instalación con Homebrew se
-detuvo porque macOS exige aceptar primero la licencia de Xcode mediante una acción
-administrativa interactiva. No se usó un binario alternativo, API key, SCP ni rsync.
+`runpodctl 2.7.1-06a0a26` quedó instalado en `~/.local/bin` desde el release oficial de
+`runpod/runpodctl`. El binario Intel macOS se verificó contra el checksum oficial; SHA-256
+`150566e84157d78fc25e39d73520aed0a879d24023a67a9d3fc41776dd34c1b3`. No se configuró
+API key, ni se usaron SCP o rsync.
 
 ## Cambios preparados localmente
 
@@ -48,16 +55,15 @@ administrativa interactiva. No se usó un binario alternativo, API key, SCP ni r
 - Tests del proxy sin puerto, TCP con puerto, configuración incompleta y garantía de que
   proxy no invoca SCP.
 
-Estos cambios no se han commiteado ni publicado. El Pod continúa fijado conceptualmente
-al SHA publicado anterior hasta que exista autorización para commit/push.
+El soporte proxy/runpodctl fue publicado en GitHub. El ajuste posterior para aceptar el
+alias privado `tennis-runpod-a2` se publicó en
+`0ac9a8afcf23afe651bf817454365f34f08473c1`.
 
 ## Gate
 
 No se cumplen las condiciones de `READY_FOR_INFERENCE`. La próxima pasada debe:
 
-1. crear o restaurar la llave privada correspondiente y registrar su clave pública en
-   RunPod;
-2. aceptar la licencia de Xcode e instalar/verificar `runpodctl` en el Mac;
-3. repetir SSH, verificar `runpodctl` remoto y continuar con checkout/activos/bootstrap.
+1. registrar en RunPod la pública de `~/.ssh/runpod_tennis_ai.pub`;
+2. repetir SSH, verificar `runpodctl` remoto y continuar con checkout/activos/bootstrap.
 
 No se produjo CSV, overlay, reporte de inferencia ni bundle de resultados.
