@@ -9,6 +9,7 @@ data/clips/*/*
 !data/clips/*/court_corners_pixel.json
 !data/clips/*/homography.json
 !data/clips/*/manual_annotation.json
+!data/clips/*/frame_timestamps.json
 !data/reference_clip/
 data/reference_clip/*
 !data/reference_clip/README.md
@@ -24,6 +25,7 @@ outputs/*
 !outputs/README.md
 
 third_party/
+transfer/
 
 # --- Entornos virtuales ---
 .venv/

@@ -17,6 +17,8 @@ La documentacion de este proyecto es parte del producto. Cada etapa debe dejar e
 - Validacion: `validation/VALIDATION_FRAMEWORK.md`
 - Protocolo del agente: `agent_protocol/AGENT_PROTOCOL.md`
 - Operaciones archivadas de Replit: `ops/REPLIT_MIGRATION.md`
+- Entorno nativo macOS: `ops/MACOS_DEVELOPMENT_ENVIRONMENT.md`
+- Handoff Stage 2 A2: `levels/level_a2/STAGE_2_EXTERNAL_HANDOFF.md`
 
 ## Reglas
 

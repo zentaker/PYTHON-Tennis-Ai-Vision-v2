@@ -21,6 +21,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from src.project.clip_manifest import ClipManifest  # noqa: E402
 from src.video.canonical_frames import (  # noqa: E402
     apply_canonical_transform,
+    iter_canonical_frames,
     probe_frame_timestamps,
     timestamp_intervals,
 )
@@ -118,6 +119,48 @@ def run_preflight(
             f"OpenCV reports {reported_frames} frames; manifest expects {manifest.frames_total}"
         )
 
+    sample_frame_ids = {0, manifest.frames_total // 2, manifest.frames_total - 1}
+    sample_shapes: dict[int, list[int]] = {}
+    decoded_count = 0
+    frame_ids_sequential = True
+    timestamps_match_decode = True
+    canonical_dimensions_all_frames = True
+    double_rotation_prevented = False
+    for record in iter_canonical_frames(
+        video_path,
+        manifest,
+        timestamps=timestamps,
+        capture_factory=cv2.VideoCapture,
+    ):
+        if record.frame_id != decoded_count:
+            frame_ids_sequential = False
+        if abs(record.timestamp_seconds - timestamps[record.frame_id]) > 1e-9:
+            timestamps_match_decode = False
+        height, width = record.image_bgr.shape[:2]
+        if (width, height) != (manifest.canonical_width, manifest.canonical_height):
+            canonical_dimensions_all_frames = False
+        if record.frame_id in sample_frame_ids:
+            sample_shapes[record.frame_id] = [int(width), int(height)]
+        if record.frame_id == 0:
+            reapplied = apply_canonical_transform(record.image_bgr, manifest)
+            double_rotation_prevented = reapplied is record.image_bgr and reapplied.shape == record.image_bgr.shape
+        decoded_count += 1
+
+    if decoded_count != manifest.frames_total:
+        raise ValueError(
+            f"Expected {manifest.frames_total} fully decoded frames, found {decoded_count}"
+        )
+    if not frame_ids_sequential:
+        raise ValueError("Canonical frame IDs are not sequential")
+    if not timestamps_match_decode:
+        raise ValueError("Canonical frame timestamps differ from probed timestamps")
+    if not canonical_dimensions_all_frames:
+        raise ValueError("At least one decoded frame is outside canonical dimensions")
+    if set(sample_shapes) != sample_frame_ids:
+        raise ValueError("Initial, middle, or final sample frame could not be decoded")
+    if not double_rotation_prevented:
+        raise ValueError("A canonical frame would be transformed more than once")
+
     if resolved_csv.suffix.lower() != ".csv":
         raise ValueError("Stage 2 CSV output must use .csv")
     if resolved_overlay.suffix.lower() != ".mp4":
@@ -153,9 +196,25 @@ def run_preflight(
         "homography": str(resolved_homography),
         "frames_manifest": manifest.frames_total,
         "frames_opencv": reported_frames,
+        "frames_fully_decoded": decoded_count,
+        "frame_id_range": [0, decoded_count - 1],
+        "frame_ids_sequential": frame_ids_sequential,
+        "sample_frames": {
+            "initial": {"frame_id": 0, "dimensions": sample_shapes[0]},
+            "middle": {
+                "frame_id": manifest.frames_total // 2,
+                "dimensions": sample_shapes[manifest.frames_total // 2],
+            },
+            "final": {
+                "frame_id": manifest.frames_total - 1,
+                "dimensions": sample_shapes[manifest.frames_total - 1],
+            },
+        },
         "timestamps_count": len(timestamps),
         "timestamp_backend": "ffprobe" if shutil.which("ffprobe") else "opencv_embedded_ffmpeg",
         "timestamps_monotonic": True,
+        "timestamp_range_seconds": [timestamps[0], timestamps[-1]],
+        "timestamps_match_decode": timestamps_match_decode,
         "variable_timing_confirmed": variable_timing_confirmed,
         "timestamp_intervals_seconds": interval_values,
         "decoded_dimensions": [manifest.decoded_width, manifest.decoded_height],
@@ -164,6 +223,8 @@ def run_preflight(
             int(canonical_first_frame.shape[0]),
         ],
         "canonical_transform": manifest.canonical_transform,
+        "canonical_dimensions_all_frames": canonical_dimensions_all_frames,
+        "double_rotation_prevented": double_rotation_prevented,
         "output_csv": str(resolved_csv),
         "output_overlay": str(resolved_overlay),
         "checkpoint": {

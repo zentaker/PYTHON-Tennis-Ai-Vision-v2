@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import subprocess
 import sys
 import tempfile
@@ -219,6 +220,7 @@ def infer_canonical_frames(
     processed = 0
     detected_count = 0
     confidence_sum = 0.0
+    confidences: list[float] = []
     started_at = time.perf_counter()
 
     with output_csv.open("w", newline="", encoding="utf-8") as handle:
@@ -261,18 +263,106 @@ def infer_canonical_frames(
             processed += 1
             detected_count += int(detected)
             confidence_sum += confidence
+            confidences.append(float(confidence))
 
     if processed != expected_frames:
         raise ValueError(f"Expected {expected_frames} CSV rows, wrote {processed}")
     elapsed = time.perf_counter() - started_at
     return {
+        "expected_frames": float(expected_frames),
         "processed_frames": float(processed),
         "detected_frames": float(detected_count),
         "detection_rate": detected_count / processed if processed else 0.0,
         "mean_confidence": confidence_sum / processed if processed else 0.0,
+        "median_confidence": float(np.median(confidences)) if confidences else 0.0,
         "elapsed_seconds": elapsed,
         "inference_fps": processed / elapsed if elapsed else 0.0,
     }
+
+
+def build_inference_report(
+    metrics: dict[str, float],
+    detections: Sequence[Detection],
+    manifest: ClipManifest,
+    *,
+    device: str,
+    pytorch_version: str,
+    cuda_version: str | None,
+    output_csv: Path,
+    output_overlay: Path,
+    total_elapsed_seconds: float,
+) -> dict[str, object]:
+    """Build the external execution report without requiring heavy imports."""
+    frame_ids = [detection.frame_id for detection in detections]
+    timestamps = [detection.timestamp_seconds for detection in detections]
+    sequential_ids = frame_ids == list(range(manifest.frames_total))
+    timestamps_monotonic = all(
+        current > previous for previous, current in zip(timestamps, timestamps[1:])
+    )
+    canonical_dimensions_valid = all(
+        detection.canonical_width == manifest.canonical_width
+        and detection.canonical_height == manifest.canonical_height
+        for detection in detections
+    )
+    detected_bounds_valid = all(
+        not detection.detected
+        or (
+            0 <= detection.x_pixel < manifest.canonical_width
+            and 0 <= detection.y_pixel < manifest.canonical_height
+        )
+        for detection in detections
+    )
+    processed_frames = int(metrics["processed_frames"])
+    if processed_frames != manifest.frames_total or len(detections) != manifest.frames_total:
+        raise ValueError("Inference report frame count does not match manifest")
+    if not sequential_ids or not timestamps_monotonic:
+        raise ValueError("Inference report frame IDs or timestamps are invalid")
+    if not canonical_dimensions_valid or not detected_bounds_valid:
+        raise ValueError("Inference report contains non-canonical detections")
+
+    return {
+        "status": "COMPLETED_PENDING_HUMAN_GATE",
+        "clip_id": manifest.clip_id,
+        "frames_expected": manifest.frames_total,
+        "frames_processed": processed_frames,
+        "detections": int(metrics["detected_frames"]),
+        "detection_rate": metrics["detection_rate"],
+        "confidence_mean": metrics["mean_confidence"],
+        "confidence_median": metrics["median_confidence"],
+        "inference_elapsed_seconds": metrics["elapsed_seconds"],
+        "total_elapsed_seconds": total_elapsed_seconds,
+        "inference_fps": metrics["inference_fps"],
+        "device": device,
+        "pytorch_version": pytorch_version,
+        "cuda_version": cuda_version,
+        "canonical_dimensions": {
+            "width": manifest.canonical_width,
+            "height": manifest.canonical_height,
+        },
+        "timestamp_verification": {
+            "count": len(timestamps),
+            "monotonic": timestamps_monotonic,
+            "range_seconds": [timestamps[0], timestamps[-1]],
+            "frame_ids_sequential": sequential_ids,
+        },
+        "bounds_verification": {
+            "canonical_dimensions_valid": canonical_dimensions_valid,
+            "detected_points_in_bounds": detected_bounds_valid,
+        },
+        "outputs": {
+            "csv": str(output_csv),
+            "overlay": str(output_overlay),
+        },
+    }
+
+
+def write_inference_report(output_path: Path, report: dict[str, object]) -> None:
+    """Persist the completed external inference report as JSON."""
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(report, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
 
 
 def read_detection_csv(path: Path) -> list[Detection]:
@@ -433,6 +523,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--wasb-root", type=Path, required=True)
     parser.add_argument("--output-csv", type=Path, required=True)
     parser.add_argument("--output-overlay", type=Path, required=True)
+    parser.add_argument("--output-report", type=Path)
     parser.add_argument("--confidence-threshold", type=float, default=0.5)
     parser.add_argument("--device", choices=("auto", "cuda", "cpu"), default="auto")
     return parser.parse_args(argv)
@@ -443,6 +534,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     manifest = ClipManifest.read(args.manifest)
     if args.video.suffix.lower() not in {".mp4", ".mov"}:
         raise ValueError(f"Unsupported video extension: {args.video.suffix}")
+    output_report = args.output_report or args.output_overlay.with_name("inference_report.json")
+    pipeline_started_at = time.perf_counter()
     predictor = load_wasb_predictor(args.checkpoint, args.wasb_root, args.device)
     metrics = infer_canonical_frames(
         iter_canonical_frames(args.video, manifest),
@@ -454,12 +547,30 @@ def main(argv: Sequence[str] | None = None) -> int:
         canonical_height=manifest.canonical_height,
     )
     render_vfr_overlay(args.video, manifest, args.output_csv, args.output_overlay)
+    detections = read_detection_csv(args.output_csv)
+    report = build_inference_report(
+        metrics,
+        detections,
+        manifest,
+        device=str(predictor.device),
+        pytorch_version=str(predictor.torch.__version__),
+        cuda_version=(
+            str(predictor.torch.version.cuda)
+            if predictor.torch.version.cuda is not None
+            else None
+        ),
+        output_csv=args.output_csv,
+        output_overlay=args.output_overlay,
+        total_elapsed_seconds=time.perf_counter() - pipeline_started_at,
+    )
+    write_inference_report(output_report, report)
     print(f"video={args.video}")
     print(f"manifest={args.manifest}")
     print(f"checkpoint={args.checkpoint}")
     print(f"wasb_root={args.wasb_root}")
     print(f"output_csv={args.output_csv}")
     print(f"output_overlay={args.output_overlay}")
+    print(f"output_report={output_report}")
     for key, value in metrics.items():
         print(f"{key}={value}")
     return 0

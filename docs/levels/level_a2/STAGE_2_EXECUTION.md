@@ -9,7 +9,7 @@ CUDA compatible.
 git clone <URL_DEL_REPOSITORIO>
 cd PYTHON-Tennis-Ai-Vision-v2
 git pull --ff-only
-uv sync --extra tracker --extra dev
+uv sync --frozen --extra tracker --extra dev
 nvidia-smi
 ffprobe -version
 ffmpeg -version
@@ -41,6 +41,7 @@ WASB source y CUDA. Este comando no carga el modelo ni ejecuta inferencia.
 ## Ejecutar WASB
 
 ```bash
+mkdir -p outputs/nivel_a2_01/stage_2
 uv run python -m src.tracker.wasb_runner \
   --video data/clips/nivel_a2_01/source.mp4 \
   --manifest data/clips/nivel_a2_01/clip_manifest.json \
@@ -48,6 +49,7 @@ uv run python -m src.tracker.wasb_runner \
   --wasb-root third_party/WASB-SBDT \
   --output-csv data/clips/nivel_a2_01/wasb_detections.csv \
   --output-overlay outputs/nivel_a2_01/stage_2/wasb_detections_overlay.mp4 \
+  --output-report outputs/nivel_a2_01/stage_2/inference_report.json \
   --confidence-threshold 0.5 \
   --device cuda
 ```
@@ -61,8 +63,15 @@ rotación y no convierte automáticamente a 60 FPS.
 Regresar a la máquina de trabajo únicamente:
 
 - `data/clips/nivel_a2_01/wasb_detections.csv`;
-- `outputs/nivel_a2_01/stage_2/wasb_detections_overlay.mp4`.
+- `outputs/nivel_a2_01/stage_2/wasb_detections_overlay.mp4`;
+- `outputs/nivel_a2_01/stage_2/inference_report.json`.
 
 Comprobar que el CSV tenga 527 filas, IDs `0–526`, timestamps monotónicos y coordenadas
 dentro de `2746x1536` cuando `detected=true`. Revisar visualmente el overlay y clasificar
 el resultado como A, B o C. No iniciar Stage 3 antes de cerrar este gate.
+
+El JSON registra frames esperados/procesados, detecciones, confianza media/mediana,
+tiempos, dispositivo, versiones PyTorch/CUDA, dimensiones y verificación temporal.
+
+El inventario de transferencia está en
+`docs/levels/level_a2/STAGE_2_EXTERNAL_HANDOFF.md`.

@@ -40,11 +40,11 @@ sin modificar el MP4.
 
 | Stage | Estado Nivel A2 |
 | --- | --- |
-| 0 | Heredada del proyecto |
+| 0 | Heredada y cerrada |
 | 1 | Cerrada exitosa; gates numerico y visual aprobados |
-| 2 | Preparada para ejecucion externa; WASB aun no ejecutado |
-| 3 | Pendiente; no iniciada |
-| 4 | Implementacion disponible; no ejecutada para A2 |
+| 2 | Preflight aprobado; pendiente de ejecucion externa |
+| 3 | No iniciada |
+| 4 | Implementacion disponible; pendiente de resultados A2 |
 | 5-7 | Pendientes |
 
 ## Frames para revision humana
@@ -90,7 +90,9 @@ las lineas reproyectadas coinciden con la cancha. El gate numerico paso con medi
 ## Preparacion Stage 2
 
 - Plan: `docs/levels/level_a2/stage_2_plan.md`.
+- Preflight aprobado: `docs/levels/level_a2/stage_2_preflight_report.md`.
 - Ejecucion externa: `docs/levels/level_a2/STAGE_2_EXECUTION.md`.
+- Inventario de handoff: `docs/levels/level_a2/STAGE_2_EXTERNAL_HANDOFF.md`.
 - Preflight local: `scripts/stage2_a2_preflight.py`.
 - Runner: `src/tracker/wasb_runner.py`.
 

@@ -49,13 +49,22 @@
           <label>Archivo de video
             <input id="videoFile" type="file" accept="video/*">
           </label>
-          <label>FPS
-            <input id="fps" type="number" min="0.001" step="0.001" value="60">
+          <label>Sidecar temporal VFR
+            <input id="timestampsFile" type="file" accept="application/json,.json">
+          </label>
+        </div>
+        <div class="row">
+          <label>FPS nominal (solo metadato/fallback histórico)
+            <input id="fps" type="number" min="0.001" step="0.000001" value="50.246305">
+          </label>
+          <label>Ruta del sidecar en el JSON
+            <input id="timestampsPath" value="data/clips/nivel_a2_01/frame_timestamps.json">
           </label>
         </div>
         <label>Ruta que se guardará en el JSON
-          <input id="clipPath" value="data/reference_clip/madrid_R1.mov">
+          <input id="clipPath" value="data/clips/nivel_a2_01/source.mp4">
         </label>
+        <div id="timestampsStatus" class="notice">Cargá frame_timestamps.json antes de anotar A2.</div>
         <video id="video" controls preload="metadata"></video>
         <div id="position" class="position">frame 0 · 0.000 s</div>
         <div class="controls">
@@ -145,6 +154,7 @@
     const fpsInput = document.getElementById("fps");
     const message = document.getElementById("message");
     const events = [];
+    let frameTimeline = [];
     let editingId = null;
     let videoUrl = null;
 
@@ -154,12 +164,34 @@
       if (!Number.isFinite(value) || value <= 0) throw new Error("FPS debe ser mayor que cero.");
       return value;
     };
-    const currentFrame = () => Math.max(0, Math.round(video.currentTime * fps()));
-    const totalFrames = () => Number.isFinite(video.duration) ? Math.round(video.duration * fps()) : 0;
+    const totalFrames = () => frameTimeline.length;
+
+    function frameForTime(timeSeconds) {
+      if (!frameTimeline.length) return 0;
+      let low = 0;
+      let high = frameTimeline.length - 1;
+      while (low <= high) {
+        const middle = Math.floor((low + high) / 2);
+        if (frameTimeline[middle].timestamp_seconds <= timeSeconds + 1e-6) low = middle + 1;
+        else high = middle - 1;
+      }
+      return Math.max(0, Math.min(frameTimeline.length - 1, high));
+    }
+
+    const currentFrame = () => frameForTime(video.currentTime);
+    const timeForFrame = (frameId) => {
+      if (!frameTimeline.length) throw new Error("Cargá frame_timestamps.json antes de anotar.");
+      if (!Number.isInteger(frameId) || frameId < 0 || frameId >= frameTimeline.length) {
+        throw new Error(`Frame ${frameId} fuera del sidecar (${frameTimeline.length} frames).`);
+      }
+      return frameTimeline[frameId].timestamp_seconds;
+    };
 
     function updatePosition() {
       try {
-        field("position").textContent = `frame ${currentFrame()} · ${video.currentTime.toFixed(3)} s`;
+        const frameId = currentFrame();
+        const mapped = frameTimeline.length ? ` · PTS ${timeForFrame(frameId).toFixed(6)} s` : "";
+        field("position").textContent = `frame ${frameId} · video ${video.currentTime.toFixed(3)} s${mapped}`;
       } catch (error) {
         field("position").textContent = error.message;
       }
@@ -167,9 +199,12 @@
 
     function seekFrames(delta) {
       video.pause();
-      const target = Math.max(0, currentFrame() + delta);
-      const maxTime = Number.isFinite(video.duration) ? video.duration : target / fps();
-      video.currentTime = Math.min(target / fps(), maxTime);
+      if (!frameTimeline.length) {
+        message.textContent = "Cargá frame_timestamps.json para avanzar por frames reales.";
+        return;
+      }
+      const target = Math.max(0, Math.min(frameTimeline.length - 1, currentFrame() + delta));
+      video.currentTime = timeForFrame(target);
       updatePosition();
     }
 
@@ -205,15 +240,20 @@
       if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end < start) {
         throw new Error("Los frames deben ser enteros y cumplir 0 ≤ inicio ≤ fin.");
       }
+      if (!frameTimeline.length) throw new Error("Cargá frame_timestamps.json antes de guardar.");
       const limit = totalFrames();
-      if (limit && end >= limit) throw new Error(`Frame fin fuera del video (${limit} frames).`);
+      if (end >= limit) throw new Error(`Frame fin fuera del video (${limit} frames).`);
       if (events.some((event) => event.id === id && event.id !== editingId)) {
         throw new Error(`ID duplicado: ${id}`);
       }
       return {
         id,
         type: field("eventType").value,
+        frame_start: start,
+        frame_end: end,
         frame_range: [start, end],
+        time_start_seconds: timeForFrame(start),
+        time_end_seconds: timeForFrame(end),
         player: field("player").value,
         side: field("side").value,
         shot_type: field("shotType").value,
@@ -224,17 +264,17 @@
     }
 
     function renderEvents() {
-      events.sort((a, b) => a.frame_range[0] - b.frame_range[0] || a.frame_range[1] - b.frame_range[1]);
+      events.sort((a, b) => a.frame_start - b.frame_start || a.frame_end - b.frame_end);
       const rows = field("eventRows");
       rows.replaceChildren();
       for (const event of events) {
         const row = document.createElement("tr");
-        const startSeconds = (event.frame_range[0] / fps()).toFixed(3);
-        const endSeconds = (event.frame_range[1] / fps()).toFixed(3);
+        const startSeconds = event.time_start_seconds.toFixed(6);
+        const endSeconds = event.time_end_seconds.toFixed(6);
         const cells = [
           event.id,
           event.type,
-          `${event.frame_range[0]}–${event.frame_range[1]}`,
+          `${event.frame_start}–${event.frame_end}`,
           `${startSeconds}–${endSeconds}`,
           `${event.player}/${event.side}`,
           `${event.shot_type}/${event.court_zone}`,
@@ -266,8 +306,8 @@
       editingId = id;
       field("eventId").value = event.id;
       field("eventType").value = event.type;
-      field("frameStart").value = event.frame_range[0];
-      field("frameEnd").value = event.frame_range[1];
+      field("frameStart").value = event.frame_start;
+      field("frameEnd").value = event.frame_end;
       field("player").value = event.player;
       field("side").value = event.side;
       field("shotType").value = event.shot_type;
@@ -289,7 +329,45 @@
       if (videoUrl) URL.revokeObjectURL(videoUrl);
       videoUrl = URL.createObjectURL(file);
       video.src = videoUrl;
-      field("clipPath").value = `data/reference_clip/${file.name}`;
+      field("clipPath").value = `data/clips/nivel_a2_01/${file.name}`;
+    });
+    field("timestampsFile").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const payload = JSON.parse(await file.text());
+        if (payload.clip_id !== "nivel_a2_01") throw new Error("El sidecar no pertenece a nivel_a2_01.");
+        if (payload.timing_mode !== "variable_frame_rate") throw new Error("El sidecar A2 debe declarar variable_frame_rate.");
+        if (!Array.isArray(payload.frames) || payload.frames.length !== payload.frame_count) {
+          throw new Error("El sidecar no contiene el número declarado de frames.");
+        }
+        let previous = -1;
+        payload.frames.forEach((frame, index) => {
+          if (frame.frame_id !== index) throw new Error(`frame_id no consecutivo en ${index}.`);
+          if (!Number.isFinite(frame.timestamp_seconds) || frame.timestamp_seconds < 0) {
+            throw new Error(`Timestamp inválido en frame ${index}.`);
+          }
+          if (index && frame.timestamp_seconds <= previous) {
+            throw new Error(`Timestamp no creciente en frame ${index}.`);
+          }
+          if (!Number.isFinite(frame.duration_seconds) || frame.duration_seconds <= 0) {
+            throw new Error(`Duración inválida en frame ${index}.`);
+          }
+          previous = frame.timestamp_seconds;
+        });
+        if (payload.frames.length !== 527) throw new Error(`A2 requiere 527 frames; se encontraron ${payload.frames.length}.`);
+        frameTimeline = payload.frames;
+        field("timestampsPath").value = `data/clips/nivel_a2_01/${file.name}`;
+        field("timestampsStatus").textContent = `Sidecar VFR válido: ${frameTimeline.length} frames · ${frameTimeline[0].timestamp_seconds.toFixed(6)}–${frameTimeline.at(-1).timestamp_seconds.toFixed(6)} s.`;
+        message.textContent = "Línea temporal VFR cargada. Ya podés anotar.";
+        updatePosition();
+        resetForm();
+        renderEvents();
+      } catch (error) {
+        frameTimeline = [];
+        field("timestampsStatus").textContent = `Sidecar rechazado: ${error.message}`;
+        message.textContent = error.message;
+      }
     });
     video.addEventListener("timeupdate", updatePosition);
     video.addEventListener("loadedmetadata", () => { updatePosition(); resetForm(); });
@@ -339,12 +417,16 @@
     field("exportJson").addEventListener("click", () => {
       try {
         if (!events.length) throw new Error("No se puede exportar sin eventos humanos.");
-        if (!video.src || !totalFrames()) throw new Error("Cargá el video antes de exportar.");
+        if (!video.src) throw new Error("Cargá el video antes de exportar.");
+        if (!frameTimeline.length) throw new Error("Cargá el sidecar VFR antes de exportar A2.");
         if (!field("clipPath").value.trim()) throw new Error("La ruta del clip es obligatoria.");
         const payload = {
+          clip_id: "nivel_a2_01",
           clip_path: field("clipPath").value.trim(),
-          level: "A",
+          level: "A2",
           fps: fps(),
+          timing_mode: "variable_frame_rate",
+          frame_timestamps_path: field("timestampsPath").value.trim(),
           duration_seconds: Number.isFinite(video.duration) ? video.duration : 0,
           frames_total: totalFrames(),
           court_corners_pixel: {},

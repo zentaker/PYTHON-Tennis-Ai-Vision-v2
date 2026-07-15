@@ -50,13 +50,19 @@ def test_preflight_validates_metadata_without_model(monkeypatch, tmp_path: Path)
     )
 
     class Capture:
+        def __init__(self) -> None:
+            self.frame_index = 0
+
         def isOpened(self) -> bool:
             return True
 
         def get(self, _property: int) -> float:
             return 3.0
 
-        def read(self) -> tuple[bool, np.ndarray]:
+        def read(self) -> tuple[bool, np.ndarray | None]:
+            if self.frame_index >= 3:
+                return False, None
+            self.frame_index += 1
             return True, np.zeros((4, 2, 3), dtype=np.uint8)
 
         def release(self) -> None:
@@ -74,6 +80,13 @@ def test_preflight_validates_metadata_without_model(monkeypatch, tmp_path: Path)
     assert report["status"] == "LIGHTWEIGHT_PREFLIGHT_PASSED"
     assert report["inference_executed"] is False
     assert report["frames_manifest"] == report["timestamps_count"] == 3
+    assert report["frames_fully_decoded"] == 3
+    assert report["frame_id_range"] == [0, 2]
+    assert report["frame_ids_sequential"] is True
+    assert report["sample_frames"]["middle"]["frame_id"] == 1
     assert report["variable_timing_confirmed"] is True
+    assert report["timestamps_match_decode"] is True
     assert report["canonical_dimensions"] == [4, 2]
+    assert report["canonical_dimensions_all_frames"] is True
+    assert report["double_rotation_prevented"] is True
     assert report["checkpoint"]["exists"] is False

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import asdict, dataclass
 from typing import Any, Mapping
 
@@ -41,7 +42,11 @@ RAW_EVENT_FIELDS = frozenset(
     {
         "id",
         "type",
+        "frame_start",
+        "frame_end",
         "frame_range",
+        "time_start_seconds",
+        "time_end_seconds",
         "player",
         "side",
         "shot_type",
@@ -109,6 +114,63 @@ def parse_frame_range(value: Any) -> tuple[int, int]:
     return start, end
 
 
+def _seconds_value(value: Any, label: str) -> float:
+    if isinstance(value, bool):
+        raise EventValidationError(f"{label} must be a non-negative number")
+    try:
+        seconds = float(value)
+    except (TypeError, ValueError) as exc:
+        raise EventValidationError(f"{label} must be a non-negative number") from exc
+    if not math.isfinite(seconds) or seconds < 0:
+        raise EventValidationError(f"{label} must be a non-negative number")
+    return seconds
+
+
+def parse_event_frames(raw: Mapping[str, Any]) -> tuple[int, int]:
+    """Accept the legacy range and explicit A2 frame fields without ambiguity."""
+    has_range = "frame_range" in raw
+    has_explicit = "frame_start" in raw or "frame_end" in raw
+    if not has_range and not has_explicit:
+        raise EventValidationError("event must include frame_range or frame_start/frame_end")
+
+    range_frames = parse_frame_range(raw.get("frame_range")) if has_range else None
+    explicit_frames = None
+    if has_explicit:
+        if "frame_start" not in raw or "frame_end" not in raw:
+            raise EventValidationError("frame_start and frame_end must be supplied together")
+        explicit_frames = (
+            _frame_value(raw["frame_start"], "frame_start"),
+            _frame_value(raw["frame_end"], "frame_end"),
+        )
+        if explicit_frames[0] > explicit_frames[1]:
+            raise EventValidationError("frame_start must be <= frame_end")
+    if range_frames is not None and explicit_frames is not None and range_frames != explicit_frames:
+        raise EventValidationError("frame_range disagrees with frame_start/frame_end")
+    result = explicit_frames or range_frames
+    if result is None:  # Defensive: the presence checks above make this unreachable.
+        raise EventValidationError("event frames are missing")
+    return result
+
+
+def parse_event_times(
+    raw: Mapping[str, Any], frame_start: int, frame_end: int, fps: float
+) -> tuple[float, float]:
+    """Prefer explicit VFR timestamps; retain CFR conversion for historical annotations."""
+    has_start = "time_start_seconds" in raw
+    has_end = "time_end_seconds" in raw
+    if has_start != has_end:
+        raise EventValidationError(
+            "time_start_seconds and time_end_seconds must be supplied together"
+        )
+    if not has_start:
+        return frame_start / fps, frame_end / fps
+    start = _seconds_value(raw["time_start_seconds"], "time_start_seconds")
+    end = _seconds_value(raw["time_end_seconds"], "time_end_seconds")
+    if start > end:
+        raise EventValidationError("time_start_seconds must be <= time_end_seconds")
+    return start, end
+
+
 @dataclass(frozen=True)
 class NormalizedEvent:
     """Lossless normalized representation of one manually supplied event."""
@@ -148,7 +210,8 @@ def normalize_narrative_event(raw: Any, fps: float = DEFAULT_FPS) -> NormalizedE
     validated_fps = validate_fps(fps)
     event_id = _required_text(raw, "id")
     event_type = _enum_value(raw, "type", ALLOWED_EVENT_TYPES)
-    frame_start, frame_end = parse_frame_range(raw.get("frame_range"))
+    frame_start, frame_end = parse_event_frames(raw)
+    time_start, time_end = parse_event_times(raw, frame_start, frame_end, validated_fps)
     player = _enum_value(raw, "player", ALLOWED_PLAYERS)
     side = _enum_value(raw, "side", ALLOWED_SIDES)
     shot_type = _enum_value(raw, "shot_type", ALLOWED_SHOT_TYPES)
@@ -169,9 +232,9 @@ def normalize_narrative_event(raw: Any, fps: float = DEFAULT_FPS) -> NormalizedE
         frame_start=frame_start,
         frame_end=frame_end,
         frame_mid=frame_mid,
-        time_start_seconds=frame_start / validated_fps,
-        time_end_seconds=frame_end / validated_fps,
-        time_mid_seconds=frame_mid / validated_fps,
+        time_start_seconds=time_start,
+        time_end_seconds=time_end,
+        time_mid_seconds=(time_start + time_end) / 2.0,
         player=player,
         side=side,
         shot_type=shot_type,

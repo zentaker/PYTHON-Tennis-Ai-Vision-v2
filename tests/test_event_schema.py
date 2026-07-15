@@ -65,6 +65,31 @@ def test_normalize_event_converts_range_and_seconds() -> None:
     assert event.to_dict()["source"] == "manual_annotation"
 
 
+def test_explicit_vfr_frames_and_times_override_nominal_fps() -> None:
+    raw = {
+        **VALID_EVENT,
+        "frame_start": 30,
+        "frame_end": 36,
+        "time_start_seconds": 0.621667,
+        "time_end_seconds": 0.738334,
+    }
+
+    event = normalize_narrative_event(raw, fps=50.246305)
+
+    assert event.frame_start == 30
+    assert event.frame_end == 36
+    assert event.time_start_seconds == 0.621667
+    assert event.time_end_seconds == 0.738334
+    assert event.time_mid_seconds == pytest.approx(0.6800005)
+
+
+def test_rejects_disagreement_between_range_and_explicit_frames() -> None:
+    raw = {**VALID_EVENT, "frame_start": 31, "frame_end": 36}
+
+    with pytest.raises(EventValidationError, match="disagrees"):
+        normalize_narrative_event(raw)
+
+
 def test_optional_vocabularies_default_to_unknown() -> None:
     raw = {"id": "ev_001", "type": "unknown", "frame_range": [0, 0]}
 
