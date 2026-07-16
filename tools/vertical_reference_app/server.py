@@ -65,6 +65,13 @@ class VerticalReferenceRequestHandler(BaseHTTPRequestHandler):
         if path == "/api/self-test":
             self._json(self.server.session.self_test)
             return
+        if path == "/api/diagnostic":
+            diagnostic = self.server.session.diagnostic_path
+            if diagnostic.is_file():
+                self._json(json.loads(diagnostic.read_text(encoding="utf-8")))
+            else:
+                self._json({"status": "NOT_EVALUATED", "failed_criteria": []})
+            return
         if path == "/api/frame":
             self._file(self.server.session.frame_path, "image/png")
             return

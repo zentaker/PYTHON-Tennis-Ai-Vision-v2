@@ -16,6 +16,7 @@ from src.court.coordinates import COURT_DIMENSIONS
 from src.court.homography import apply_homography
 from src.geometry.camera_model import CameraModel
 from src.geometry.vertical_calibration import refine_pinhole_camera
+from tools.vertical_reference_app.evaluation import evaluate_vertical_calibration, render_vertical_overlays, write_candidate_csv
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -45,6 +46,15 @@ REFERENCE_STEPS = (
 
 class VerticalReferenceError(ValueError):
     """Human-readable validation error safe to show in the browser."""
+
+
+def evaluation_message(status: str) -> str:
+    return {
+        "READY_FOR_STAGE_5B": "La calibración vertical pasó las validaciones.",
+        "MARGINAL_VERTICAL_CALIBRATION": "Las referencias se guardaron, pero la calibración tiene incertidumbre moderada.",
+        "STILL_NEEDS_VERTICAL_REFERENCE": "Las referencias se guardaron, pero todavía no reducen suficientemente la ambigüedad vertical.",
+        "INVALID_HUMAN_REFERENCE": "Las referencias se guardaron, pero existe una incompatibilidad geométrica.",
+    }.get(status, "La evaluación no está disponible.")
 
 
 def _sha256(path: Path) -> str:
@@ -102,6 +112,10 @@ class VerticalReferenceSession:
     @property
     def final_path(self) -> Path:
         return (self.state_root / "vertical_reference.json") if self.state_root else self.clip_dir / "vertical_reference.json"
+
+    @property
+    def diagnostic_path(self) -> Path:
+        return (self.state_root / "readiness_report.json") if self.state_root else OUTPUT_ROOT / self.clip_id / "stage_5a1" / "readiness_report.json"
 
     @property
     def post_candidates(self) -> list[tuple[str, str, float]]:
@@ -234,12 +248,26 @@ class VerticalReferenceSession:
         backup_dir.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
         (backup_dir / f"vertical_reference_{timestamp}.json").write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-        refined, metrics = self.recalibrate(references)
         stage_dir = self.state_root if self.state_root else OUTPUT_ROOT / self.clip_id / "stage_5a1"
-        refined.write_json(stage_dir / "camera_model_refined.json", status="MARGINAL_VERTICAL_CALIBRATION", source_vertical_reference_sha256=_sha256(self.final_path), metrics=metrics)
-        report = {"status": "MARGINAL_VERTICAL_CALIBRATION", "references": references, "metrics": metrics, "readiness": "STILL_NEEDS_VERTICAL_REFERENCE", "note": "Recalibration is prepared and does not start Stage 5B."}
-        (stage_dir / "vertical_calibration_report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-        return {"saved": True, "path": "data/clips/nivel_a2_01/vertical_reference.json", "readiness": report["readiness"]}
+        try:
+            evaluation = evaluate_vertical_calibration(self.camera, self.candidates, self.homography, references)
+            refined = evaluation["selected_model"]
+            stage_dir.mkdir(parents=True, exist_ok=True)
+            refined.write_json(stage_dir / "camera_model_refined.json", status=evaluation["status"], source_vertical_reference_sha256=_sha256(self.final_path), metrics=evaluation["metrics"], criteria=evaluation["criteria"], uncertainty=evaluation["jitter"])
+            write_candidate_csv(stage_dir / "vertical_candidate_comparison.csv", evaluation["candidate_results"])
+            (stage_dir / "vertical_jitter_report.json").write_text(json.dumps(evaluation["jitter"], indent=2) + "\n", encoding="utf-8")
+            report = {key: value for key, value in evaluation.items() if key != "selected_model"}
+            report["references"] = references
+            (stage_dir / "vertical_calibration_report.json").write_text(json.dumps(report, indent=2, default=str) + "\n", encoding="utf-8")
+            readiness = {"status": evaluation["status"], "passed_criteria": evaluation["criteria"]["passed"], "failed_criteria": evaluation["criteria"]["failed"], "ground_errors": evaluation["metrics"]["ground"], "vertical_errors": evaluation["metrics"]["vertical"], "sensitivity_before_px": evaluation["sensitivity_before_px"], "sensitivity_after_px": evaluation["sensitivity_after_px"], "improvement_percentage": evaluation["improvement_percentage"], "recommendation": evaluation["recommendation"], "stage_5b_started": False}
+            (stage_dir / "readiness_report.json").write_text(json.dumps(readiness, indent=2) + "\n", encoding="utf-8")
+            render_vertical_overlays(self.frame_path, stage_dir / "vertical_calibration_overlay.png", stage_dir / "vertical_calibration_closeup.png", refined, self.homography, references)
+            return {"saved": True, "path": "data/clips/nivel_a2_01/vertical_reference.json", "status": evaluation["status"], "readiness": evaluation["status"], "message": "Las cuatro referencias fueron guardadas correctamente.", "evaluation_message": evaluation_message(evaluation["status"]), "diagnostic_path": "outputs/nivel_a2_01/stage_5a1/readiness_report.json"}
+        except (ValueError, np.linalg.LinAlgError, RuntimeError) as exc:
+            stage_dir.mkdir(parents=True, exist_ok=True)
+            report = {"status": "INVALID_HUMAN_REFERENCE", "failed_criteria": [str(exc)], "stage_5b_started": False}
+            (stage_dir / "readiness_report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+            return {"saved": True, "path": "data/clips/nivel_a2_01/vertical_reference.json", "status": "INVALID_HUMAN_REFERENCE", "readiness": "INVALID_HUMAN_REFERENCE", "message": "Las cuatro referencias fueron guardadas correctamente.", "evaluation_message": evaluation_message("INVALID_HUMAN_REFERENCE"), "diagnostic_path": "outputs/nivel_a2_01/stage_5a1/readiness_report.json"}
 
     def recalibrate(self, references: list[dict[str, Any]]) -> tuple[CameraModel, dict[str, float]]:
         points_world = np.asarray([item["world"] for item in references], dtype=np.float64)

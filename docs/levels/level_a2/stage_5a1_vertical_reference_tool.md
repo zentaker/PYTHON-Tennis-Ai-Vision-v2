@@ -2,7 +2,8 @@
 
 **Estado:** `TOOL_READY_PENDING_HUMAN_CLICKS`  
 **Stage 5A:** `NEEDS_VERTICAL_REFERENCE`  
-**Stage 5B:** `NOT_STARTED`
+**Stage 5B:** `NOT_STARTED` (aunque la evaluación posterior ya alcanzó `READY_FOR_STAGE_5B`,
+la reconstrucción aún no se ha ejecutado)
 
 Stage 5A demostró que la homografía de suelo es válida, pero los modelos monoculares
 equivalentes divergen hasta 117.5 px en referencias verticales. Esta pasada añade la
@@ -61,3 +62,7 @@ El `browser_e2e_test` se ejecuta aparte sobre una instancia real de Chrome y una
 descartable; solo se considera entrega lista cuando ambos resultados son correctos.
 
 No se usan RunPod, SSH, GPU, CUDA, PyTorch, WASB ni automatización de mouse.
+
+La evaluación real posterior se documenta en
+`stage_5a1_vertical_calibration_report.md`; el readiness ya no es un valor fijo del
+backend.

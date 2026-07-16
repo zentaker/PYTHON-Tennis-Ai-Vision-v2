@@ -16,6 +16,7 @@ main { width:min(1500px, 100%); margin:auto; padding:1rem; }
 #loupe { position:absolute; width:220px; height:220px; border:2px solid #ffd166; border-radius:50%; pointer-events:none; background:#0a1016; box-shadow:0 4px 18px #000b; }
 .tools, .point-actions { display:flex; flex-wrap:wrap; gap:.45rem; align-items:center; padding-top:.8rem; } button { border:1px solid #536779; background:#253443; color:#f5f7fa; border-radius:6px; padding:.55rem .75rem; cursor:pointer; } button:hover { background:#34506a; } button:disabled { opacity:.45; cursor:not-allowed; } button.selected { background:#0b806f; border-color:#00e5c0; } .primary { background:#087f5b; border-color:#0ca678; }
 .message { min-height:1.4rem; color:#ffd166; margin:.8rem 0 0; } .error { color:#ff9b9b; }
+.saved-message { color:#8ff0d0; font-weight:700; }.evaluation-message { color:#ffd166; }
 .confirmation { margin-top:1rem; } .confirmation h2 { margin-top:0; font-size:1.1rem; } #pointList { display:grid; gap:.35rem; color:#cbd6df; } .actions { display:flex; gap:.5rem; margin-top:1rem; }
 @media (max-width:900px) { .step-panel { grid-template-columns:repeat(2, 1fr); } }
 @media (max-width:700px) { header { padding:.8rem; } main { padding:.6rem; } .viewport { min-height:280px; } .step-panel { grid-template-columns:1fr; } }
