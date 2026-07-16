@@ -9,8 +9,8 @@ Proyecto para analizar video de broadcast de tenis y generar progresivamente:
 
 Stage 3 esta cerrada y validada. Stage 4 Nivel A2 esta cerrada con gate humano A y usa
 eventos anotados manualmente; no intenta detectar golpes o botes automaticamente.
-Stage 5A terminó con `NEEDS_VERTICAL_REFERENCE`; Stage 5A.1 está lista para cuatro
-clics humanos antes de cualquier reconstrucción 3D.
+Stage 5A terminó con `READY_FOR_STAGE_5B` tras evaluar las cuatro referencias verticales;
+Stage 5B aún no se ha iniciado.
 
 La pasada historica Madrid R1 se conserva como Nivel A. La pasada activa Nivel A2 tiene
 Stage 1–4 cerradas y continúa con Stage 5A. Ver
@@ -23,8 +23,8 @@ Stage 1–4 cerradas y continúa con Stage 5A. Ver
 | 2 - Deteccion WASB | Cerrada con limitaciones conocidas |
 | 3 - Suavizado temporal | Cerrada y validada visualmente (`v1.3.0`) |
 | 4 - Eventos Nivel A | `CLOSED_SUCCESSFULLY` (A2, gate A) |
-| 5A - Calibracion/observabilidad 3D | `NEEDS_VERTICAL_REFERENCE` |
-| 5A.1 - Referencia vertical de red | Lista, pendiente de clics humanos |
+| 5A - Calibracion/observabilidad 3D | `READY_FOR_STAGE_5B` |
+| 5A.1 - Referencia vertical de red | Cerrada exitosamente |
 | 5B - Reconstruccion X,Y,Z | No iniciada |
 | 5C - Vista superior derivada | No iniciada |
 | 6 - Vista lateral derivada | No iniciada |

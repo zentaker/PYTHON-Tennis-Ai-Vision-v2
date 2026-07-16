@@ -1,7 +1,7 @@
 # Stage 5A.1 — Herramienta de referencia vertical
 
-**Estado:** `TOOL_READY_PENDING_HUMAN_CLICKS`  
-**Stage 5A:** `NEEDS_VERTICAL_REFERENCE`  
+**Estado:** `CLOSED_SUCCESSFULLY`
+**Stage 5A:** `READY_FOR_STAGE_5B`
 **Stage 5B:** `NOT_STARTED` (aunque la evaluación posterior ya alcanzó `READY_FOR_STAGE_5B`,
 la reconstrucción aún no se ha ejecutado)
 
@@ -65,4 +65,5 @@ No se usan RunPod, SSH, GPU, CUDA, PyTorch, WASB ni automatización de mouse.
 
 La evaluación real posterior se documenta en
 `stage_5a1_vertical_calibration_report.md`; el readiness ya no es un valor fijo del
-backend.
+backend. La herramienta no volvió a solicitar clics después de persistir las cuatro
+referencias.
