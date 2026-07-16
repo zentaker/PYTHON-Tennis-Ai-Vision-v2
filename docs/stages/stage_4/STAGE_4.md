@@ -1,14 +1,14 @@
 # STAGE 4 - Deteccion y normalizacion de eventos
 
-**Estado:** `IMPLEMENTED_PENDING_FINAL_HUMAN_VISUAL_GATE`
+**Estado:** `CLOSED_SUCCESSFULLY`
 **Nivel:** A
 **Fecha de preparacion:** 2026-05-19
 **Fecha de implementacion base:** 2026-07-13
 
 ## Estado operativo Nivel A2
 
-Desde 2026-07-15, Stage 1–3 de `nivel_a2_01` están cerradas y Stage 4 se encuentra en
-`IMPLEMENTED_PENDING_FINAL_HUMAN_VISUAL_GATE`. El nuevo anotador local pasó su self-test real
+Desde 2026-07-16, Stage 1–3 de `nivel_a2_01` están cerradas y Stage 4 está
+`CLOSED_SUCCESSFULLY` tras el gate humano final **A**. El nuevo anotador local pasó su self-test real
 `30/30`: 527 frames exactos, IDs `0–526`, timestamps estrictos y resolución
 `2746×1536`. La guía de uso está en
 `docs/levels/level_a2/stage_4_annotation_guide.md` y el diseño verificado en
@@ -131,15 +131,19 @@ validados, pero todavía esperan revisión visual humana.
 
 ## Gate
 
-Pendiente de validacion humana. Stage 4 no se puede cerrar con fixtures.
+El gate humano final está aprobado con veredicto **A**. Stage 4 no se puede cerrar con
+fixtures solamente, pero sí queda cerrada para A2 con la revisión documentada.
 
-El usuario debe confirmar:
+El usuario confirmó:
 
 - todos los botes narrados estan presentes;
 - todos los golpes narrados estan presentes;
 - los rangos de frames son razonables;
 - no se inventaron eventos;
 - no se perdieron eventos durante la normalizacion.
+
+Stage 5A puede auditar la cámara y la observabilidad; Stage 5B todavía no está
+implementado.
 
 ## Fuera de alcance Nivel A
 

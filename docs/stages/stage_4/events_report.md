@@ -1,6 +1,6 @@
 # Events Report — Stage 4 Nivel A
 
-**Estado A2:** `IMPLEMENTED_PENDING_FINAL_HUMAN_VISUAL_GATE`
+**Estado A2:** `CLOSED_SUCCESSFULLY`
 
 **Fecha:** 2026-07-15
 
@@ -27,4 +27,6 @@ multiframe. La suite completa pasó con 160 tests.
 La evidencia, hashes, tabla de los nueve eventos y validaciones se encuentran en
 `docs/levels/level_a2/stage_4_execution_report.md`.
 
-Stage 4 no está cerrada: falta el gate visual final humano. Stage 5 no ha comenzado.
+Gate humano final: **A — CLOSED_SUCCESSFULLY**. El usuario confirmó que el bote terminal
+`ev_010` (frame 463, `9.221667 s`, `side=far`) es correcto y que no faltan eventos.
+Stage 5A queda en progreso; Stage 5B no se ha iniciado.

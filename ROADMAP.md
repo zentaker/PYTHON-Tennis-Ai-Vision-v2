@@ -3,11 +3,11 @@
 **Version:** 0.3
 **Fecha de creacion:** 2026-05-18
 **Fecha de reconciliacion:** 2026-07-13
-**Estado:** Activo - Stage 4 Nivel A en progreso
+**Estado:** Activo - Stage 5A Nivel A2 en progreso
 
-La implementacion transversal de Stage 4 esta disponible, pero la pasada de datos activa
-es Nivel A2 y se encuentra en Stage 1, pendiente de calibracion humana. La pasada Madrid R1
-permanece cerrada como evidencia historica.
+La pasada de datos activa es Nivel A2. Stage 1–4 están cerradas con gates aprobados y la
+auditoría de cámara/observabilidad Stage 5A está en progreso. La pasada Madrid R1
+permanece cerrada como evidencia histórica.
 
 ## 1. Objetivo
 
@@ -22,9 +22,11 @@ Construir un sistema que, dado un video de broadcast de tenis con camara fija, g
 - [x] Stage 1 - Calibracion de cancha.
 - [x] Stage 2 - Deteccion de pelota con WASB, con limitaciones conocidas.
 - [x] Stage 3 - Trayectoria suavizada y gate visual.
-- [ ] Stage 4 - Eventos. En progreso para Nivel A.
-- [ ] Stage 5 - Vista superior 2D. No iniciada.
-- [ ] Stage 6 - Vista lateral 2D. No iniciada.
+- [x] Stage 4 - Eventos. A2 cerrada exitosamente con gate humano A.
+- [ ] Stage 5A - Calibración de cámara 3D y observabilidad. En progreso para A2.
+- [ ] Stage 5B - Reconstrucción física X,Y,Z. No iniciada.
+- [ ] Stage 5C - Vista superior derivada de X,Y. No iniciada.
+- [ ] Stage 6 - Vista lateral derivada de distancia,Z. No iniciada.
 - [ ] Stage 7 - Metricas y validacion final. No iniciada.
 
 Stage 0 se considera funcionalmente cerrada. Su cierre documental fue reconciliado
@@ -84,19 +86,33 @@ Estado: cerrada y taggeada como `v1.3.0`. Gate visual aprobado.
 Nivel A lee y valida `narrative_events` de `manual_annotation.json`, sin inventar ni
 detectar eventos. Niveles B/C incorporaran deteccion automatica de botes y golpes.
 
-Estado: en progreso. Gate Nivel A: conversion sin perdida y validacion humana.
+Estado: cerrada exitosamente para A2. Gate humano final: A.
 
-### Stage 5 - Vista superior 2D
+### Stage 5A - Calibración y observabilidad de cámara 3D
 
-Proyectar la trayectoria sobre la cancha y renderizarla.
+Auditar la homografía, construir un modelo pinhole assumption-based, medir sensibilidad
+vertical y segmentar vuelos. No reconstruye todavía la pelota en 3D.
 
-Estado: no iniciada. Gate: lado, cruces de red y bounds coherentes.
+Estado: en progreso. Gate: candidato estable, errores explícitos y decisión de readiness.
+
+### Stage 5B - Reconstrucción física X,Y,Z
+
+Ajustar por segmento X,Y,Z con reproyección, restricciones Z=0 en botes y dinámica
+balística. El diseño está documentado, pero la implementación aún no comenzó.
+
+Estado: no iniciada.
+
+### Stage 5C - Vista superior derivada
+
+Renderizar X,Y de la trayectoria 3D aprobada.
+
+Estado: no iniciada.
 
 ### Stage 6 - Vista lateral 2D
 
-Renderizar parabolas entre botes con altura explicitamente inferida.
+Renderizar distancia,Z de la trayectoria 3D aprobada.
 
-Estado: no iniciada. Gate: continuidad y alturas fisicamente plausibles.
+Estado: no iniciada.
 
 ### Stage 7 - Metricas y validacion final
 

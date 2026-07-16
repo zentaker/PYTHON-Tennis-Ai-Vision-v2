@@ -7,12 +7,14 @@ Proyecto para analizar video de broadcast de tenis y generar progresivamente:
 
 ## Estado actual
 
-Stage 3 esta cerrada y validada. Stage 4 Nivel A esta en implementacion y usa eventos
-anotados manualmente; no intenta detectar golpes o botes automaticamente.
+Stage 3 esta cerrada y validada. Stage 4 Nivel A2 esta cerrada con gate humano A y usa
+eventos anotados manualmente; no intenta detectar golpes o botes automaticamente.
+Stage 5A esta en progreso para auditar camara y observabilidad antes de cualquier
+reconstruccion 3D.
 
-La pasada historica Madrid R1 se conserva como Nivel A. La pasada activa Nivel A2 vuelve
-a Stage 1 con un clip MP4 nuevo; esta preparada y pendiente de aprobacion humana del frame
-de referencia. Ver [docs/levels/level_a2/README.md](docs/levels/level_a2/README.md).
+La pasada historica Madrid R1 se conserva como Nivel A. La pasada activa Nivel A2 tiene
+Stage 1–4 cerradas y continúa con Stage 5A. Ver
+[docs/levels/level_a2/README.md](docs/levels/level_a2/README.md).
 
 | Stage | Estado |
 | --- | --- |
@@ -20,9 +22,11 @@ de referencia. Ver [docs/levels/level_a2/README.md](docs/levels/level_a2/README.
 | 1 - Calibracion | Cerrada con gate visual firmado |
 | 2 - Deteccion WASB | Cerrada con limitaciones conocidas |
 | 3 - Suavizado temporal | Cerrada y validada visualmente (`v1.3.0`) |
-| 4 - Eventos Nivel A | En progreso |
-| 5 - Vista superior | No iniciada |
-| 6 - Vista lateral | No iniciada |
+| 4 - Eventos Nivel A | `CLOSED_SUCCESSFULLY` (A2, gate A) |
+| 5A - Calibracion/observabilidad 3D | En progreso |
+| 5B - Reconstruccion X,Y,Z | No iniciada |
+| 5C - Vista superior derivada | No iniciada |
+| 6 - Vista lateral derivada | No iniciada |
 | 7 - Validacion final | No iniciada |
 
 Roadmap completo: [ROADMAP.md](ROADMAP.md).

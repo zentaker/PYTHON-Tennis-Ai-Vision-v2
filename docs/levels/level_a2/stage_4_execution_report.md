@@ -1,6 +1,6 @@
 # Stage 4 A2 — Reporte de ejecución
 
-**Estado:** `IMPLEMENTED_PENDING_FINAL_HUMAN_VISUAL_GATE`
+**Estado:** `CLOSED_SUCCESSFULLY`
 
 **Fecha:** 2026-07-16
 
@@ -119,9 +119,11 @@ Los tests cubren diez eventos, conservación de `ev_001`–`ev_009`, `ev_010` en
 cinco botes, loader VFR, overlay de 527 frames, timeline, contact sheet, revisión
 terminal y compatibilidad histórica CFR.
 
-## Estado y límites
+## Gate humano final y límites
 
-El material está preparado para el gate visual final. No se diseñó reconstrucción de
-altura, cámara 3D ni vista superior/lateral. Stage 4 no se cierra automáticamente.
-RunPod, SSH, GPU y WASB no se utilizaron; Stage 2 y Stage 3 no se recalcularon; Stage 5
-no comenzó.
+El usuario confirmó que `ev_001`–`ev_010` representan todos los saques, golpes y botes
+visibles; `ev_010` es el último bote real en frame 463 (`9.221667 s`, `side=far`).
+Veredicto humano: **A**. Stage 4 A2 queda `CLOSED_SUCCESSFULLY`.
+
+RunPod, SSH, GPU y WASB no se utilizaron; Stage 2 y Stage 3 no se recalcularon; el
+anotador no se reabrió.
