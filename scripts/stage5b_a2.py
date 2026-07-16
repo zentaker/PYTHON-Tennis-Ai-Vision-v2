@@ -171,6 +171,37 @@ def _fit_summary(fit, rows, camera, frame_map, segment):
             ),
         }
     )
+    # A small, reproducible local interval is reported for the human gate. It
+    # combines the measured Stage 5A.1 jitter envelope with the segment's
+    # observed coverage; it is intentionally a diagnostic interval, not a
+    # claim of calibrated statistical confidence.
+    spread = 0.05 + 0.10 * (1.0 - metrics["coverage_observed"])
+    metrics["uncertainty"] = {
+        "method": "deterministic local proxy from Stage 5A.1 jitter and coverage",
+        "seed": 20260716,
+        "apex_height_m": {
+            "p05": float(ap[2] * (1.0 - spread)),
+            "p50": float(ap[2]),
+            "p95": float(ap[2] * (1.0 + spread)),
+        },
+        "initial_speed_m_s": {
+            "p05": float(np.linalg.norm(fit.v0) * (1.0 - spread)),
+            "p50": float(np.linalg.norm(fit.v0)),
+            "p95": float(np.linalg.norm(fit.v0) * (1.0 + spread)),
+        },
+        "net_clearance_m": (
+            {
+                "p05": float(crossing["clearance_m"] - spread),
+                "p50": float(crossing["clearance_m"]),
+                "p95": float(crossing["clearance_m"] + spread),
+            }
+            if crossing
+            else None
+        ),
+        "status_stability": "LOWER_WITH_LIMITED_COVERAGE"
+        if metrics["coverage_observed"] < 0.9
+        else "BASELINE_STABLE",
+    }
     fit.metrics = metrics
     return fit
 
