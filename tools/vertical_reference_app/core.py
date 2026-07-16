@@ -100,7 +100,8 @@ class VerticalReferenceSession:
     def post_candidates(self) -> list[tuple[str, str, float]]:
         half_doubles = COURT_DIMENSIONS.doubles_half_width_m
         half_singles = COURT_DIMENSIONS.singles_half_width_m
-        return [("left", "exterior", -half_doubles), ("right", "exterior", half_doubles), ("left", "singles", -half_singles), ("right", "singles", half_singles)]
+        post_offset = 0.914
+        return [("left", "exterior", -(half_doubles + post_offset)), ("right", "exterior", half_doubles + post_offset), ("left", "singles", -(half_singles + post_offset)), ("right", "singles", half_singles + post_offset)]
 
     def _restore_draft(self) -> None:
         if not self.draft_path.exists():
