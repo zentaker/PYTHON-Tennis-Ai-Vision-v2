@@ -1,7 +1,7 @@
 # Nivel A2 - `nivel_a2_01`
 
-**Estado:** Stage 1–4 `CLOSED_SUCCESSFULLY`; Stage 5A `IN_PROGRESS`; Stage 5B/5C y
-Stage 6 `NOT_STARTED`
+**Estado:** Stage 1–4 `CLOSED_SUCCESSFULLY`; Stage 5A `NEEDS_VERTICAL_REFERENCE`;
+Stage 5A.1 `TOOL_READY_PENDING_HUMAN_CLICKS`; Stage 5B/5C y Stage 6 `NOT_STARTED`
 **Fecha de actualización:** 2026-07-15
 
 ## Clip seleccionado
@@ -46,7 +46,8 @@ sin modificar el MP4.
 | 2 | Cerrada exitosamente; gate visual humano A |
 | 3 | Cerrada exitosamente; gate visual humano A |
 | 4 | `CLOSED_SUCCESSFULLY`; gate humano A; 10 eventos procesados |
-| 5A | `IN_PROGRESS`; calibración de cámara y observabilidad |
+| 5A | `NEEDS_VERTICAL_REFERENCE`; calibración monocular ambigua |
+| 5A.1 | `TOOL_READY_PENDING_HUMAN_CLICKS`; cuatro referencias verticales |
 | 5B | `NOT_STARTED`; diseño documentado, sin reconstrucción |
 | 5C | `NOT_STARTED`; vista superior derivada de X,Y |
 | 6 | `NOT_STARTED`; vista lateral derivada de distancia,Z |
@@ -134,5 +135,6 @@ La anotación humana final contiene 10 eventos; el décimo es el bote terminal `
 frame 463. El usuario aprobó el material con gate humano A y Stage 4 está cerrada
 exitosamente. Stage 5A audita la cámara sin modificar la anotación.
 
-WASB no se ejecutó en macOS durante esta pasada. Stage 4 está cerrada; Stage 5A está en
-progreso y Stage 5B todavía no se ha iniciado.
+WASB no se ejecutó en macOS durante esta pasada. Stage 4 está cerrada; Stage 5A espera
+referencia vertical y Stage 5A.1 está lista para los cuatro clics humanos. Stage 5B no
+se ha iniciado.

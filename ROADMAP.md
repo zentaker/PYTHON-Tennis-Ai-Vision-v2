@@ -3,10 +3,11 @@
 **Version:** 0.3
 **Fecha de creacion:** 2026-05-18
 **Fecha de reconciliacion:** 2026-07-13
-**Estado:** Activo - Stage 5A Nivel A2 en progreso
+**Estado:** Activo - Stage 5A.1 Nivel A2 pendiente de clics humanos
 
 La pasada de datos activa es Nivel A2. Stage 1–4 están cerradas con gates aprobados y la
-auditoría de cámara/observabilidad Stage 5A está en progreso. La pasada Madrid R1
+la auditoría de cámara Stage 5A terminó con `NEEDS_VERTICAL_REFERENCE` y Stage 5A.1 está
+lista para la referencia humana mínima. La pasada Madrid R1
 permanece cerrada como evidencia histórica.
 
 ## 1. Objetivo
@@ -23,7 +24,8 @@ Construir un sistema que, dado un video de broadcast de tenis con camara fija, g
 - [x] Stage 2 - Deteccion de pelota con WASB, con limitaciones conocidas.
 - [x] Stage 3 - Trayectoria suavizada y gate visual.
 - [x] Stage 4 - Eventos. A2 cerrada exitosamente con gate humano A.
-- [ ] Stage 5A - Calibración de cámara 3D y observabilidad. En progreso para A2.
+- [x] Stage 5A - Calibración de cámara 3D y observabilidad. A2 requiere referencia vertical.
+- [ ] Stage 5A.1 - Referencia vertical de red. Herramienta lista; pendiente de cuatro clics.
 - [ ] Stage 5B - Reconstrucción física X,Y,Z. No iniciada.
 - [ ] Stage 5C - Vista superior derivada de X,Y. No iniciada.
 - [ ] Stage 6 - Vista lateral derivada de distancia,Z. No iniciada.
@@ -93,7 +95,8 @@ Estado: cerrada exitosamente para A2. Gate humano final: A.
 Auditar la homografía, construir un modelo pinhole assumption-based, medir sensibilidad
 vertical y segmentar vuelos. No reconstruye todavía la pelota en 3D.
 
-Estado: en progreso. Gate: candidato estable, errores explícitos y decisión de readiness.
+Estado: `NEEDS_VERTICAL_REFERENCE`. Stage 5A.1 debe aportar cuatro referencias humanas
+antes de evaluar `READY_FOR_STAGE_5B`.
 
 ### Stage 5B - Reconstrucción física X,Y,Z
 

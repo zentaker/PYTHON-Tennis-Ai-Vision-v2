@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Referencia vertical</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <div><h1>Referencia vertical de red</h1><p id="status">Preparando la imagen…</p></div>
+    <strong id="stepCounter">Paso 1 de 4</strong>
+  </header>
+  <main>
+    <section class="viewer-card">
+      <div id="instruction" class="instruction"></div>
+      <div id="viewport" class="viewport">
+        <canvas id="canvas" aria-label="Imagen de la cancha para marcar referencias"></canvas>
+        <div id="crosshair" hidden></div>
+        <canvas id="loupe" width="220" height="220" hidden></canvas>
+      </div>
+      <div class="tools">
+        <span>Zoom:</span>
+        <button data-zoom="fit">Ajustar</button><button data-zoom="1">100%</button>
+        <button data-zoom="1.5">150%</button><button data-zoom="2">200%</button>
+        <button data-zoom="3">300%</button><button data-zoom="5">500%</button>
+        <button id="undo">Deshacer</button><button id="reset">Reiniciar</button>
+      </div>
+      <p id="message" class="message"></p>
+    </section>
+    <section id="confirmation" class="confirmation" hidden>
+      <h2>Revisa las cuatro referencias</h2>
+      <div id="pointList"></div>
+      <div class="actions"><button id="correct">Corregir</button><button id="save" class="primary">Guardar referencias</button></div>
+    </section>
+  </main>
+  <script src="/app.js" defer></script>
+</body>
+</html>
