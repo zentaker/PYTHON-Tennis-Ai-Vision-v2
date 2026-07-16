@@ -97,7 +97,7 @@ def test_missing_annotation_message_names_the_manual_tool(tmp_path: Path) -> Non
         load_normalized_events(missing)
 
 
-def test_a2_nine_events_use_explicit_vfr_timestamps(tmp_path: Path) -> None:
+def test_a2_ten_events_use_explicit_vfr_timestamps(tmp_path: Path) -> None:
     fps, events = load_normalized_events(
         A2_ANNOTATION,
         frame_timestamps_path=A2_TIMESTAMPS,
@@ -105,14 +105,22 @@ def test_a2_nine_events_use_explicit_vfr_timestamps(tmp_path: Path) -> None:
     )
 
     assert fps == 60.0  # Metadata only; event times come from the VFR index.
-    assert len(events) == 9
-    assert [event.id for event in events] == [f"ev_{index:03d}" for index in range(1, 10)]
+    assert len(events) == 10
+    assert [event.id for event in events] == [f"ev_{index:03d}" for index in range(1, 11)]
     assert events[0].time_start_seconds == 2.771667
     assert (events[3].frame_start, events[3].frame_end) == (262, 264)
     assert (events[3].time_start_seconds, events[3].time_end_seconds) == (
         5.188333,
         5.238333,
     )
+    assert (events[9].type, events[9].player, events[9].side) == (
+        "bounce",
+        "unknown",
+        "far",
+    )
+    assert (events[9].frame_start, events[9].frame_end) == (463, 463)
+    assert events[9].time_start_seconds == 9.221667
+    assert sum(event.type == "bounce" for event in events) == 5
 
     output = tmp_path / "events.json"
     payload = run_stage_4(
@@ -123,7 +131,41 @@ def test_a2_nine_events_use_explicit_vfr_timestamps(tmp_path: Path) -> None:
     )
     assert payload["timing_mode"] == "variable_frame_rate"
     assert payload["frames_total"] == 527
-    assert payload["event_count"] == 9
+    assert payload["event_count"] == 10
+
+
+def test_a2_first_nine_events_remain_the_verified_sequence() -> None:
+    _fps, events = load_normalized_events(
+        A2_ANNOTATION,
+        frame_timestamps_path=A2_TIMESTAMPS,
+        clip_id="nivel_a2_01",
+    )
+    expected = [
+        ("ev_001", "serve", "near", "near", 139, 139, 2.771667, 2.771667),
+        ("ev_002", "bounce", "unknown", "far", 158, 158, 3.138333, 3.138333),
+        ("ev_003", "hit", "far", "far", 200, 200, 3.955000, 3.955000),
+        ("ev_004", "bounce", "unknown", "near", 262, 264, 5.188333, 5.238333),
+        ("ev_005", "hit", "near", "near", 287, 288, 5.688333, 5.721667),
+        ("ev_006", "bounce", "unknown", "far", 327, 327, 6.488333, 6.488333),
+        ("ev_007", "hit", "far", "far", 351, 351, 6.971667, 6.971667),
+        ("ev_008", "bounce", "unknown", "near", 399, 400, 7.938333, 7.955000),
+        ("ev_009", "hit", "near", "near", 434, 435, 8.638333, 8.655000),
+    ]
+
+    actual = [
+        (
+            event.id,
+            event.type,
+            event.player,
+            event.side,
+            event.frame_start,
+            event.frame_end,
+            event.time_start_seconds,
+            event.time_end_seconds,
+        )
+        for event in events[:9]
+    ]
+    assert actual == expected
 
 
 def test_a2_loader_rejects_timestamp_not_derived_from_frame_index(tmp_path: Path) -> None:

@@ -14,6 +14,10 @@ import cv2
 from src.events.event_loader import load_annotation, run_stage_4
 from src.events.render_events_contact_sheet import render_events_contact_sheet
 from src.events.render_events_overlay import render_events_overlay
+from src.events.render_terminal_bounce_review import (
+    render_terminal_bounce_contact_sheet,
+    render_terminal_bounce_review,
+)
 from src.events.render_events_timeline import render_events_timeline
 from src.project.clip_manifest import ClipManifest
 from src.video.canonical_frames import probe_frame_timestamps, timestamp_intervals
@@ -24,6 +28,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CLIP_ID = "nivel_a2_01"
 CLIP_DIR = PROJECT_ROOT / "data" / "clips" / CLIP_ID
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / CLIP_ID / "stage_4"
+PREVIOUS_ANNOTATION_SHA256 = "1e540abe1ef3545969d84d07763c132adcf851788e6fe51a14999a4a3cda0e84"
 
 
 def sha256_file(path: Path) -> str:
@@ -117,6 +122,8 @@ def run_a2(
     overlay_path = output_dir / "events_overlay.mp4"
     timeline_path = output_dir / "events_timeline.png"
     contact_sheet_path = output_dir / "events_contact_sheet.png"
+    final_review_path = output_dir / "final_bounce_review.mp4"
+    final_contact_sheet_path = output_dir / "final_bounce_contact_sheet.png"
     report_path = output_dir / "events_report.json"
 
     normalized = run_stage_4(
@@ -127,8 +134,20 @@ def run_a2(
     )
     _validate_normalized_events(annotation, normalized)
     events = normalized["events"]
-    if len(events) != 9:
-        raise RuntimeError(f"Expected 9 human events, found {len(events)}")
+    if len(events) != 10:
+        raise RuntimeError(f"Expected 10 human events, found {len(events)}")
+    terminal = events[-1]
+    if (
+        terminal["id"] != "ev_010"
+        or terminal["type"] != "bounce"
+        or terminal["player"] != "unknown"
+        or terminal["side"] != "far"
+        or terminal["frame_start"] != 463
+        or terminal["frame_end"] != 463
+        or terminal["time_start_seconds"] != 9.221667
+        or terminal["time_end_seconds"] != 9.221667
+    ):
+        raise RuntimeError("The tenth event does not match the verified terminal bounce")
     timestamps = [frame.timestamp_seconds for frame in sidecar.frames]
     overlay = render_events_overlay(
         video_path,
@@ -158,7 +177,48 @@ def run_a2(
         events_path,
         contact_sheet_path,
     )
-    for image_path in (timeline_path, contact_sheet_path):
+    if timeline["event_count"] != 10 or contact_sheet["event_sections"] != 10:
+        raise RuntimeError("Timeline/contact sheet did not preserve all 10 events")
+    terminal_section = contact_sheet["sections"][-1]
+    if terminal_section["event_id"] != "ev_010" or terminal_section["frames"] != [
+        461,
+        462,
+        463,
+        464,
+        465,
+    ]:
+        raise RuntimeError("Main contact sheet does not show the terminal-bounce context")
+    tracking_path = PROJECT_ROOT / "outputs" / CLIP_ID / "stage_3" / "smoothed_trajectory.csv"
+    final_review = render_terminal_bounce_review(
+        video_path,
+        manifest,
+        timestamps,
+        events_path,
+        final_review_path,
+        tracking_path=tracking_path,
+    )
+    final_review_timestamps = probe_frame_timestamps(final_review_path)
+    final_review_intervals = sorted(
+        {round(value, 6) for value in timestamp_intervals(final_review_timestamps)}
+    )
+    if len(final_review_intervals) < 2:
+        raise RuntimeError("Terminal-bounce review is not VFR")
+    final_review_endpoints = _decode_overlay_endpoints(final_review_path)
+    if final_review_endpoints["decoded_frames"] != final_review["frames"]:
+        raise RuntimeError("Terminal-bounce review frame count changed during encoding")
+    if (
+        not final_review_endpoints["first_frame_readable"]
+        or not final_review_endpoints["last_frame_readable"]
+    ):
+        raise RuntimeError("Terminal-bounce review endpoints are not readable")
+    final_contact_sheet = render_terminal_bounce_contact_sheet(
+        video_path,
+        manifest,
+        timestamps,
+        events_path,
+        final_contact_sheet_path,
+    )
+    for image_path in (timeline_path, contact_sheet_path, final_contact_sheet_path):
         image = cv2.imread(str(image_path))
         if image is None or image.size == 0:
             raise RuntimeError(f"Generated review image is not readable: {image_path}")
@@ -184,11 +244,12 @@ def run_a2(
     ]
     report: dict[str, object] = {
         "schema_version": "1.0",
-        "status": "IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE",
+        "status": "IMPLEMENTED_PENDING_FINAL_HUMAN_VISUAL_GATE",
         "clip_id": CLIP_ID,
         "persistence_source": persistence_source,
         "annotation_path": str(annotation_path),
         "annotation_sha256": sha256_file(annotation_path),
+        "previous_annotation_sha256": PREVIOUS_ANNOTATION_SHA256,
         "annotation_backups": [
             {"path": str(path), "sha256": sha256_file(path)} for path in backup_paths
         ],
@@ -211,6 +272,8 @@ def run_a2(
             "overlay": str(overlay_path),
             "timeline": str(timeline_path),
             "contact_sheet": str(contact_sheet_path),
+            "final_bounce_review": str(final_review_path),
+            "final_bounce_contact_sheet": str(final_contact_sheet_path),
         },
         "overlay_validation": {
             **overlay,
@@ -221,6 +284,22 @@ def run_a2(
         },
         "timeline_validation": timeline,
         "contact_sheet_validation": contact_sheet,
+        "final_bounce_review_validation": {
+            **final_review,
+            **final_review_endpoints,
+            "timing_mode": "variable_frame_rate",
+            "distinct_frame_intervals_seconds": final_review_intervals,
+        },
+        "final_bounce_contact_sheet_validation": final_contact_sheet,
+        "correction": {
+            "reason": "User detected and annotated the omitted terminal bounce.",
+            "first_version_event_count": 9,
+            "final_event_count": 10,
+            "corrected_event_id": "ev_010",
+            "corrected_frame": 463,
+            "corrected_timestamp_seconds": 9.221667,
+            "first_nine_events_unchanged": True,
+        },
         "validations": {
             "annotation_matches_frame_timestamps": True,
             "normalized_events_lossless": True,
@@ -232,6 +311,8 @@ def run_a2(
             "overlay_last_frame_preserved": True,
             "timeline_readable": True,
             "contact_sheet_readable": True,
+            "terminal_bounce_review_vfr": True,
+            "terminal_bounce_contact_sheet_readable": True,
         },
         "limitations": [
             "Event semantics and frame ranges are human annotations, not automatic detections.",

@@ -1,123 +1,127 @@
 # Stage 4 A2 — Reporte de ejecución
 
-**Estado:** `IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`
+**Estado:** `IMPLEMENTED_PENDING_FINAL_HUMAN_VISUAL_GATE`
 
-**Fecha:** 2026-07-15
+**Fecha:** 2026-07-16
 
-**Commit base:** `a0c3498b1f387ff3d44169350e7dfea2573901a0`
+**Commit inicial de esta corrección:** `dbc1323da0279d75c8157171240c79223ebba374`
 
-## Persistencia y recuperación
+## Corrección confirmada
 
-La fuente canónica fue el archivo final escrito por el anotador:
-`data/clips/nivel_a2_01/manual_annotation.json`.
+La primera ejecución tenía nueve eventos. El usuario detectó un bote terminal omitido,
+lo añadió en el anotador frame-accurate y pulsó nuevamente **Finalizar y guardar
+anotación**. La persistencia actual contiene diez eventos y el nuevo `ev_010` fue usado
+como fuente canónica; no se reconstruyeron ni editaron silenciosamente los nueve
+anteriores.
+
+## Persistencia y backups
+
+Final, borrador y `GET /api/events` contienen 10 eventos concordantes. El endpoint de
+sesión sigue listo (`PASSED_30_30`, `draft_restored=true`).
 
 | Evidencia | Estado | Tamaño | Eventos | SHA-256 |
 | --- | --- | ---: | ---: | --- |
-| Archivo final | JSON válido | 4081 B | 9 | `1e540abe1ef3545969d84d07763c132adcf851788e6fe51a14999a4a3cda0e84` |
-| Borrador | JSON válido | 4081 B | 9 | `1e540abe1ef3545969d84d07763c132adcf851788e6fe51a14999a4a3cda0e84` |
-| `GET /api/events` | Respuesta válida | — | 9 | — |
-| `GET /api/session` | `PASSED_30_30`, ready | — | — | — |
+| Archivo final | JSON válido | 4485 B | 10 | `9d7668eef478a85f9d8d1146058c19dafe975466119a271e03f9925ae58a7e8b` |
+| Borrador | JSON válido | 4485 B | 10 | `9d7668eef478a85f9d8d1146058c19dafe975466119a271e03f9925ae58a7e8b` |
+| `GET /api/events` | Respuesta válida | — | 10 | — |
 
-Final y borrador eran byte a byte idénticos. El endpoint confirmó los mismos nueve
-eventos, por lo que no se aplicó recuperación ni reconstrucción desde la captura.
+SHA anterior de la anotación de nueve eventos:
+`1e540abe1ef3545969d84d07763c132adcf851788e6fe51a14999a4a3cda0e84`.
 
-Antes de normalizar se crearon y verificaron estos backups ignorados por Git:
+Backups nuevos, creados antes de normalizar:
 
-- `outputs/nivel_a2_01/stage_4/backups/manual_annotation_before_normalization_20260715T123801-0500.json`;
-- `outputs/nivel_a2_01/stage_4/backups/annotation_draft_20260715T123801-0500.json`.
+- `outputs/nivel_a2_01/stage_4/backups/manual_annotation_with_terminal_bounce_20260716T112527-0500.json`;
+- `outputs/nivel_a2_01/stage_4/backups/annotation_draft_with_terminal_bounce_20260716T112527-0500.json`.
 
-Ambos conservan el SHA-256 `1e540abe1ef3545969d84d07763c132adcf851788e6fe51a14999a4a3cda0e84`.
+Ambos coinciden byte a byte con final y borrador, con SHA
+`9d7668eef478a85f9d8d1146058c19dafe975466119a271e03f9925ae58a7e8b`. Los backups de
+nueve eventos anteriores se conservaron.
 
-## Auditoría contra el respaldo humano
+## Auditoría de los diez eventos
 
-Los nueve eventos coinciden exactamente en cantidad, orden, tipo, jugador, lado,
-frames y timestamps con la captura autoritativa proporcionada por el usuario. Cada
-timestamp también coincide con `frame_timestamps.json` con error menor a un microsegundo.
+Los nueve eventos anteriores son byte-semánticamente equivalentes al backup anterior en
+ID, tipo, jugador, lado, rangos, timestamps, subtipo, zona, fuente y notas.
 
-| ID | Tipo | Jugador | Lado | Frames | Cantidad | Timestamps (s) | Resultado |
-| --- | --- | --- | --- | --- | ---: | --- | --- |
-| ev_001 | serve | near | near | 139–139 | 1 | 2.771667–2.771667 | PASS |
-| ev_002 | bounce | unknown | far | 158–158 | 1 | 3.138333–3.138333 | PASS |
-| ev_003 | hit | far | far | 200–200 | 1 | 3.955000–3.955000 | PASS |
-| ev_004 | bounce | unknown | near | 262–264 | 3 | 5.188333–5.238333 | PASS |
-| ev_005 | hit | near | near | 287–288 | 2 | 5.688333–5.721667 | PASS |
-| ev_006 | bounce | unknown | far | 327–327 | 1 | 6.488333–6.488333 | PASS |
-| ev_007 | hit | far | far | 351–351 | 1 | 6.971667–6.971667 | PASS |
-| ev_008 | bounce | unknown | near | 399–400 | 2 | 7.938333–7.955000 | PASS |
-| ev_009 | hit | near | near | 434–435 | 2 | 8.638333–8.655000 | PASS |
+El décimo evento coincide con la captura humana actual y con el índice VFR:
 
-Conteos: `serve=1`, `bounce=4`, `hit=4`; jugador `near=3`, `far=2`, `unknown=4`;
-lado `near=5`, `far=4`; eventos puntuales `5`; eventos multiframe `4`.
+| Campo | `ev_010` |
+| --- | --- |
+| Tipo | `bounce` |
+| Jugador/lado | `unknown/far` |
+| Frames | `463–463` |
+| Cantidad | `1` |
+| Timestamp | `9.221667–9.221667 s` |
+| `shot_type` / `court_zone` | `unknown` / `unknown` |
+| `source` | `manual_annotation` |
+| `notes` | vacío, conservado del archivo guardado |
 
-## Normalización
+Frame 463 en `frame_timestamps.json` tiene timestamp `9.221667` y el error guardado es
+`0.0 s`.
 
-El loader acepta ahora `--annotation`, `--output`, `--frame-timestamps` y `--clip-id`.
-Para A2 exige timestamps explícitos derivados del índice VFR, conserva rangos inclusivos
-y registra `clip_id=nivel_a2_01`, `timing_mode=variable_frame_rate` y
-`frames_total=527`. El modo histórico basado en FPS se conserva para Madrid.
+| ID | Tipo | Jugador | Lado | Frames | Cantidad | Timestamps (s) |
+| --- | --- | --- | --- | --- | ---: | --- |
+| ev_001 | serve | near | near | 139–139 | 1 | 2.771667–2.771667 |
+| ev_002 | bounce | unknown | far | 158–158 | 1 | 3.138333–3.138333 |
+| ev_003 | hit | far | far | 200–200 | 1 | 3.955000–3.955000 |
+| ev_004 | bounce | unknown | near | 262–264 | 3 | 5.188333–5.238333 |
+| ev_005 | hit | near | near | 287–288 | 2 | 5.688333–5.721667 |
+| ev_006 | bounce | unknown | far | 327–327 | 1 | 6.488333–6.488333 |
+| ev_007 | hit | far | far | 351–351 | 1 | 6.971667–6.971667 |
+| ev_008 | bounce | unknown | near | 399–400 | 2 | 7.938333–7.955000 |
+| ev_009 | hit | near | near | 434–435 | 2 | 8.638333–8.655000 |
+| ev_010 | bounce | unknown | far | 463–463 | 1 | 9.221667–9.221667 |
 
-Resultado:
+Conteos: `serve=1`, `hit=4`, `bounce=5`; eventos puntuales `6`; multiframe `4`;
+jugador `near=3`, `far=2`, `unknown=5`; lado `near=5`, `far=5`.
 
-- `outputs/nivel_a2_01/stage_4/events.json`;
-- 9 eventos, mismos IDs, orden, categorías, rangos, timestamps, notas y fuente;
-- SHA-256: `0a63fc219adad385684f92c2ae12e54574f53e7e367a9270631e09ae51c500f0`.
+## Normalización y outputs
 
-## Material de revisión
+El loader A2 se ejecutó con el video canónico, manifest, `frame_timestamps.json` y el
+archivo final. Registró `clip_id=nivel_a2_01`, `frames_total=527` y
+`timing_mode=variable_frame_rate`, sin modificar `manual_annotation.json`.
 
-### Overlay
+### Overlay completo
 
-`outputs/nivel_a2_01/stage_4/events_overlay.mp4`
+[events_overlay.mp4](/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2/outputs/nivel_a2_01/stage_4/events_overlay.mp4)
 
-- modo `canonical_vfr`;
-- H.264, `2746×1536`;
-- 527 frames decodificados, IDs `0–526`;
-- duración reportada `10.471668 s`, coherente con el timestamp del último frame;
-- intervalos observados `0.016666`, `0.016667`, `0.021667` y `0.033334 s`;
-- primer y último frame legibles;
-- eventos puntuales y fases `START`, `ACTIVE`, `END` verificadas;
-- SHA-256: `157464605646fd9bb74ccac1f42c9fdca889e7057c215d83d2527897277936b9`.
+- `527` frames, IDs `0–526`, primer y último frame legibles;
+- orientación `2746×1536`;
+- VFR preservado con múltiples intervalos;
+- `ev_010` visible exactamente en frame 463 con timestamp `9.221667`;
+- SHA-256: `d68df49ccd895722eaf976a1d36714d7c72042bb4dd25ba58384b81571fdcb31`.
 
-### Timeline
+### Timeline y contact sheet
 
-`outputs/nivel_a2_01/stage_4/events_timeline.png`
+[events_timeline.png](/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2/outputs/nivel_a2_01/stage_4/events_timeline.png)
+contiene 10 eventos visibles, incluido el quinto bote y `ev_010` después de `ev_009`.
 
-- eje temporal VFR;
-- 9 eventos visibles, incluidos los cinco eventos puntuales;
-- tabla inferior con rangos y tiempos completos;
-- imagen legible de `2316×1259`;
-- SHA-256: `1452398914eae60f1d49effbf9c3ec2e6f9465a802c01feff92e7a035bce9ed6`.
+[events_contact_sheet.png](/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2/outputs/nivel_a2_01/stage_4/events_contact_sheet.png)
+contiene 10 secciones en orden, con `[461, 462, 463, 464, 465]` para `ev_010`.
 
-### Contact sheet
+### Revisión focalizada del último bote
 
-`outputs/nivel_a2_01/stage_4/events_contact_sheet.png`
+[final_bounce_review.mp4](/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2/outputs/nivel_a2_01/stage_4/final_bounce_review.mp4)
+es una revisión canónica VFR de 53 frames (`428–480`) que incluye `ev_009`, `ev_010`,
+tracking opcional y las etiquetas `ULTIMO GOLPE | ev_009` y `BOTE TERMINAL | ev_010`.
 
-- 9 secciones en orden `ev_001`–`ev_009`;
-- cinco vistas contextuales por evento;
-- frames puntuales sin imágenes duplicadas;
-- IDs, timestamps, tipo y jugador/lado visibles;
-- imagen legible de `1800×2646`;
-- SHA-256: `aed2177e8109077f81a9d70502bcaa7301bd7aa14ec374cba37cc662c178c7ac`.
-
-El reporte de máquina está en
-`outputs/nivel_a2_01/stage_4/events_report.json`.
+[final_bounce_contact_sheet.png](/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2/outputs/nivel_a2_01/stage_4/final_bounce_contact_sheet.png)
+contiene exactamente los frames `459–467` y marca `463` con borde y etiqueta visible.
 
 ## Validación automática
 
-- `uv run pytest`: 157 passed;
+- `uv run pytest`: 160 passed;
 - `uv run ruff check .`: passed;
 - `uv run python -m compileall src scripts tests`: passed;
 - `uv run python scripts/replit_smoke_test.py`: passed;
 - `git diff --check`: passed.
 
-Los tests cubren la anotación A2 de nueve eventos, frame→timestamp, eventos puntuales y
-multiframe, orden, IDs duplicados, bounds, loader VFR, overlay canónico de 527 frames,
-VFR, último frame, timeline, contact sheet y compatibilidad histórica CFR.
+Los tests cubren diez eventos, conservación de `ev_001`–`ev_009`, `ev_010` en frame 463,
+cinco botes, loader VFR, overlay de 527 frames, timeline, contact sheet, revisión
+terminal y compatibilidad histórica CFR.
 
-## Límites y gate
+## Estado y límites
 
-Los eventos siguen siendo evidencia humana, no detecciones automáticas. La inspección
-técnica confirmó que los artefactos son legibles y estructuralmente correctos, pero no
-reemplaza el juicio visual del usuario.
-
-Stage 4 permanece abierta en `IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`. Stage 2 y Stage 3
-no se recalcularon; RunPod, SSH, GPU y WASB no se utilizaron; Stage 5 no comenzó.
+El material está preparado para el gate visual final. No se diseñó reconstrucción de
+altura, cámara 3D ni vista superior/lateral. Stage 4 no se cierra automáticamente.
+RunPod, SSH, GPU y WASB no se utilizaron; Stage 2 y Stage 3 no se recalcularon; Stage 5
+no comenzó.

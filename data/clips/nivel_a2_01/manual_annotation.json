@@ -169,6 +169,24 @@
       "court_zone": "unknown",
       "source": "manual_annotation",
       "notes": ""
+    },
+    {
+      "id": "ev_010",
+      "type": "bounce",
+      "frame_start": 463,
+      "frame_end": 463,
+      "frame_range": [
+        463,
+        463
+      ],
+      "time_start_seconds": 9.221667,
+      "time_end_seconds": 9.221667,
+      "player": "unknown",
+      "side": "far",
+      "shot_type": "unknown",
+      "court_zone": "unknown",
+      "source": "manual_annotation",
+      "notes": ""
     }
   ],
   "ball_manual_positions": [],

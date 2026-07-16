@@ -1,6 +1,6 @@
 # Rediseño del anotador de Stage 4 — Nivel A2
 
-**Estado:** `IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`
+**Estado:** `IMPLEMENTED_PENDING_FINAL_HUMAN_VISUAL_GATE`
 
 **Fecha:** 2026-07-15
 

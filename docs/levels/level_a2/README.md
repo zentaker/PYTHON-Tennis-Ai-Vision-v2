@@ -1,7 +1,7 @@
 # Nivel A2 - `nivel_a2_01`
 
 **Estado:** Stage 1, Stage 2 y Stage 3 cerradas exitosamente; Stage 4
-`IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`; Stage 5 `NOT_STARTED`
+`IMPLEMENTED_PENDING_FINAL_HUMAN_VISUAL_GATE`; Stage 5 `NOT_STARTED`
 **Fecha de actualización:** 2026-07-15
 
 ## Clip seleccionado
@@ -45,7 +45,7 @@ sin modificar el MP4.
 | 1 | Cerrada exitosa; gates numerico y visual aprobados |
 | 2 | Cerrada exitosamente; gate visual humano A |
 | 3 | Cerrada exitosamente; gate visual humano A |
-| 4 | `IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`; 9 eventos procesados |
+| 4 | `IMPLEMENTED_PENDING_FINAL_HUMAN_VISUAL_GATE`; 10 eventos procesados |
 | 5 | `NOT_STARTED` |
 | 6-7 | Pendientes |
 
@@ -128,10 +128,9 @@ ocultar su cobertura de `76.2808%`, `19` frames interpolados y `125` missing.
 - Ruta final de la anotación humana:
   `data/clips/nivel_a2_01/manual_annotation.json`.
 
-La anotación humana final contiene 9 eventos y fue normalizada sin pérdidas. Se generaron
-localmente `events.json`, overlay canónico VFR, timeline, contact sheet y reporte. Todos
-los artefactos técnicos pasaron sus validaciones; Stage 4 sigue abierta hasta el gate
-visual humano.
+La anotación humana final contiene 10 eventos; el décimo es el bote terminal `ev_010` en
+frame 463. Los nueve eventos anteriores no cambiaron. Se regeneraron los artefactos
+técnicos y pasaron sus validaciones; Stage 4 sigue abierta hasta el gate visual final.
 
-WASB no se ejecutó en macOS durante esta pasada. Stage 4 espera la anotación humana y
+WASB no se ejecutó en macOS durante esta pasada. Stage 4 espera el gate visual final y
 Stage 5 no se inició.

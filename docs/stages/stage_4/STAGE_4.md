@@ -1,6 +1,6 @@
 # STAGE 4 - Deteccion y normalizacion de eventos
 
-**Estado:** `IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`
+**Estado:** `IMPLEMENTED_PENDING_FINAL_HUMAN_VISUAL_GATE`
 **Nivel:** A
 **Fecha de preparacion:** 2026-05-19
 **Fecha de implementacion base:** 2026-07-13
@@ -8,7 +8,7 @@
 ## Estado operativo Nivel A2
 
 Desde 2026-07-15, Stage 1–3 de `nivel_a2_01` están cerradas y Stage 4 se encuentra en
-`IMPLEMENTED_PENDING_HUMAN_VISUAL_GATE`. El nuevo anotador local pasó su self-test real
+`IMPLEMENTED_PENDING_FINAL_HUMAN_VISUAL_GATE`. El nuevo anotador local pasó su self-test real
 `30/30`: 527 frames exactos, IDs `0–526`, timestamps estrictos y resolución
 `2746×1536`. La guía de uso está en
 `docs/levels/level_a2/stage_4_annotation_guide.md` y el diseño verificado en
@@ -17,10 +17,11 @@ Desde 2026-07-15, Stage 1–3 de `nivel_a2_01` están cerradas y Stage 4 se encu
 La aplicación recibe el video por CLI y oculta todos los inputs técnicos. La página
 estática histórica quedó retirada porque no garantizaba navegación frame-accurate.
 
-La anotación humana final de A2 contiene 9 eventos. El loader VFR la normalizó sin
-pérdidas y se generaron overlay canónico, timeline y contact sheet. El reporte completo
-está en `docs/levels/level_a2/stage_4_execution_report.md`. El cierre histórico de Madrid
-permanece compatible y separado del gate A2.
+La anotación humana final de A2 contiene 10 eventos; el usuario añadió el bote terminal
+`ev_010` en frame 463 después de la primera versión de nueve eventos. El loader VFR la
+normalizó sin pérdidas y se generaron overlay canónico, timeline, contact sheet y revisión
+focalizada. El reporte completo está en `docs/levels/level_a2/stage_4_execution_report.md`.
+El cierre histórico de Madrid permanece compatible y separado del gate A2.
 
 ## Proposito
 
@@ -40,6 +41,7 @@ Implementado:
 - overlay CFR histórico y canónico VFR en `src/events/render_events_overlay.py`;
 - timeline VFR en `src/events/render_events_timeline.py`;
 - contact sheet en `src/events/render_events_contact_sheet.py`;
+- revisión focalizada del bote terminal en `src/events/render_terminal_bounce_review.py`;
 - runner reproducible A2 en `src/events/run_stage4_a2.py`;
 - aplicación local frame-accurate `tools/event_annotator_app/`;
 - autosave, restore, undo y export validado;
