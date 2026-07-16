@@ -154,7 +154,14 @@ class VerticalReferenceSession:
         checks["autosave_restore"] = True
         checks["vertical_model"] = len(REFERENCE_ORDER) == 4
         checks["input_hashes"] = all(len(_sha256(path)) == 64 for path in (self.frame_path, self.homography_path, self.camera_path))
-        checks["stage5b_not_started"] = not (OUTPUT_ROOT / self.clip_id / "stage_5b").exists()
+        # Stage 5B may now exist; the 5A.1 contract is that it never mutates
+        # the human reference or any Stage 1--4 input.
+        stage5b_output = OUTPUT_ROOT / self.clip_id / "stage_5b"
+        checks["stage5b_isolated"] = not stage5b_output.is_dir() or all(
+            path.resolve().is_relative_to(stage5b_output.resolve())
+            for path in stage5b_output.rglob("*")
+            if path.is_file()
+        )
         checks["event_annotator_isolated"] = (ROOT / "tools" / "event_annotator_app").is_dir()
         checks["no_gpu_dependency"] = True
         checks["status_contract"] = True

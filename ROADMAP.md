@@ -3,7 +3,7 @@
 **Version:** 0.3
 **Fecha de creacion:** 2026-05-18
 **Fecha de reconciliacion:** 2026-07-13
-**Estado:** Activo - Stage 5B Nivel A2 listo para iniciar bajo instrucción explícita
+**Estado:** Activo - Stage 5B Nivel A2 baseline ejecutado, pendiente gate humano 3D
 
 La pasada de datos activa es Nivel A2. Stage 1–4 están cerradas con gates aprobados y la
 la auditoría de cámara Stage 5A terminó con `READY_FOR_STAGE_5B` tras evaluar Stage 5A.1.
@@ -24,9 +24,9 @@ Construir un sistema que, dado un video de broadcast de tenis con camara fija, g
 - [x] Stage 2 - Deteccion de pelota con WASB, con limitaciones conocidas.
 - [x] Stage 3 - Trayectoria suavizada y gate visual.
 - [x] Stage 4 - Eventos. A2 cerrada exitosamente con gate humano A.
-- [x] Stage 5A - Calibración de cámara 3D y observabilidad. A2 lista para Stage 5B.
+- [x] Stage 5A - Calibración de cámara 3D y observabilidad. Cerrada con referencia refinada.
 - [x] Stage 5A.1 - Referencia vertical de red. Cuatro clics y evaluación cerrados.
-- [ ] Stage 5B - Reconstrucción física X,Y,Z. No iniciada.
+- [x] Stage 5B - Reconstrucción física X,Y,Z. Baseline marginal; pendiente gate humano.
 - [ ] Stage 5C - Vista superior derivada de X,Y. No iniciada.
 - [ ] Stage 6 - Vista lateral derivada de distancia,Z. No iniciada.
 - [ ] Stage 7 - Metricas y validacion final. No iniciada.
@@ -95,14 +95,14 @@ Estado: cerrada exitosamente para A2. Gate humano final: A.
 Auditar la homografía, construir un modelo pinhole assumption-based, medir sensibilidad
 vertical y segmentar vuelos. No reconstruye todavía la pelota en 3D.
 
-Estado: `READY_FOR_STAGE_5B`. La referencia vertical y su estabilidad ya fueron evaluadas.
+Estado: cerrada con calibración vertical refinada; readiness `READY_FOR_STAGE_5B`.
 
 ### Stage 5B - Reconstrucción física X,Y,Z
 
 Ajustar por segmento X,Y,Z con reproyección, restricciones Z=0 en botes y dinámica
 balística. El diseño está documentado, pero la implementación aún no comenzó.
 
-Estado: no iniciada.
+Estado: baseline ejecutado; `BALLISTIC_BASELINE_MARGINAL`, pendiente gate humano 3D.
 
 ### Stage 5C - Vista superior derivada
 

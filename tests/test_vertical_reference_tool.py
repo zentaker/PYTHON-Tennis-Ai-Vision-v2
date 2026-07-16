@@ -25,7 +25,7 @@ def test_self_test_passes_without_gpu_or_event_annotator_state() -> None:
     assert session.self_test["core_self_test"] == "PASS"
     assert session.self_test["browser_e2e_test"] == "RUN_SEPARATELY"
     assert session.self_test["check_count"] == 28
-    assert session.self_test["checks"]["stage5b_not_started"]
+    assert session.self_test["checks"]["stage5b_isolated"]
     assert session.self_test["checks"]["event_annotator_isolated"]
 
 

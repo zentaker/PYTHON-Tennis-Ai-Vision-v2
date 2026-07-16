@@ -1,7 +1,7 @@
 # Stage 5A A2 — Cámara y observabilidad
 
-**Estado:** `IN_PROGRESS`  
-**Decisión de readiness:** `NEEDS_VERTICAL_REFERENCE`  
+**Estado:** `CLOSED_WITH_REFINED_VERTICAL_CALIBRATION`
+**Decisión de readiness:** `READY_FOR_STAGE_5B`
 **Método:** `ASSUMPTION_BASED_MONOCULAR_CALIBRATION`
 
 ## Convención 3D

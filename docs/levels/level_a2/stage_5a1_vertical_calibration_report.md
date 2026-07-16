@@ -1,6 +1,6 @@
 # Stage 5A.1 — Evaluación de referencia vertical A2
 
-**Estado calculado:** `READY_FOR_STAGE_5B`  
+**Estado:** `CLOSED_SUCCESSFULLY` · **Readiness calculado:** `READY_FOR_STAGE_5B`
 **Referencia humana SHA-256:** `e33512a98b0e1acad00ae7eef2c4e5fc820a0538c8f7b06e8e6ea0ca04644b73`  
 **Candidato seleccionado:** `f1.90_dx0_dy0`
 
@@ -51,6 +51,5 @@ altura ≤15%, profundidad positiva y ausencia de bias sistemático. Todos pasar
 - `outputs/nivel_a2_01/stage_5a1/vertical_calibration_overlay.png`
 - `outputs/nivel_a2_01/stage_5a1/vertical_calibration_closeup.png`
 
-La ejecución no recalculó Stage 2/3, no modificó Stage 4 y no inició Stage 5B. La
-decisión `READY_FOR_STAGE_5B` queda registrada, pero Stage 5B no se ejecuta en esta
-pasada; requiere una instrucción posterior.
+La ejecución no recalculó Stage 2/3 ni modificó Stage 4. Stage 5A.1 queda cerrada y la
+decisión `READY_FOR_STAGE_5B` autorizó la pasada 3D descrita en el reporte de Stage 5B.

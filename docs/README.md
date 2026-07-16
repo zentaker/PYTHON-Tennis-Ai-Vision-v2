@@ -11,7 +11,9 @@ La documentacion de este proyecto es parte del producto. Cada etapa debe dejar e
 - Stage 5A A2: `levels/level_a2/stage_5a_camera_calibration_report.md`
 - Herramienta Stage 5A.1: `levels/level_a2/stage_5a1_vertical_reference_tool.md`
 - Evaluación Stage 5A.1: `levels/level_a2/stage_5a1_vertical_calibration_report.md`
-- Diseño Stage 5B (no iniciado): `levels/level_a2/stage_5b_3d_reconstruction_design.md`
+- Cierre Stage 5A.1: `levels/level_a2/stage_5a1_exit_report.md`
+- Diseño Stage 5B: `levels/level_a2/stage_5b_3d_reconstruction_design.md`
+- Ejecución Stage 5B: `levels/level_a2/stage_5b_execution_report.md`
 - Recuperacion de assets Stage 4: `stages/stage_4/ASSET_RECOVERY.md`
 - Nivel A2 activo: `levels/level_a2/README.md`
 - Ejecución Stage 4 A2: `levels/level_a2/stage_4_execution_report.md`

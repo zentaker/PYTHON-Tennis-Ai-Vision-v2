@@ -1,7 +1,7 @@
 # Nivel A2 - `nivel_a2_01`
 
-**Estado:** Stage 1–4 `CLOSED_SUCCESSFULLY`; Stage 5A `READY_FOR_STAGE_5B`;
-Stage 5A.1 `CLOSED_SUCCESSFULLY`; Stage 5B/5C y Stage 6 `NOT_STARTED`
+**Estado:** Stage 1–4 `CLOSED_SUCCESSFULLY`; Stage 5A y 5A.1 cerradas;
+Stage 5B `IN_PROGRESS` (`BALLISTIC_BASELINE_MARGINAL`); Stage 5C y Stage 6 `NOT_STARTED`
 **Fecha de actualización:** 2026-07-15
 
 ## Clip seleccionado
@@ -46,9 +46,9 @@ sin modificar el MP4.
 | 2 | Cerrada exitosamente; gate visual humano A |
 | 3 | Cerrada exitosamente; gate visual humano A |
 | 4 | `CLOSED_SUCCESSFULLY`; gate humano A; 10 eventos procesados |
-| 5A | `READY_FOR_STAGE_5B`; calibración vertical evaluada |
+| 5A | `CLOSED_WITH_REFINED_VERTICAL_CALIBRATION` |
 | 5A.1 | `CLOSED_SUCCESSFULLY`; cuatro referencias y jitter aprobados |
-| 5B | `NOT_STARTED`; diseño documentado, sin reconstrucción |
+| 5B | `IN_PROGRESS`; baseline balístico ejecutado, pendiente gate humano 3D |
 | 5C | `NOT_STARTED`; vista superior derivada de X,Y |
 | 6 | `NOT_STARTED`; vista lateral derivada de distancia,Z |
 
@@ -135,6 +135,6 @@ La anotación humana final contiene 10 eventos; el décimo es el bote terminal `
 frame 463. El usuario aprobó el material con gate humano A y Stage 4 está cerrada
 exitosamente. Stage 5A audita la cámara sin modificar la anotación.
 
-WASB no se ejecutó en macOS durante esta pasada. Stage 4 está cerrada; Stage 5A.1
-conserva las cuatro referencias humanas y la evaluación real produjo `READY_FOR_STAGE_5B`.
-Stage 5B todavía no se ha iniciado.
+WASB, RunPod y GPU no se utilizaron en esta pasada. Stage 4 está cerrada; Stage 5A y
+5A.1 conservan las cuatro referencias humanas. Stage 5B generó un baseline marginal y
+queda pendiente el gate visual humano 3D; Stage 5C y Stage 6 no comenzaron.
