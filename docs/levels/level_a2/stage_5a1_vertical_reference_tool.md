@@ -52,9 +52,12 @@ automáticamente.
 
 ## Self-test
 
-`GET /api/self-test` debe devolver `PASS` con 28 comprobaciones antes de desbloquear la
-interfaz: inputs, hashes, resolución, homografía, modelo, candidatos, sistema de
+`GET /api/self-test` devuelve `core_self_test=PASS` con 28 comprobaciones antes de
+desbloquear la interfaz: inputs, hashes, resolución, homografía, modelo, candidatos, sistema de
 coordenadas, transformación de canvas, zoom/pan/DPR, autosave/restore, clasificación,
 aislamiento del anotador y ausencia de Stage 5B/GPU.
+
+El `browser_e2e_test` se ejecuta aparte sobre una instancia real de Chrome y una sesión
+descartable; solo se considera entrega lista cuando ambos resultados son correctos.
 
 No se usan RunPod, SSH, GPU, CUDA, PyTorch, WASB ni automatización de mouse.

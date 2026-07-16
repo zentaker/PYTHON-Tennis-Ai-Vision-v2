@@ -22,6 +22,8 @@ def test_canvas_mapping_contains_zoom_pan_and_canonical_corners() -> None:
 def test_self_test_passes_without_gpu_or_event_annotator_state() -> None:
     session = VerticalReferenceSession("nivel_a2_01")
     assert session.self_test["status"] == "PASS"
+    assert session.self_test["core_self_test"] == "PASS"
+    assert session.self_test["browser_e2e_test"] == "RUN_SEPARATELY"
     assert session.self_test["check_count"] == 28
     assert session.self_test["checks"]["stage5b_not_started"]
     assert session.self_test["checks"]["event_annotator_isolated"]
@@ -36,4 +38,3 @@ def test_post_classification_uses_regulation_geometry() -> None:
     candidate = session.classify_post(pixel)
     assert candidate is not None
     assert candidate.side == "left"
-

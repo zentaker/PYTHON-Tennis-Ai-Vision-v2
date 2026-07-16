@@ -30,10 +30,16 @@ REFERENCE_LABELS = {
     "net_post_top": "Poste: parte superior",
 }
 REFERENCE_INSTRUCTIONS = (
-    "Haz clic en el punto del suelo justo debajo del centro de la red.",
-    "Haz clic en la parte superior de la red, exactamente sobre el punto anterior.",
-    "Haz clic en la base de un poste vertical visible de la red.",
-    "Haz clic en la parte superior del mismo poste.",
+    "Marca el punto donde la cinta central de la red toca el suelo.",
+    "Marca la parte superior de la red directamente encima del punto anterior.",
+    "Marca la base de uno de los postes laterales que sostiene la red.",
+    "Marca la parte superior del mismo poste.",
+)
+REFERENCE_STEPS = (
+    {"id": "net_center_base", "title": "Centro de red — piso", "instruction": REFERENCE_INSTRUCTIONS[0], "description": "Es el punto inferior de la cinta vertical ubicada en el centro de la red."},
+    {"id": "net_center_top", "title": "Centro de red — parte superior", "instruction": REFERENCE_INSTRUCTIONS[1], "description": "Marca la banda superior blanca en el centro de la red."},
+    {"id": "net_post_base", "title": "Poste — base", "instruction": REFERENCE_INSTRUCTIONS[2], "description": "Elige un poste visible y marca el punto donde toca el suelo."},
+    {"id": "net_post_top", "title": "Mismo poste — parte superior", "instruction": REFERENCE_INSTRUCTIONS[3], "description": "Debe ser exactamente el mismo poste utilizado en el paso anterior."},
 )
 
 
@@ -67,10 +73,11 @@ class PostCandidate:
 class VerticalReferenceSession:
     """One isolated guided session; it never touches Stage 4 annotation state."""
 
-    def __init__(self, clip_id: str) -> None:
+    def __init__(self, clip_id: str, state_root: Path | None = None) -> None:
         if clip_id != "nivel_a2_01":
             raise VerticalReferenceError("Clip no autorizado para esta herramienta.")
         self.clip_id = clip_id
+        self.state_root = state_root
         self.clip_dir = CLIP_ROOT / clip_id
         self.frame_path = self.clip_dir / "reference_frame.png"
         self.homography_path = self.clip_dir / "homography.json"
@@ -90,11 +97,11 @@ class VerticalReferenceSession:
 
     @property
     def draft_path(self) -> Path:
-        return OUTPUT_ROOT / self.clip_id / "stage_5a1" / "vertical_reference_draft.json"
+        return (self.state_root / "vertical_reference_draft.json") if self.state_root else OUTPUT_ROOT / self.clip_id / "stage_5a1" / "vertical_reference_draft.json"
 
     @property
     def final_path(self) -> Path:
-        return self.clip_dir / "vertical_reference.json"
+        return (self.state_root / "vertical_reference.json") if self.state_root else self.clip_dir / "vertical_reference.json"
 
     @property
     def post_candidates(self) -> list[tuple[str, str, float]]:
@@ -147,12 +154,13 @@ class VerticalReferenceSession:
         checks["validation_contract"] = callable(self.validate)
         checks["classification_contract"] = callable(self.classify_post) and len(self.post_candidates) == 4
         checks["ui_has_no_file_selector"] = "type=\"file\"" not in (Path(__file__).with_name("static") / "index.html").read_text(encoding="utf-8")
-        checks["drafts_are_ignored_outputs"] = "outputs/" in str(self.draft_path)
+        checks["drafts_are_ignored_outputs"] = self.state_root is not None or "outputs/" in str(self.draft_path)
         failed = [name for name, passed in checks.items() if not passed]
-        return {"status": "PASS" if not failed else "FAIL", "checks": checks, "failed": failed, "check_count": 28}
+        status = "PASS" if not failed else "FAIL"
+        return {"status": status, "core_self_test": status, "browser_e2e_test": "RUN_SEPARATELY", "checks": checks, "failed": failed, "check_count": 28}
 
     def session_payload(self) -> dict[str, Any]:
-        return {"ready": self.ready, "clip_id": self.clip_id, "width": WIDTH, "height": HEIGHT, "image_url": "/api/frame", "step": len(self.points), "total_steps": 4, "points": self.points, "instructions": list(REFERENCE_INSTRUCTIONS), "labels": REFERENCE_LABELS, "draft_available": self.draft_path.exists(), "draft_steps": len(self.points), "self_test_status": self.self_test["status"]}
+        return {"ready": self.ready, "clip_id": self.clip_id, "width": WIDTH, "height": HEIGHT, "image_url": "/api/frame", "step": len(self.points), "total_steps": 4, "points": self.points, "steps": list(REFERENCE_STEPS), "instructions": list(REFERENCE_INSTRUCTIONS), "labels": REFERENCE_LABELS, "draft_available": self.draft_path.exists(), "draft_steps": len(self.points), "self_test_status": self.self_test["status"]}
 
     def classify_post(self, pixel: tuple[float, float]) -> PostCandidate | None:
         xy = apply_homography(np.asarray(self.homography["H_pixel_to_court"], dtype=np.float64), np.asarray([pixel], dtype=np.float64))[0]
@@ -222,12 +230,12 @@ class VerticalReferenceSession:
             references.append({"id": reference_id, "pixel": item["pixel"], "world": world_by_id[reference_id], "known_height_m": world_by_id[reference_id][2], **({"reference_type": item["reference_type"], "side": item["side"]} if "side" in item else {})})
         payload = {"schema_version": 1, "clip_id": self.clip_id, "frame_path": "data/clips/nivel_a2_01/reference_frame.png", "frame_sha256": _sha256(self.frame_path), "frame_dimensions": {"width": WIDTH, "height": HEIGHT}, "coordinate_system": {"units": "meters", "origin": "court_center_net", "x": "left_to_right", "y": "net_to_far_baseline", "z": "up"}, "references": references, "source_homography_sha256": _sha256(self.homography_path), "source_camera_model_sha256": _sha256(self.camera_path), "created_at": datetime.now(timezone.utc).isoformat(), "source": "human_vertical_reference"}
         self.final_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-        backup_dir = OUTPUT_ROOT / self.clip_id / "stage_5a1" / "backups"
+        backup_dir = (self.state_root / "backups") if self.state_root else OUTPUT_ROOT / self.clip_id / "stage_5a1" / "backups"
         backup_dir.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
         (backup_dir / f"vertical_reference_{timestamp}.json").write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         refined, metrics = self.recalibrate(references)
-        stage_dir = OUTPUT_ROOT / self.clip_id / "stage_5a1"
+        stage_dir = self.state_root if self.state_root else OUTPUT_ROOT / self.clip_id / "stage_5a1"
         refined.write_json(stage_dir / "camera_model_refined.json", status="MARGINAL_VERTICAL_CALIBRATION", source_vertical_reference_sha256=_sha256(self.final_path), metrics=metrics)
         report = {"status": "MARGINAL_VERTICAL_CALIBRATION", "references": references, "metrics": metrics, "readiness": "STILL_NEEDS_VERTICAL_REFERENCE", "note": "Recalibration is prepared and does not start Stage 5B."}
         (stage_dir / "vertical_calibration_report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

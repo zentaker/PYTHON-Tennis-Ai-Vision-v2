@@ -14,6 +14,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--clip-id", required=True)
     parser.add_argument("--port", type=int, default=8766)
+    parser.add_argument("--open-browser", action="store_true", help="Abrir explícitamente el navegador")
     parser.add_argument("--no-open", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     if not 0 <= args.port <= 65535:
@@ -31,7 +32,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"URL: {url}", flush=True)
     if not session.ready:
         print("Herramienta bloqueada: self-test fallido", file=sys.stderr, flush=True)
-    elif not args.no_open and sys.platform == "darwin":
+    elif args.open_browser and not args.no_open and sys.platform == "darwin":
         subprocess.Popen(["open", url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
         server.serve_forever()

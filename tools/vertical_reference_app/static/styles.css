@@ -6,11 +6,16 @@ h1 { margin:0; font-size:1.35rem; } header p { margin:.35rem 0 0; color:#b8c5d1;
 main { width:min(1500px, 100%); margin:auto; padding:1rem; }
 .viewer-card, .confirmation { background:#19232e; border:1px solid #324353; border-radius:12px; padding:1rem; }
 .instruction { min-height:2.5rem; font-size:1.2rem; font-weight:600; color:#ffe29a; padding:.3rem 0 .8rem; }
+.explanation { margin:.1rem 0 .8rem; color:#cbd6df; }
+.step-panel { display:grid; grid-template-columns:repeat(4, 1fr); gap:.5rem; margin-bottom:.8rem; }
+.step-item { border:1px solid #405363; border-radius:7px; padding:.55rem; display:grid; gap:.25rem; color:#aebdca; background:#15202a; }
+.step-item strong { color:#f5f7fa; font-size:.9rem; }.step-item small { font-size:.75rem; line-height:1.25; }.step-item.current { border-color:#ffd166; box-shadow:0 0 0 1px #ffd166; }.step-item.complete { border-color:#00c2a8; }.step-item span { font-size:.75rem; color:#ffd166; }.step-item.complete span { color:#00e5c0; }
 .viewport { position:relative; width:100%; height:min(72vh, 820px); min-height:360px; overflow:hidden; background:#05080b; border-radius:8px; touch-action:none; }
 #canvas { display:block; width:100%; height:100%; cursor:crosshair; }
 #crosshair { position:absolute; width:22px; height:22px; border:2px solid #00e5ff; border-radius:50%; pointer-events:none; transform:translate(-50%,-50%); }
 #loupe { position:absolute; width:220px; height:220px; border:2px solid #ffd166; border-radius:50%; pointer-events:none; background:#0a1016; box-shadow:0 4px 18px #000b; }
-.tools { display:flex; flex-wrap:wrap; gap:.45rem; align-items:center; padding-top:.8rem; } button { border:1px solid #536779; background:#253443; color:#f5f7fa; border-radius:6px; padding:.55rem .75rem; cursor:pointer; } button:hover { background:#34506a; } button:disabled { opacity:.45; cursor:not-allowed; } .primary { background:#087f5b; border-color:#0ca678; }
+.tools, .point-actions { display:flex; flex-wrap:wrap; gap:.45rem; align-items:center; padding-top:.8rem; } button { border:1px solid #536779; background:#253443; color:#f5f7fa; border-radius:6px; padding:.55rem .75rem; cursor:pointer; } button:hover { background:#34506a; } button:disabled { opacity:.45; cursor:not-allowed; } button.selected { background:#0b806f; border-color:#00e5c0; } .primary { background:#087f5b; border-color:#0ca678; }
 .message { min-height:1.4rem; color:#ffd166; margin:.8rem 0 0; } .error { color:#ff9b9b; }
 .confirmation { margin-top:1rem; } .confirmation h2 { margin-top:0; font-size:1.1rem; } #pointList { display:grid; gap:.35rem; color:#cbd6df; } .actions { display:flex; gap:.5rem; margin-top:1rem; }
-@media (max-width:700px) { header { padding:.8rem; } main { padding:.6rem; } .viewport { min-height:280px; } }
+@media (max-width:900px) { .step-panel { grid-template-columns:repeat(2, 1fr); } }
+@media (max-width:700px) { header { padding:.8rem; } main { padding:.6rem; } .viewport { min-height:280px; } .step-panel { grid-template-columns:1fr; } }
