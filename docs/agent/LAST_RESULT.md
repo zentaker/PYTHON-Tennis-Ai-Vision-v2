@@ -1,5 +1,8 @@
 # Last result
 
+- Branch: `agent/player-perception-p1`
+- Foundation commit: `8b61845b02b3eb41122ee94a17c62bdd06bcefaa`
+
 ## Changes
 
 - Added the permanent agent contract and coordination state under `docs/agent/`.
