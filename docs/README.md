@@ -17,6 +17,11 @@ La documentacion de este proyecto es parte del producto. Cada etapa debe dejar e
 - Rechazo Stage 5B v1: `levels/level_a2/stage_5b_v1_rejection_report.md`
 - Diseño Stage 5B v2 anclado: `levels/level_a2/stage_5b_v2_anchored_reconstruction.md`
 - Ejecución Stage 5B v2: `levels/level_a2/stage_5b_v2_execution_report.md`
+- Rechazo Stage 5B v2: `levels/level_a2/stage_5b_v2_rejection_report.md`
+- ADR Player-Aware P1: `architecture/ADR_PLAYER_AWARE_PERCEPTION.md`
+- Contratos Player-Aware: `architecture/PLAYER_PERCEPTION_OUTPUTS.md`
+- Estado de coordinación: `agent/CURRENT_STATE.json`
+- Gate de proveedores GPU: `ops/GPU_PROVIDER_ACCEPTANCE_GATE.md`
 - Recuperacion de assets Stage 4: `stages/stage_4/ASSET_RECOVERY.md`
 - Nivel A2 activo: `levels/level_a2/README.md`
 - Ejecución Stage 4 A2: `levels/level_a2/stage_4_execution_report.md`

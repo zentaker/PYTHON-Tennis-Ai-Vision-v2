@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "branch": "agent/player-perception-p1",
+  "base_sha": "154c8476268dbb9ead9061d83a02d11a91e38abd",
+  "head_sha": "154c8476268dbb9ead9061d83a02d11a91e38abd",
+  "task": "Prepare reusable player-aware perception foundation; no heavy inference",
+  "status": "IN_PROGRESS",
+  "stages": {"stage_1_to_5a1": "VALIDATED", "stage_5b_v1": "REJECTED_BY_HUMAN_GATE", "stage_5b_v2": "REJECTED_BY_HUMAN_GATE", "stage_5c": "NOT_STARTED", "stage_6": "NOT_STARTED", "stage_p1": "PREPARATION_IN_PROGRESS"},
+  "tests": {},
+  "artifacts": [],
+  "blocker": null,
+  "next_action": "Implement and validate CPU-only player-aware contracts"
+}

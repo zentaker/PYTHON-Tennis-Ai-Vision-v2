@@ -3,7 +3,7 @@
 **Version:** 0.3
 **Fecha de creacion:** 2026-05-18
 **Fecha de reconciliacion:** 2026-07-13
-**Estado:** Activo - Stage 5B v1 rechazado; reimplementación anclada v2 en progreso
+**Estado:** Activo - Stage 5B v1/v2 rechazados; preparación Player-Aware P1 completada
 
 La pasada de datos activa es Nivel A2. Stage 1–4 están cerradas con gates aprobados y la
 la auditoría de cámara Stage 5A terminó con `READY_FOR_STAGE_5B` tras evaluar Stage 5A.1.
@@ -26,7 +26,7 @@ Construir un sistema que, dado un video de broadcast de tenis con camara fija, g
 - [x] Stage 4 - Eventos. A2 cerrada exitosamente con gate humano A.
 - [x] Stage 5A - Calibración de cámara 3D y observabilidad. Cerrada con referencia refinada.
 - [x] Stage 5A.1 - Referencia vertical de red. Cuatro clics y evaluación cerrados.
-- [ ] Stage 5B - Reconstrucción física X,Y,Z. v1 rechazado; v2 anclada en progreso.
+- [ ] Stage 5B - Reconstrucción física X,Y,Z. v1/v2 rechazados por gate humano; no reabrir sin evidencia.
 - [ ] Stage 5C - Vista superior derivada de X,Y. No iniciada.
 - [ ] Stage 6 - Vista lateral derivada de distancia,Z. No iniciada.
 - [ ] Stage 7 - Metricas y validacion final. No iniciada.
@@ -102,7 +102,8 @@ Estado: cerrada con calibración vertical refinada; readiness `READY_FOR_STAGE_5
 Ajustar por segmento X,Y,Z con reproyección, restricciones Z=0 en botes y dinámica
 balística. El diseño está documentado, pero la implementación aún no comenzó.
 
-Estado: `V1_REJECTED_REIMPLEMENTATION_IN_PROGRESS`; v2 ancla eventos a rayos y endpoints.
+Estado: v1 y v2 `REJECTED_BY_HUMAN_GATE`. No se ejecutará una v3 exclusivamente
+matemática; el siguiente trabajo es P1 player-aware tras el gate de proveedor GPU.
 
 ### Stage 5C - Vista superior derivada
 
