@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tennis-vision-ai.local/schemas/player-perception-model-bundle.json",
+  "title": "Player-aware perception model bundle",
+  "type": "object",
+  "required": ["schema_version", "detector", "tracker", "pose", "runtime", "license"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0"},
+    "detector": {"$ref": "#/$defs/model"},
+    "tracker": {
+      "type": "object",
+      "required": ["implementation", "high_threshold", "low_threshold", "match_threshold"],
+      "additionalProperties": false,
+      "properties": {
+        "implementation": {"type": "string"},
+        "high_threshold": {"type": "number", "minimum": 0, "maximum": 1},
+        "low_threshold": {"type": "number", "minimum": 0, "maximum": 1},
+        "match_threshold": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "pose": {"$ref": "#/$defs/model"},
+    "runtime": {
+      "type": "object",
+      "required": ["device", "precision", "batch_size", "model_cache_path"],
+      "additionalProperties": false,
+      "properties": {
+        "device": {"enum": ["cpu", "cuda", "auto"]},
+        "precision": {"enum": ["fp32", "fp16"]},
+        "batch_size": {"type": "integer", "minimum": 1},
+        "model_cache_path": {"type": "string", "pattern": "^(?!/).+"}
+      }
+    },
+    "license": {
+      "type": "object",
+      "required": ["source", "license", "notes"],
+      "additionalProperties": false,
+      "properties": {
+        "source": {"type": "string"},
+        "license": {"type": "string"},
+        "notes": {"type": "string"}
+      }
+    }
+  },
+  "$defs": {
+    "model": {
+      "type": "object",
+      "required": ["framework", "config", "checkpoint", "checksum_sha256", "input_size", "keypoint_convention"],
+      "additionalProperties": false,
+      "properties": {
+        "framework": {"type": "string"},
+        "config": {"type": "string", "pattern": "^(?!/).+"},
+        "checkpoint": {"type": "string", "pattern": "^(?!/).+"},
+        "checksum_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+        "input_size": {
+          "type": "array",
+          "prefixItems": [{"type": "integer", "minimum": 1}, {"type": "integer", "minimum": 1}],
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "confidence_threshold": {"type": "number", "minimum": 0, "maximum": 1},
+        "keypoint_convention": {"type": "string"}
+      }
+    }
+  }
+}

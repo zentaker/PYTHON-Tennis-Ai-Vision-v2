@@ -38,6 +38,11 @@ class PlayerTrack:
     bbox: BoundingBox
     identity: str = "unknown"
     confidence: float = 0.0
+    identity_confidence: float = 0.0
+    identity_reason: str = "insufficient_evidence"
+    identity_switch: bool = False
+    missing_interval_frames: int = 0
+    reassociated: bool = False
 
 
 @dataclass(frozen=True)
@@ -71,6 +76,9 @@ class FootAnchor:
     airborne_possible: bool
     fallback_used: bool
     support_side: str = "unknown"
+    low_confidence: bool = False
+    occluded: bool = False
+    smoothing_applied: bool = False
 
 
 @dataclass(frozen=True)
@@ -101,6 +109,8 @@ class ContactAudit:
     ball_wrist_distance_px: float | None
     confidence: float
     warnings: tuple[str, ...] = ()
+    frame_end: int | None = None
+    expected_identity: str = "unknown"
 
 
 @dataclass(frozen=True)
@@ -111,6 +121,20 @@ class FramePerception:
     poses: tuple[PlayerPose, ...]
     foot_anchors: tuple[FootAnchor, ...]
     court_positions: tuple[CourtPosition, ...]
+    timestamp_seconds: float = 0.0
+    width: int = 0
+    height: int = 0
+
+
+@dataclass(frozen=True)
+class FrameInput:
+    """One decoded frame passed to a backend in canonical BGR coordinates."""
+
+    frame_id: int
+    timestamp_seconds: float
+    image: Any
+    width: int
+    height: int
 
 
 @dataclass

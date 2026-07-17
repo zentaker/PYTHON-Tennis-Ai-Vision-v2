@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "clip_id": "nivel_a2_01",
+  "frames": [139, 140, 200, 201, 287, 288, 351, 352, 434, 435],
+  "events": ["ev_001", "ev_003", "ev_005", "ev_007", "ev_009"],
+  "purpose": "Ten-frame provider smoke only; visual accuracy remains a human gate."
+}

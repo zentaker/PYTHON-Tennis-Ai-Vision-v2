@@ -1,0 +1,21 @@
+# P1 GPU runtime compatibility
+
+This is a provider-neutral Linux/CUDA image. It is intentionally not built or run on
+the Intel Mac during this task.
+
+| Component | Pin | Rationale/source |
+|---|---|---|
+| Base OS | `pytorch/pytorch:2.3.1-cuda12.1-cudnn8-runtime` | Official PyTorch image tag; CUDA 12.1 runtime and Python 3.11 are supplied by the image. |
+| CUDA | 12.1 | Matches the pinned PyTorch image and common NVIDIA driver compatibility policy. |
+| PyTorch | 2.3.1 | Matches the official base image and avoids installing a second torch build. |
+| MMEngine | 0.10.4 | OpenMMLab 0.10 compatibility line for the pinned 2.x stack. |
+| MMCV | 2.1.0 | OpenMMLab 2.x compatibility line for MMDetection 3.x/MMPose 1.x. |
+| MMDetection | 3.3.0 | Stable 3.x API used by the lazy detector adapter. |
+| MMPose | 1.3.2 | Stable 1.x top-down inference API used by the pose adapter. |
+| FFmpeg | Ubuntu package | Required for video inspection and VFR assets. |
+
+Sources consulted: the official PyTorch Docker image tags and the official OpenMMLab
+installation/compatibility matrices for MMEngine, MMCV, MMDetection and MMPose.
+Versions were recorded on 2026-07-17. The image must be rebuilt and smoke-tested on the
+target NVIDIA runtime before any provider is accepted. No weights are downloaded by the
+Docker build; model assets are mounted at `/models` and checked by their manifest.

@@ -1,3 +1,0 @@
-# Provider-neutral optional runtime. Models and weights are mounted externally.
-numpy==1.26.4
-opencv-python-headless==4.10.0.84

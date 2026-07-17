@@ -1,37 +1,38 @@
 # Last result
 
-- Branch: `agent/player-perception-p1`
-- Foundation commit: `8b61845b02b3eb41122ee94a17c62bdd06bcefaa`
+- Branch: `agent/player-perception-p1-runtime` (based on `e9861aed059c062cfa19004a0a0d866144d4a307`).
 
 ## Changes
 
 - Added the permanent agent contract and coordination state under `docs/agent/`.
 - Recorded the human-gate rejection of Stage 5B v2 and the no-v3 decision.
-- Added the backend-neutral `src/player_perception/` foundation: typed schemas,
-  temporal identities, support-foot anchors, court projection, contact audit,
-  geometric biomechanics, deterministic mock backend and lazy OpenMMLab boundary.
-- Added the provider-neutral container contract, environment validator and empty
-  `GPU_PROVIDER_ACCEPTANCE_GATE.md`.
+- Connected `FrameInput` to canonical VFR decoding and selected-frame processing.
+- Implemented a manifest-driven lazy OpenMMLab detector, ByteTrack-compatible temporal
+  association and top-down pose normalization; no real weights were loaded.
+- Added complete P1 writers, contact audit integration, renderers, artifact manifest,
+  output validator and the exact ten-frame smoke command.
+- Added model bundle schema/fetcher, pinned CUDA container contract and readiness auditor.
 - Updated the root README, roadmap and documentation index without changing approved
   historical artifacts.
 
 ## Validation
 
-- `uv run pytest` — 193 passed.
+- `uv run pytest` — 199 passed.
 - `uv run ruff check .` — passed.
 - `uv run python -m compileall src scripts tests` — passed.
 - `uv run python scripts/replit_smoke_test.py` — passed.
 - `git diff --check` — passed.
+- `uv run python scripts/audit_p1_runtime_readiness.py` — `READY_FOR_GPU_PROVIDER_SMOKE`.
 
 ## Limitations and intentionally unexecuted work
 
-- The mock backend is the only backend executed; it writes only to temporary test
-  directories.
-- No model weights, CUDA/PyTorch GPU environment, Docker GPU job, OpenMMLab inference,
-  provider setup, SSH, cloud access, Stage 5B rerun, Stage 5C or Stage 6 were executed.
-- Real player-aware outputs remain pending a provider acceptance gate and a later human
-  visual gate.
+- Local execution used only the deterministic mock backend, including a real-video
+  ten-frame decode into temporary output directories.
+- No model weights, CUDA/PyTorch GPU environment, Docker build/run, OpenMMLab inference,
+  provider setup, SSH, cloud access, full 527-frame job, Stage 5B, Stage 5C or Stage 6
+  were executed.
+- Real player-aware outputs remain pending provider acceptance and a human visual gate.
 
 ## Next action
 
-Seleccionar y validar un proveedor GPU mediante GPU_PROVIDER_ACCEPTANCE_GATE antes de ejecutar Stage P1 real.
+ChatGPT debe auditar P1_RUNTIME_READINESS y después evaluar proveedores actuales contra GPU_PROVIDER_ACCEPTANCE_GATE.

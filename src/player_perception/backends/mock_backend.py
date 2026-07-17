@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from ..schemas import BoundingBox, PlayerDetection, PlayerPose, PlayerTrack, PoseKeypoint
+from ..schemas import FrameInput
 
 
 class MockBackend:
@@ -12,7 +13,12 @@ class MockBackend:
         self.width = width
         self.height = height
 
-    def process(self, frame_id: int, image=None):
+    def process(self, frame: FrameInput | int, image=None):
+        if isinstance(frame, int):
+            frame_id = frame
+        else:
+            frame_id = frame.frame_id
+            image = frame.image
         del image
         shift = (frame_id % 5) * 0.5
         boxes = [

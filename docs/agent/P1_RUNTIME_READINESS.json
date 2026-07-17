@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "status": "READY_FOR_GPU_PROVIDER_SMOKE",
+  "checks": {
+    "model_manifest": true,
+    "canonical_decoder_import": true,
+    "openmmlab_validate_only": true,
+    "video_present": true,
+    "smoke_script": true,
+    "output_validator": true,
+    "container_contract": true,
+    "backend_process_implemented": true,
+    "no_semantic_constraints_input": true,
+    "real_video_decoding": true,
+    "mock_real_frame_e2e": true,
+    "all_static_and_local_checks": true
+  },
+  "not_executed": [
+    "OpenMMLab model inference",
+    "CUDA/PyTorch GPU execution",
+    "Docker build or run",
+    "cloud provider setup",
+    "full 527-frame job",
+    "Stage 5B/5C/6"
+  ],
+  "next_action": "ChatGPT debe auditar P1_RUNTIME_READINESS y después evaluar proveedores actuales contra GPU_PROVIDER_ACCEPTANCE_GATE."
+}

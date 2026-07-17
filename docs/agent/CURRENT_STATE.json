@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "branch": "agent/player-perception-p1",
+  "branch": "agent/player-perception-p1-runtime",
   "base_sha": "154c8476268dbb9ead9061d83a02d11a91e38abd",
-  "head_sha": "8b61845b02b3eb41122ee94a17c62bdd06bcefaa",
-  "task": "Prepare reusable player-aware perception foundation; no heavy inference",
+  "head_sha": "e9861aed059c062cfa19004a0a0d866144d4a307",
+  "task": "Prepare executable provider-neutral Stage P1 runtime and ten-frame GPU smoke job",
   "status": "COMPLETED",
-  "stages": {"stage_1_to_5a1": "VALIDATED", "stage_5b_v1": "REJECTED_BY_HUMAN_GATE", "stage_5b_v2": "REJECTED_BY_HUMAN_GATE", "stage_5c": "NOT_STARTED", "stage_6": "NOT_STARTED", "stage_p1": "PREPARATION_COMPLETE"},
-  "tests": {"pytest": "193 passed", "ruff": "passed", "compileall": "passed", "replit_smoke": "passed", "diff_check": "passed"},
-  "artifacts": ["src/player_perception", "tests/test_player_perception.py", "containers/player-perception", "scripts/run_stage_p1_container.sh", "scripts/validate_stage_p1_environment.py", "docs/architecture/ADR_PLAYER_AWARE_PERCEPTION.md", "docs/architecture/PLAYER_PERCEPTION_OUTPUTS.md", "docs/ops/GPU_PROVIDER_ACCEPTANCE_GATE.md"],
+  "stages": {"stage_1_to_5a1": "VALIDATED", "stage_5b_v1": "REJECTED_BY_HUMAN_GATE", "stage_5b_v2": "REJECTED_BY_HUMAN_GATE", "stage_5c": "NOT_STARTED", "stage_6": "NOT_STARTED", "stage_p1": "READY_FOR_GPU_PROVIDER_SMOKE"},
+  "tests": {"pytest": "199 passed", "ruff": "passed", "compileall": "passed", "replit_smoke": "passed", "diff_check": "passed", "readiness": "READY_FOR_GPU_PROVIDER_SMOKE"},
+  "artifacts": ["src/player_perception", "config/player_perception", "tests/test_player_perception.py", "tests/test_player_perception_runtime.py", "containers/player-perception", "scripts/run_stage_p1_smoke.sh", "scripts/validate_stage_p1_outputs.py", "scripts/audit_p1_runtime_readiness.py", "scripts/fetch_player_perception_models.py", "docs/agent/P1_RUNTIME_READINESS.json"],
   "blocker": null,
-  "next_action": "Seleccionar y validar un proveedor GPU mediante GPU_PROVIDER_ACCEPTANCE_GATE antes de ejecutar Stage P1 real."
+  "next_action": "ChatGPT debe auditar P1_RUNTIME_READINESS y después evaluar proveedores actuales contra GPU_PROVIDER_ACCEPTANCE_GATE."
 }

@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "detector": {
+    "framework": "mmdetection",
+    "config": "player_perception/rtmdet_tiny_person.py",
+    "checkpoint": "player_perception/rtmdet_tiny_person.pth",
+    "checksum_sha256": null,
+    "input_size": [640, 640],
+    "confidence_threshold": 0.35,
+    "keypoint_convention": "n/a"
+  },
+  "tracker": {
+    "implementation": "bytetrack-compatible",
+    "high_threshold": 0.55,
+    "low_threshold": 0.10,
+    "match_threshold": 0.80
+  },
+  "pose": {
+    "framework": "mmpose",
+    "config": "player_perception/rtmpose-m.py",
+    "checkpoint": "player_perception/rtmpose-m.pth",
+    "checksum_sha256": null,
+    "input_size": [192, 256],
+    "confidence_threshold": 0.25,
+    "keypoint_convention": "coco-wholebody-compatible"
+  },
+  "runtime": {
+    "device": "auto",
+    "precision": "fp32",
+    "batch_size": 2,
+    "model_cache_path": "player_perception/cache"
+  },
+  "license": {
+    "source": "OpenMMLab model zoo; exact assets must be recorded before execution",
+    "license": "Review upstream detector and pose checkpoint licenses before use",
+    "notes": "Paths are repository-relative or mounted; no URL or weight is downloaded by application code. Null checksums block model fetch validation until supplied."
+  }
+}

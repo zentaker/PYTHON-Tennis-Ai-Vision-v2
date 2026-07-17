@@ -22,6 +22,9 @@ La documentacion de este proyecto es parte del producto. Cada etapa debe dejar e
 - Contratos Player-Aware: `architecture/PLAYER_PERCEPTION_OUTPUTS.md`
 - Estado de coordinación: `agent/CURRENT_STATE.json`
 - Gate de proveedores GPU: `ops/GPU_PROVIDER_ACCEPTANCE_GATE.md`
+- Runtime P1 readiness: `agent/P1_RUNTIME_READINESS.json`
+- Bundle de modelos P1: `../config/player_perception/p1_openmmlab.json`
+- Smoke de diez frames: `../scripts/run_stage_p1_smoke.sh`
 - Recuperacion de assets Stage 4: `stages/stage_4/ASSET_RECOVERY.md`
 - Nivel A2 activo: `levels/level_a2/README.md`
 - Ejecución Stage 4 A2: `levels/level_a2/stage_4_execution_report.md`

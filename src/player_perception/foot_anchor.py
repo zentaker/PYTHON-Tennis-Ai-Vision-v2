@@ -5,6 +5,37 @@ from __future__ import annotations
 from .schemas import BoundingBox, FootAnchor, PlayerPose
 
 
+class FootAnchorSmoother:
+    """Causal moving average that preserves airborne and fallback warnings."""
+
+    def __init__(self, window: int = 3):
+        if window < 1:
+            raise ValueError("foot smoothing window must be positive")
+        self.window = window
+        self._history: dict[str, list[tuple[float, float]]] = {}
+
+    def update(self, anchor: FootAnchor) -> FootAnchor:
+        values = self._history.setdefault(anchor.track_id, [])
+        values.append((anchor.x_pixel, anchor.y_pixel))
+        del values[: -self.window]
+        x = sum(item[0] for item in values) / len(values)
+        y = sum(item[1] for item in values) / len(values)
+        return FootAnchor(
+            anchor.frame_id,
+            anchor.track_id,
+            x,
+            y,
+            anchor.method,
+            anchor.confidence,
+            anchor.airborne_possible,
+            anchor.fallback_used,
+            anchor.support_side,
+            anchor.low_confidence,
+            anchor.occluded,
+            len(values) > 1,
+        )
+
+
 def foot_anchor(
     frame_id: int, track_id: str, bbox: BoundingBox, pose: PlayerPose | None = None
 ) -> FootAnchor:
@@ -35,6 +66,8 @@ def foot_anchor(
                 else "left"
                 if valid[0].name.startswith("left_")
                 else "right",
+                min(item.confidence for item in valid) < 0.5,
+                False,
             )
     x, y = bbox.bottom_center
     return FootAnchor(
@@ -47,4 +80,6 @@ def foot_anchor(
         True,
         True,
         "unknown",
+        True,
+        True,
     )

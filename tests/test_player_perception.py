@@ -7,6 +7,7 @@ from src.player_perception.backends.mock_backend import MockBackend
 from src.player_perception.biomechanics import geometric_features
 from src.player_perception.court_projection import CourtProjector
 from src.player_perception.foot_anchor import foot_anchor
+from src.player_perception.foot_anchor import FootAnchorSmoother
 from src.player_perception.identity import assign_near_far, stable_identity_history
 from src.player_perception.pipeline import PerceptionPipeline
 from src.player_perception.schemas import BoundingBox, PlayerPose, PlayerTrack, PoseKeypoint
@@ -56,6 +57,16 @@ def test_foot_anchor_prefers_heel_or_toe_over_ankle() -> None:
     anchor = foot_anchor(0, "a", box, pose)
     assert anchor.method == "pose_heel-toe"
     assert anchor.support_side == "left"
+
+
+def test_foot_anchor_smoother_is_causal_and_marks_smoothing() -> None:
+    box = BoundingBox(10, 20, 30, 60, 0.8)
+    smoother = FootAnchorSmoother(window=2)
+    first = smoother.update(foot_anchor(0, "a", box))
+    second = smoother.update(foot_anchor(1, "a", BoundingBox(20, 20, 40, 60, 0.8)))
+    assert first.smoothing_applied is False
+    assert second.smoothing_applied is True
+    assert second.x_pixel == 25.0
 
 
 def test_projection_regions_and_mock_pipeline() -> None:
