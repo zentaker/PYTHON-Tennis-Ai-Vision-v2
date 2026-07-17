@@ -41,7 +41,6 @@ jobs:
 
       - name: Download official assets and calculate checksums
         id: assets
-        continue-on-error: true
         run: |
           mkdir -p "$RUNNER_TEMP/p1-models" "$RUNNER_TEMP/p1-output"
           python -m scripts.ci_free_runtime_gate \
