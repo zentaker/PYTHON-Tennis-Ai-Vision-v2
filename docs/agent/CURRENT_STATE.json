@@ -2,7 +2,7 @@
   "schema_version": 1,
   "branch": "agent/player-perception-p1-free-ci-gate",
   "base_sha": "154c8476268dbb9ead9061d83a02d11a91e38abd",
-  "head_sha": "a7946bd32b068d2d14ec29bf6dcdca1eadff116c",
+  "head_sha": "3809db14bf4404c3733ba6a9a71b3da5a33db8d9",
   "task": "Create and execute a free GitHub Actions P1 runtime gate",
   "status": "BLOCKED",
   "stages": {"stage_1_to_5a1": "VALIDATED", "stage_5b_v1": "REJECTED_BY_HUMAN_GATE", "stage_5b_v2": "REJECTED_BY_HUMAN_GATE", "stage_5c": "NOT_STARTED", "stage_6": "NOT_STARTED", "stage_p1": "FREE_CI_GATE_BLOCKED"},
