@@ -2,12 +2,12 @@
   "schema_version": 1,
   "branch": "agent/player-perception-p1-free-ci-gate",
   "base_sha": "154c8476268dbb9ead9061d83a02d11a91e38abd",
-  "head_sha": "3809db14bf4404c3733ba6a9a71b3da5a33db8d9",
+  "head_sha": "ef6955314544c2ebb6820a93cb67fb2b377346de",
   "task": "Create and execute a free GitHub Actions P1 runtime gate",
   "status": "BLOCKED",
   "stages": {"stage_1_to_5a1": "VALIDATED", "stage_5b_v1": "REJECTED_BY_HUMAN_GATE", "stage_5b_v2": "REJECTED_BY_HUMAN_GATE", "stage_5c": "NOT_STARTED", "stage_6": "NOT_STARTED", "stage_p1": "FREE_CI_GATE_BLOCKED"},
   "tests": {"pytest": "200 passed", "ruff": "passed", "compileall": "passed", "replit_smoke": "passed", "diff_check": "passed", "readiness": "BLOCKED"},
   "artifacts": ["src/player_perception", "config/player_perception", "tests/test_player_perception.py", "tests/test_player_perception_runtime.py", "containers/player-perception", "scripts/run_stage_p1_smoke.sh", "scripts/validate_stage_p1_outputs.py", "scripts/audit_p1_runtime_readiness.py", "scripts/fetch_player_perception_models.py", "docs/agent/P1_RUNTIME_READINESS.json"],
-  "blocker": "GitHub Actions run 29605537750 (third iteration) failed because the asset script could not import src; inference then failed because the checkpoint was absent. The workflow invocation is fixed in the branch but not revalidated under the three-iteration limit.",
-  "next_action": "A separately authorized pass must rerun the corrected free CI gate; no GPU provider, 527-frame run, Stage 5B, Stage 5C or Stage 6."
+  "blocker": "GitHub Actions run 29620560537 failed during the real backend import with ModuleNotFoundError: No module named 'addict' after assets and checksums passed. The two allowed corrections for this pass are exhausted.",
+  "next_action": "A separately authorized pass must add the missing dependency and rerun the corrected free CI gate; no GPU provider, 527-frame run, Stage 5B, Stage 5C or Stage 6."
 }
