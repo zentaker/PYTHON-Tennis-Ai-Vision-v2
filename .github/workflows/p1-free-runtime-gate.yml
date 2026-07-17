@@ -1,0 +1,105 @@
+name: P1 free runtime gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/player-perception-p1-free-ci-gate
+
+permissions:
+  contents: read
+
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build provider-neutral CUDA image
+        run: docker build --file containers/player-perception/Dockerfile --tag tennis-p1-free-ci:sha-${GITHUB_SHA} .
+
+      - name: Validate image contract without weights
+        run: >-
+          docker run --rm --entrypoint python tennis-p1-free-ci:sha-${GITHUB_SHA}
+          -m src.player_perception.cli --backend openmmlab --validate-only
+          --model-bundle /workspace/config/player_perception/p1_openmmlab.json
+
+      - name: Inspect OpenMMLab stack and GPU absence
+        run: |
+          docker run --rm --entrypoint python tennis-p1-free-ci:sha-${GITHUB_SHA} - <<'PY'
+          import importlib.metadata as metadata
+          import torch
+          import mmcv, mmengine, mmdet, mmpose
+          print("torch", torch.__version__)
+          for package in ("mmcv", "mmengine", "mmdet", "mmpose"):
+              print(package, metadata.version(package))
+          print("torch.cuda.is_available", torch.cuda.is_available())
+          assert torch.cuda.is_available() is False
+          PY
+
+      - name: Download official assets and calculate checksums
+        id: assets
+        continue-on-error: true
+        run: |
+          mkdir -p "$RUNNER_TEMP/p1-models" "$RUNNER_TEMP/p1-output"
+          python scripts/ci_free_runtime_gate.py \
+            --model-bundle config/player_perception/p1_openmmlab.json \
+            --models-dir "$RUNNER_TEMP/p1-models" \
+            --config-root "$RUNNER_TEMP/p1-configs" \
+            --report "$RUNNER_TEMP/p1-runtime-report.json" \
+            --allow-unpinned
+
+      - name: Fetch official CPU fixture
+        run: >-
+          curl --fail --location --retry 3
+          https://raw.githubusercontent.com/open-mmlab/mmpose/v1.3.2/tests/data/coco/000000000785.jpg
+          --output "$RUNNER_TEMP/fixture.jpg"
+
+      - name: Run one-image CPU inference through the real backend
+        run: |
+          docker run --rm --entrypoint python \
+            -v "$RUNNER_TEMP/p1-models:/models:ro" \
+            -v "$RUNNER_TEMP/p1-output:/output" \
+            -v "$RUNNER_TEMP/fixture.jpg:/input/fixture.jpg:ro" \
+            tennis-p1-free-ci:sha-${GITHUB_SHA} \
+            -m src.player_perception.cli \
+            --clip-id nivel_a2_01 --backend openmmlab --device cpu \
+            --model-bundle /workspace/config/player_perception/p1_openmmlab.json \
+            --models-dir /models --config-root /opt/openmmlab \
+            --homography /workspace/data/clips/nivel_a2_01/homography.json \
+            --image /input/fixture.jpg --frames 0 --output-dir /output
+
+      - name: Verify real whole-body output and checksums
+        env:
+          REPORT_PATH: ${{ runner.temp }}/p1-runtime-report.json
+          OUTPUT_DIR: ${{ runner.temp }}/p1-output
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          report = json.loads(Path(os.environ["REPORT_PATH"]).read_text())
+          assert report["status"] == "ASSETS_VERIFIED", report
+          output = Path(os.environ["OUTPUT_DIR"])
+          perception = json.loads((output / "perception_report.json").read_text())
+          assert perception["frame_count"] == 1
+          tracks = (output / "player_tracks.csv").read_text()
+          assert "track_id" in tracks
+          pose = json.loads((output / "player_pose.jsonl").read_text().splitlines()[0])
+          assert len(pose["keypoints"]) == 133
+          assert (output / "artifact_manifest.json").is_file()
+          PY
+
+      - name: Upload small CI report only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p1-free-runtime-report
+          path: ${{ runner.temp }}/p1-runtime-report.json
+          retention-days: 3
+
+      - name: Remove weights, fixture and outputs
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/p1-models" "$RUNNER_TEMP/p1-output" "$RUNNER_TEMP/fixture.jpg" "$RUNNER_TEMP/p1-runtime-report.json"

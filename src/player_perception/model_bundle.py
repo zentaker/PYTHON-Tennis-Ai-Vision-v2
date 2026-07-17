@@ -33,6 +33,17 @@ def load_model_bundle(path: Path) -> dict[str, Any]:
             raise ModelBundleError(f"model bundle missing {component} section")
         _relative_path(section.get("config"), f"{component}.config")
         _relative_path(section.get("checkpoint"), f"{component}.checkpoint")
+        for url_name in ("config_url", "checkpoint_url"):
+            url = section.get(url_name)
+            if not isinstance(url, str) or not url.startswith("https://"):
+                raise ModelBundleError(f"{component}.{url_name} must be an official HTTPS URL")
+        config_checksum = section.get("config_sha256")
+        if (
+            not isinstance(config_checksum, str)
+            or len(config_checksum) != 64
+            or any(c not in "0123456789abcdef" for c in config_checksum)
+        ):
+            raise ModelBundleError(f"{component}.config_sha256 must be lowercase SHA-256")
         checksum = section.get("checksum_sha256")
         if checksum is not None and (
             not isinstance(checksum, str)
@@ -42,6 +53,8 @@ def load_model_bundle(path: Path) -> dict[str, Any]:
             raise ModelBundleError(f"{component}.checksum_sha256 must be lowercase SHA-256 or null")
         if not isinstance(section.get("input_size"), list) or len(section["input_size"]) != 2:
             raise ModelBundleError(f"{component}.input_size must contain width and height")
+        if not isinstance(section.get("keypoint_count"), int) or section["keypoint_count"] < 1:
+            raise ModelBundleError(f"{component}.keypoint_count must be positive")
     tracker = payload.get("tracker")
     if not isinstance(tracker, dict) or not tracker.get("implementation"):
         raise ModelBundleError("model bundle tracker implementation is required")

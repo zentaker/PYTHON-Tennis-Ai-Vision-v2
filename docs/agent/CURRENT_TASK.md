@@ -1,7 +1,7 @@
 # Current task
 
-Prepare executable provider-neutral Stage P1 runtime and ten-frame GPU smoke job.
-Implement real canonical frame decoding, manifest-driven OpenMMLab adapters, complete
-outputs, validation and a CUDA container contract. Do not run Stage 5B, GPU inference,
-cloud setup or model downloads on this Mac. Preserve all historical outputs and
-approved inputs.
+Create and execute a free GitHub Actions runtime gate for the provider-neutral Stage P1
+runtime. Pin official MMPose whole-body and MMDetection assets, validate dataset-meta
+keypoint mapping, build the CUDA container in CI, and run one CPU fixture inference.
+Do not run Stage 5B, use a cloud/GPU provider, or download model weights on this Mac.
+Preserve all historical outputs and approved inputs.

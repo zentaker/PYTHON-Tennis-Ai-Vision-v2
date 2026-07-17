@@ -41,7 +41,19 @@ def foot_anchor(
 ) -> FootAnchor:
     points = pose.by_name() if pose else {}
     for names, method in (
-        (("left_heel", "right_heel", "left_toe", "right_toe"), "pose_heel-toe"),
+        (
+            (
+                "left_heel",
+                "right_heel",
+                "left_toe",
+                "right_toe",
+                "left_big_toe",
+                "right_big_toe",
+                "left_small_toe",
+                "right_small_toe",
+            ),
+            "pose_heel-toe",
+        ),
         (("left_ankle", "right_ankle"), "pose_ankle"),
     ):
         valid = [

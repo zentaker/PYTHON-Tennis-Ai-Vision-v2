@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "status": "READY_FOR_GPU_PROVIDER_SMOKE",
+  "status": "RUNTIME_REQUIRES_FREE_CI_VALIDATION",
   "checks": {
     "model_manifest": true,
     "canonical_decoder_import": true,
@@ -15,6 +15,14 @@
     "mock_real_frame_e2e": true,
     "all_static_and_local_checks": true
   },
+  "reasons": [
+    "Docker has not been built",
+    "OpenMMLab has not been executed",
+    "official whole-body assets/configs were not previously pinned",
+    "checkpoint SHA-256 values must be resolved in free CI without downloading weights on the Mac",
+    "whole-body mapping now requires model dataset metainfo validation",
+    "SimpleIoUTracker is an explicit fallback, not authentic ByteTrack"
+  ],
   "not_executed": [
     "OpenMMLab model inference",
     "CUDA/PyTorch GPU execution",

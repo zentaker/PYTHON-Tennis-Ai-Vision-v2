@@ -17,7 +17,7 @@ def main() -> int:
     parser.add_argument("--model-bundle", type=Path, required=True)
     parser.add_argument("--component", choices=["detector", "pose"], required=True)
     parser.add_argument(
-        "--source-url", required=True, help="Explicit upstream URL; never stored in Git"
+        "--source-url", help="Optional override; defaults to manifest checkpoint_url"
     )
     parser.add_argument("--models-dir", type=Path, default=Path("/models"))
     args = parser.parse_args()
@@ -29,6 +29,7 @@ def main() -> int:
             f"{args.component}.checksum_sha256 is null; record the verified SHA-256 before fetching"
         )
     destination = resolve_model_path(args.models_dir, section["checkpoint"])
+    source_url = args.source_url or section["checkpoint_url"]
     destination.parent.mkdir(parents=True, exist_ok=True)
     if destination.exists() and sha256_file(destination) == checksum:
         print(f"already present and verified: {destination}")
@@ -37,7 +38,7 @@ def main() -> int:
         temporary = Path(handle.name)
     try:
         with (
-            urllib.request.urlopen(args.source_url, timeout=60) as response,
+            urllib.request.urlopen(source_url, timeout=120) as response,
             temporary.open("wb") as output,
         ):
             shutil.copyfileobj(response, output)

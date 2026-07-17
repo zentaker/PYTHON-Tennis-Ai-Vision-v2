@@ -14,6 +14,7 @@
       "additionalProperties": false,
       "properties": {
         "implementation": {"type": "string"},
+        "future_implementation": {"type": "string"},
         "high_threshold": {"type": "number", "minimum": 0, "maximum": 1},
         "low_threshold": {"type": "number", "minimum": 0, "maximum": 1},
         "match_threshold": {"type": "number", "minimum": 0, "maximum": 1}
@@ -45,12 +46,15 @@
   "$defs": {
     "model": {
       "type": "object",
-      "required": ["framework", "config", "checkpoint", "checksum_sha256", "input_size", "keypoint_convention"],
+      "required": ["framework", "config", "config_url", "config_sha256", "checkpoint", "checkpoint_url", "checksum_sha256", "input_size", "keypoint_convention", "keypoint_count"],
       "additionalProperties": false,
       "properties": {
         "framework": {"type": "string"},
         "config": {"type": "string", "pattern": "^(?!/).+"},
+        "config_url": {"type": "string", "format": "uri", "pattern": "^https://"},
+        "config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "checkpoint": {"type": "string", "pattern": "^(?!/).+"},
+        "checkpoint_url": {"type": "string", "format": "uri", "pattern": "^https://"},
         "checksum_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
         "input_size": {
           "type": "array",
@@ -60,6 +64,9 @@
         },
         "confidence_threshold": {"type": "number", "minimum": 0, "maximum": 1},
         "keypoint_convention": {"type": "string"}
+        ,"keypoint_count": {"type": "integer", "minimum": 1},
+        "metainfo_url": {"type": "string", "format": "uri", "pattern": "^https://"},
+        "keypoint_names": {"type": "array", "items": {"type": "string"}}
       }
     }
   }

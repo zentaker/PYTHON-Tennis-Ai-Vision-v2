@@ -12,6 +12,7 @@ from typing import Any, Callable, Sequence
 
 import numpy as np
 
+from ..keypoint_mapping import KeypointMappingError, resolve_keypoint_names
 from ..model_bundle import load_model_bundle, resolve_model_path
 from ..schemas import (
     BoundingBox,
@@ -20,27 +21,6 @@ from ..schemas import (
     PlayerPose,
     PlayerTrack,
     PoseKeypoint,
-)
-
-
-COCO_KEYPOINTS = (
-    "nose",
-    "left_eye",
-    "right_eye",
-    "left_ear",
-    "right_ear",
-    "left_shoulder",
-    "right_shoulder",
-    "left_elbow",
-    "right_elbow",
-    "left_wrist",
-    "right_wrist",
-    "left_hip",
-    "right_hip",
-    "left_knee",
-    "right_knee",
-    "left_ankle",
-    "right_ankle",
 )
 
 
@@ -55,12 +35,12 @@ class _TrackState:
     missed: int = 0
 
 
-class ByteTrackCompatibleTracker:
-    """Small dependency-free association layer with ByteTrack-style thresholds.
+class SimpleIoUTracker:
+    """Small dependency-free fallback; this is not the ByteTrack algorithm.
 
-    This keeps the backend executable when MMTracking is not installed. It uses high
-    confidence matches first, then low-confidence detections, while preserving the
-    same temporal ``track_id`` contract expected by a ByteTrack adapter.
+    This keeps the backend executable when MMTracking is not installed. A future
+    runtime gate must replace this with an official/validated ByteTrack implementation
+    before tracking quality is evaluated.
     """
 
     def __init__(self, high_threshold: float, low_threshold: float, match_threshold: float):
@@ -163,7 +143,11 @@ def _prediction_fields(result: Any) -> tuple[np.ndarray, np.ndarray, np.ndarray]
 
 
 def _keypoints_from_result(
-    result: Any, track_id: str, frame_id: int, bbox: BoundingBox | None = None
+    result: Any,
+    track_id: str,
+    frame_id: int,
+    names: Sequence[str],
+    bbox: BoundingBox | None = None,
 ) -> PlayerPose:
     instances = getattr(result, "pred_instances", result)
     keypoints = getattr(instances, "keypoints", None)
@@ -182,7 +166,10 @@ def _keypoints_from_result(
         if scores is not None and _as_numpy(scores).ndim == 2
         else (_as_numpy(scores) if scores is not None else np.ones(len(points)))
     )
-    names = COCO_KEYPOINTS[: len(points)]
+    if len(points) != len(names):
+        raise OpenMMLabRuntimeError(
+            f"pose output has {len(points)} keypoints but dataset metainfo declares {len(names)}"
+        )
     normalized = tuple(
         PoseKeypoint(
             name,
@@ -224,8 +211,9 @@ class OpenMMLabBackend:
         self._inference_pose = inference_pose_fn
         self._init_detector = init_detector_fn
         self._init_pose = init_pose_fn
+        self._keypoint_names: tuple[str, ...] | None = None
         tracker_config = (self.bundle or {}).get("tracker", {})
-        self.tracker = ByteTrackCompatibleTracker(
+        self.tracker = SimpleIoUTracker(
             float(tracker_config.get("high_threshold", 0.55)),
             float(tracker_config.get("low_threshold", 0.10)),
             float(tracker_config.get("match_threshold", 0.80)),
@@ -271,6 +259,15 @@ class OpenMMLabBackend:
             str(detector_config), str(detector_checkpoint), device=self.device
         )
         self._pose = self._init_pose(str(pose_config), str(pose_checkpoint), device=self.device)
+        expected_count = int(self.bundle["pose"]["keypoint_count"])
+        try:
+            self._keypoint_names = resolve_keypoint_names(
+                expected_count=expected_count,
+                dataset_meta=getattr(self._pose, "dataset_meta", None),
+                manifest_names=self.bundle["pose"].get("keypoint_names"),
+            )
+        except KeypointMappingError as exc:
+            raise OpenMMLabRuntimeError(str(exc)) from exc
 
     def _resolve_config(self, relative_path: str) -> Path:
         repository_path = (self.config_root / relative_path).resolve()
@@ -316,8 +313,12 @@ class OpenMMLabBackend:
                 raise OpenMMLabRuntimeError(
                     f"pose output count {len(pose_results)} does not match track count {len(tracks)} at frame {frame.frame_id}"
                 )
+            if self._keypoint_names is None:
+                raise OpenMMLabRuntimeError("pose keypoint metainfo was not initialized")
             poses = [
-                _keypoints_from_result(item, track.track_id, frame.frame_id, track.bbox)
+                _keypoints_from_result(
+                    item, track.track_id, frame.frame_id, self._keypoint_names, track.bbox
+                )
                 for item, track in zip(pose_results, tracks)
             ]
         return detections, tracks, tuple(poses)

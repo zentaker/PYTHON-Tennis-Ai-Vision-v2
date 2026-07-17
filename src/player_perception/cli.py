@@ -8,6 +8,7 @@ import json
 import tempfile
 from pathlib import Path
 
+import cv2
 import numpy as np
 
 from src.project.clip_manifest import ClipManifest
@@ -94,6 +95,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--clip-id", default="nivel_a2_01")
     parser.add_argument("--video", type=Path)
+    parser.add_argument("--image", type=Path, help="single decoded image for a CPU runtime gate")
     parser.add_argument("--manifest", type=Path)
     parser.add_argument("--homography", type=Path, default=DEFAULT_HOMOGRAPHY)
     parser.add_argument("--trajectory", type=Path)
@@ -108,6 +110,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--validate-only", action="store_true")
     parser.add_argument("--model-bundle", type=Path)
     parser.add_argument("--models-dir", type=Path, default=Path("/models"))
+    parser.add_argument("--config-root", type=Path, default=Path("."))
     parser.add_argument("--fail-on-missing-models", action="store_true")
     parser.add_argument("--foot-smoothing-window", type=int, default=1)
     return parser
@@ -131,6 +134,7 @@ def main(argv: list[str] | None = None) -> int:
         OpenMMLabBackend(
             model_bundle=args.model_bundle,
             models_dir=args.models_dir,
+            config_root=args.config_root,
             device=args.device,
             validate_only=True,
         )
@@ -141,13 +145,27 @@ def main(argv: list[str] | None = None) -> int:
     backend = (
         MockBackend()
         if args.backend == "mock"
-        else OpenMMLabBackend(args.model_bundle, args.models_dir, device=args.device)
+        else OpenMMLabBackend(
+            args.model_bundle,
+            args.models_dir,
+            args.config_root,
+            device=args.device,
+        )
     )
     projector = CourtProjector(args.homography)
     pipeline = PerceptionPipeline(backend, projector, args.foot_smoothing_window)
     selected_set = set(selected)
     frame_inputs: list[FrameInput] = []
-    if args.video:
+    if args.video and args.image:
+        raise ValueError("--video and --image cannot be combined")
+    if args.image:
+        image = cv2.imread(str(args.image), cv2.IMREAD_COLOR)
+        if image is None:
+            raise FileNotFoundError(f"image not found or unreadable: {args.image}")
+        if selected != [0]:
+            raise ValueError("--image runtime gate requires exactly --frames 0")
+        frame_inputs = [FrameInput(0, 0.0, image, image.shape[1], image.shape[0])]
+    elif args.video:
         if not args.video.is_file():
             raise FileNotFoundError(f"video not found: {args.video}")
         try:

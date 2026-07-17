@@ -8,7 +8,9 @@ import pytest
 
 from scripts.validate_stage_p1_outputs import validate
 from src.player_perception.backends.openmmlab_backend import OpenMMLabBackend
+from src.player_perception.backends.openmmlab_backend import SimpleIoUTracker
 from src.player_perception.cli import _selected_frames, build_parser
+from src.player_perception.keypoint_mapping import KeypointMappingError, resolve_keypoint_names
 from src.player_perception.model_bundle import ModelBundleError, load_model_bundle
 from src.player_perception.outputs import write_perception_outputs
 from src.player_perception.pipeline import PerceptionPipeline
@@ -22,7 +24,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_manifest_is_relative_and_model_bundle_is_loadable(tmp_path: Path) -> None:
     payload = load_model_bundle(ROOT / "config/player_perception/p1_openmmlab.json")
-    assert payload["tracker"]["implementation"] == "bytetrack-compatible"
+    assert payload["pose"]["keypoint_count"] == 133
+    assert payload["tracker"]["implementation"] == "simple-iou-fallback"
     with pytest.raises(ModelBundleError, match="relative"):
         payload["detector"]["config"] = "/absolute/config.py"
         temporary = tmp_path / "invalid_p1_model_bundle.json"
@@ -31,6 +34,15 @@ def test_manifest_is_relative_and_model_bundle_is_loadable(tmp_path: Path) -> No
             load_model_bundle(temporary)
         finally:
             temporary.unlink()
+
+
+def test_wholebody_mapping_rejects_17_point_truncation() -> None:
+    with pytest.raises(KeypointMappingError, match="metainfo"):
+        resolve_keypoint_names(expected_count=133, manifest_names=["nose"] * 17)
+    names = [f"joint_{index}" for index in range(133)]
+    resolved = resolve_keypoint_names(expected_count=133, manifest_names=names)
+    assert len(resolved) == 133
+    assert isinstance(SimpleIoUTracker(0.5, 0.1, 0.5), SimpleIoUTracker)
 
 
 def test_pipeline_accepts_real_frame_input_and_preserves_timestamp() -> None:
@@ -68,14 +80,18 @@ def test_openmmlab_fake_backend_initializes_once_and_rejects_none(tmp_path: Path
                 "detector": {
                     "framework": "fake",
                     "config": "detector.py",
+                    "config_url": "https://example.invalid/detector.py",
+                    "config_sha256": "a" * 64,
                     "checkpoint": "detector.pth",
+                    "checkpoint_url": "https://example.invalid/detector.pth",
                     "checksum_sha256": None,
                     "input_size": [32, 32],
                     "confidence_threshold": 0.1,
                     "keypoint_convention": "coco",
+                    "keypoint_count": 1,
                 },
                 "tracker": {
-                    "implementation": "bytetrack-compatible",
+                    "implementation": "simple-iou-fallback",
                     "high_threshold": 0.5,
                     "low_threshold": 0.1,
                     "match_threshold": 0.1,
@@ -83,11 +99,16 @@ def test_openmmlab_fake_backend_initializes_once_and_rejects_none(tmp_path: Path
                 "pose": {
                     "framework": "fake",
                     "config": "pose.py",
+                    "config_url": "https://example.invalid/pose.py",
+                    "config_sha256": "b" * 64,
                     "checkpoint": "pose.pth",
+                    "checkpoint_url": "https://example.invalid/pose.pth",
                     "checksum_sha256": None,
                     "input_size": [32, 32],
                     "confidence_threshold": 0.1,
                     "keypoint_convention": "coco",
+                    "keypoint_count": 2,
+                    "keypoint_names": ["nose", "left_eye"],
                 },
                 "runtime": {
                     "device": "cpu",
