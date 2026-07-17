@@ -17,7 +17,7 @@ WORKDIR /workspace
 RUN git clone --depth 1 --branch ${MMDET_REF} https://github.com/open-mmlab/mmdetection.git /opt/openmmlab/mmdetection \
     && git clone --depth 1 --branch ${MMPOSE_REF} https://github.com/open-mmlab/mmpose.git /opt/openmmlab/mmpose
 ENV P1_CONFIG_ROOT=/opt/openmmlab
-COPY constraints.txt requirements-runtime.txt requirements-openmmlab.txt /workspace/containers/player-perception/
+COPY containers/player-perception/constraints.txt containers/player-perception/requirements-runtime.txt containers/player-perception/requirements-openmmlab.txt /workspace/containers/player-perception/
 RUN python -m pip install --upgrade pip \
     && python -m pip install --no-cache-dir --no-deps \
         --find-links https://download.openmmlab.com/mmcv/dist/cu121/torch2.3/index.html \
