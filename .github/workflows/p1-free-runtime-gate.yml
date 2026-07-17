@@ -47,8 +47,7 @@ jobs:
             --model-bundle config/player_perception/p1_openmmlab.json \
             --models-dir "$RUNNER_TEMP/p1-models" \
             --config-root "$RUNNER_TEMP/p1-configs" \
-            --report "$RUNNER_TEMP/p1-runtime-report.json" \
-            --allow-unpinned
+            --report "$RUNNER_TEMP/p1-runtime-report.json"
 
       - name: Fetch official CPU fixture
         run: >-
