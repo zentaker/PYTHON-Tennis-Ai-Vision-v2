@@ -1,7 +1,7 @@
 # Nivel A2 - `nivel_a2_01`
 
 **Estado:** Stage 1–4 `CLOSED_SUCCESSFULLY`; Stage 5A y 5A.1 cerradas;
-Stage 5B `IN_PROGRESS` (`BALLISTIC_BASELINE_MARGINAL`); Stage 5C y Stage 6 `NOT_STARTED`
+Stage 5B v1 `REJECTED_BY_HUMAN_GATE`; Stage 5B v2 `IN_PROGRESS`; Stage 5C y Stage 6 `NOT_STARTED`
 **Fecha de actualización:** 2026-07-15
 
 ## Clip seleccionado
@@ -48,7 +48,7 @@ sin modificar el MP4.
 | 4 | `CLOSED_SUCCESSFULLY`; gate humano A; 10 eventos procesados |
 | 5A | `CLOSED_WITH_REFINED_VERTICAL_CALIBRATION` |
 | 5A.1 | `CLOSED_SUCCESSFULLY`; cuatro referencias y jitter aprobados |
-| 5B | `IN_PROGRESS`; baseline balístico ejecutado, pendiente gate humano 3D |
+| 5B | `V1_REJECTED_REIMPLEMENTATION_IN_PROGRESS`; v2 anclada en rayos |
 | 5C | `NOT_STARTED`; vista superior derivada de X,Y |
 | 6 | `NOT_STARTED`; vista lateral derivada de distancia,Z |
 

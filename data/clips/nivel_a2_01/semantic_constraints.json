@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "clip_id": "nivel_a2_01",
+  "constraints": [
+    {
+      "event_id": "ev_003",
+      "constraint": "behind_far_baseline",
+      "axis": "Y",
+      "operator": ">",
+      "value_m": 11.885,
+      "source": "human_3d_gate"
+    }
+  ]
+}

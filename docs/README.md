@@ -14,6 +14,9 @@ La documentacion de este proyecto es parte del producto. Cada etapa debe dejar e
 - Cierre Stage 5A.1: `levels/level_a2/stage_5a1_exit_report.md`
 - Diseño Stage 5B: `levels/level_a2/stage_5b_3d_reconstruction_design.md`
 - Ejecución Stage 5B: `levels/level_a2/stage_5b_execution_report.md`
+- Rechazo Stage 5B v1: `levels/level_a2/stage_5b_v1_rejection_report.md`
+- Diseño Stage 5B v2 anclado: `levels/level_a2/stage_5b_v2_anchored_reconstruction.md`
+- Ejecución Stage 5B v2: `levels/level_a2/stage_5b_v2_execution_report.md`
 - Recuperacion de assets Stage 4: `stages/stage_4/ASSET_RECOVERY.md`
 - Nivel A2 activo: `levels/level_a2/README.md`
 - Ejecución Stage 4 A2: `levels/level_a2/stage_4_execution_report.md`

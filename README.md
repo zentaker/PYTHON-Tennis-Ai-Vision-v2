@@ -9,8 +9,8 @@ Proyecto para analizar video de broadcast de tenis y generar progresivamente:
 
 Stage 3 esta cerrada y validada. Stage 4 Nivel A2 esta cerrada con gate humano A y usa
 eventos anotados manualmente; no intenta detectar golpes o botes automaticamente.
-Stage 5A/5A.1 están cerradas y el baseline físico de Stage 5B terminó en
-`BALLISTIC_BASELINE_MARGINAL`, pendiente del gate humano 3D.
+Stage 5A/5A.1 están cerradas. El baseline Stage 5B v1 fue rechazado por el gate humano;
+la reimplementación anclada v2 está en progreso.
 
 La pasada historica Madrid R1 se conserva como Nivel A. La pasada activa Nivel A2 tiene
 Stage 1–4 cerradas y continúa con Stage 5A. Ver
@@ -25,7 +25,7 @@ Stage 1–4 cerradas y continúa con Stage 5A. Ver
 | 4 - Eventos Nivel A | `CLOSED_SUCCESSFULLY` (A2, gate A) |
 | 5A - Calibracion/observabilidad 3D | `CLOSED_WITH_REFINED_VERTICAL_CALIBRATION` |
 | 5A.1 - Referencia vertical de red | Cerrada exitosamente |
-| 5B - Reconstruccion X,Y,Z | `IN_PROGRESS` · baseline marginal, gate humano pendiente |
+| 5B - Reconstruccion X,Y,Z | `V1_REJECTED_REIMPLEMENTATION_IN_PROGRESS` |
 | 5C - Vista superior derivada | No iniciada |
 | 6 - Vista lateral derivada | No iniciada |
 | 7 - Validacion final | No iniciada |
