@@ -2,7 +2,7 @@
   "schema_version": 1,
   "branch": "agent/player-perception-p1-runtime",
   "base_sha": "154c8476268dbb9ead9061d83a02d11a91e38abd",
-  "head_sha": "e9861aed059c062cfa19004a0a0d866144d4a307",
+  "head_sha": "b72ce4b76160aa1658b6141273b116e6738cef29",
   "task": "Prepare executable provider-neutral Stage P1 runtime and ten-frame GPU smoke job",
   "status": "COMPLETED",
   "stages": {"stage_1_to_5a1": "VALIDATED", "stage_5b_v1": "REJECTED_BY_HUMAN_GATE", "stage_5b_v2": "REJECTED_BY_HUMAN_GATE", "stage_5c": "NOT_STARTED", "stage_6": "NOT_STARTED", "stage_p1": "READY_FOR_GPU_PROVIDER_SMOKE"},

@@ -1,6 +1,7 @@
 # Last result
 
 - Branch: `agent/player-perception-p1-runtime` (based on `e9861aed059c062cfa19004a0a0d866144d4a307`).
+- Runtime commit: `b72ce4b76160aa1658b6141273b116e6738cef29`.
 
 ## Changes
 
