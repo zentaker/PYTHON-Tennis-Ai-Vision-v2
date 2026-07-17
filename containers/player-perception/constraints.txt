@@ -1,5 +1,6 @@
 numpy==1.26.4
 opencv-python-headless==4.10.0.84
+yapf==0.40.2
 mmengine==0.10.4
 mmcv==2.2.0
 mmdet==3.3.0
