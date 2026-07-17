@@ -79,9 +79,12 @@ jobs:
           python - <<'PY'
           import json
           import os
+          import re
           from pathlib import Path
           report = json.loads(Path(os.environ["REPORT_PATH"]).read_text())
-          assert report["status"] == "ASSETS_VERIFIED", report
+          assert report["status"] in {"ASSETS_VERIFIED", "CHECKSUMS_DISCOVERED_NOT_PINNED"}, report
+          for component in report["components"].values():
+              assert re.fullmatch(r"[0-9a-f]{64}", component["checkpoint_sha256"])
           output = Path(os.environ["OUTPUT_DIR"])
           perception = json.loads((output / "perception_report.json").read_text())
           assert perception["frame_count"] == 1

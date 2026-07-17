@@ -17,6 +17,7 @@ uv run python -m src.player_perception.cli \
   --backend "${P1_BACKEND:-openmmlab}" \
   --device "${P1_DEVICE:-cuda}" \
   --model-bundle "$MODEL_BUNDLE" \
+  --config-root "${P1_CONFIG_ROOT:-.}" \
   --video "${P1_VIDEO:-data/clips/$CLIP_ID/source.mp4}" \
   --manifest "${P1_MANIFEST:-data/clips/$CLIP_ID/clip_manifest.json}" \
   --homography "${P1_HOMOGRAPHY:-data/clips/$CLIP_ID/homography.json}" \
