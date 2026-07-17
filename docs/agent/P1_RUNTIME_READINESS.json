@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "status": "RUNTIME_REQUIRES_FREE_CI_VALIDATION",
+  "status": "BLOCKED",
   "checks": {
     "model_manifest": true,
     "canonical_decoder_import": true,
@@ -13,7 +13,8 @@
     "no_semantic_constraints_input": true,
     "real_video_decoding": true,
     "mock_real_frame_e2e": true,
-    "all_static_and_local_checks": true
+    "all_static_and_local_checks": true,
+    "free_ci_gate": false
   },
   "reasons": [
     "Docker has not been built",
@@ -21,7 +22,8 @@
     "official whole-body assets/configs were not previously pinned",
     "checkpoint SHA-256 values must be resolved in free CI without downloading weights on the Mac",
     "whole-body mapping now requires model dataset metainfo validation",
-    "SimpleIoUTracker is an explicit fallback, not authentic ByteTrack"
+    "SimpleIoUTracker is an explicit fallback, not authentic ByteTrack",
+    "Free CI iteration 3 failed: scripts/ci_free_runtime_gate.py was invoked as a file and could not import the repository package (ModuleNotFoundError: No module named 'src'); the subsequent inference had no downloaded checkpoint and failed with missing detector checkpoint"
   ],
   "not_executed": [
     "OpenMMLab model inference",
@@ -31,5 +33,5 @@
     "full 527-frame job",
     "Stage 5B/5C/6"
   ],
-  "next_action": "ChatGPT debe auditar P1_RUNTIME_READINESS y después evaluar proveedores actuales contra GPU_PROVIDER_ACCEPTANCE_GATE."
+  "next_action": "Fix the free CI module invocation, then rerun the gate in a separately authorized pass; do not promote readiness or use a GPU provider until it passes."
 }
