@@ -98,8 +98,97 @@ def estimate_speed(
         window_start_seconds=float(data[0, 0]),
         window_end_seconds=float(data[-1, 0]),
         confidence=confidence,
+        outgoing_confidence=confidence,
         warnings=tuple(warnings),
     )
+
+
+def estimate_event_kinematics(
+    samples: Sequence[BallTrajectorySample],
+    contact_timestamp_seconds: float,
+    method: str,
+    *,
+    pre_window_seconds: float = 0.5,
+    post_window_seconds: float = 0.5,
+    max_gap_seconds: float = 0.5,
+    outlier_mad_scale: float = 6.0,
+) -> BallKinematics:
+    """Estimate independent incoming and outgoing speeds around one contact."""
+    if not np.isfinite(contact_timestamp_seconds):
+        return _unavailable(method, _speed_unit(method), 0, "contact timestamp must be finite")
+    if pre_window_seconds <= 0 or post_window_seconds <= 0:
+        raise ValueError("contact windows must be positive")
+    ordered = list(samples)
+    incoming = [
+        sample
+        for sample in ordered
+        if contact_timestamp_seconds - pre_window_seconds
+        <= sample.timestamp_seconds
+        <= contact_timestamp_seconds
+    ]
+    outgoing = [
+        sample
+        for sample in ordered
+        if contact_timestamp_seconds
+        <= sample.timestamp_seconds
+        <= contact_timestamp_seconds + post_window_seconds
+    ]
+    common = {
+        "max_gap_seconds": max_gap_seconds,
+        "outlier_mad_scale": outlier_mad_scale,
+    }
+    incoming_result = estimate_speed(incoming, method, **common)
+    outgoing_result = estimate_speed(outgoing, method, **common)
+    incoming_available = incoming_result.status == "available"
+    outgoing_available = outgoing_result.status == "available"
+    status = "available" if incoming_available or outgoing_available else "unavailable"
+    warnings = tuple(f"incoming: {warning}" for warning in incoming_result.warnings) + tuple(
+        f"outgoing: {warning}" for warning in outgoing_result.warnings
+    )
+    confidences = [
+        value
+        for value, available in (
+            (incoming_result.confidence, incoming_available),
+            (outgoing_result.confidence, outgoing_available),
+        )
+        if available
+    ]
+    return BallKinematics(
+        status=status,
+        method=method,
+        speed_unit=_speed_unit(method),
+        incoming_speed_mps=(incoming_result.outgoing_speed_mps if incoming_available else None),
+        incoming_speed_kmh=(incoming_result.outgoing_speed_kmh if incoming_available else None),
+        outgoing_speed_mps=(outgoing_result.outgoing_speed_mps if outgoing_available else None),
+        outgoing_speed_kmh=(outgoing_result.outgoing_speed_kmh if outgoing_available else None),
+        peak_outgoing_speed_kmh=(
+            outgoing_result.peak_outgoing_speed_kmh if outgoing_available else None
+        ),
+        samples_used=incoming_result.samples_used + outgoing_result.samples_used,
+        rejected_samples=(
+            incoming_result.rejected_samples + outgoing_result.rejected_samples
+        ),
+        incoming_samples_used=incoming_result.samples_used,
+        incoming_rejected_samples=incoming_result.rejected_samples,
+        outgoing_samples_used=outgoing_result.samples_used,
+        outgoing_rejected_samples=outgoing_result.rejected_samples,
+        window_start_seconds=(
+            incoming_result.window_start_seconds if incoming_available else None
+        ),
+        window_end_seconds=(outgoing_result.window_end_seconds if outgoing_available else None),
+        confidence=min(confidences) if confidences else 0.0,
+        incoming_confidence=incoming_result.confidence if incoming_available else 0.0,
+        outgoing_confidence=outgoing_result.confidence if outgoing_available else 0.0,
+        warnings=warnings,
+    )
+
+
+def _speed_unit(method: str) -> str:
+    if method == "pixel_apparent":
+        return "pixels_per_second"
+    if method in {"court_planar_xy", "estimated_3d"}:
+        return "metres_per_second"
+    raise ValueError(f"unsupported method: {method}")
 
 
 def _unavailable(method: str, unit: str, rejected: int, warning: str) -> BallKinematics:
