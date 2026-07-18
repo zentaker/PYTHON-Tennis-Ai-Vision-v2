@@ -4,6 +4,13 @@ This directory is the only provider-specific integration. The validated
 `containers/player-perception/Dockerfile` is reused verbatim through
 `modal.Image.from_dockerfile`; no second dependency matrix exists.
 
+The free SDK gate pins the official Python SDK to `modal==1.5.2` in
+`requirements-modal.txt`. The gate instantiates the current `Image.from_dockerfile`
+(`context_dir=ROOT`), named `Volume` handles, `App.function`, `Function.spawn`,
+`FunctionCall.object_id`/`cancel`, `current_input_id`, and the Volume
+`batch_upload(force=True)`, `commit`, `reload`, `listdir`, and `read_file` APIs.
+It never authenticates, hydrates, uploads, spawns, or contacts Modal.
+
 The adapter is intentionally guarded. It does not authenticate, create a remote
 App, create Volumes, or spend credits during a dry-run. After one manual Modal
 authentication and local budget/credit confirmation, the only execution command is:

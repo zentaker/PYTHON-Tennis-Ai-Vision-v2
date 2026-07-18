@@ -27,8 +27,10 @@ DOCKERFILE = ROOT / "containers/player-perception/Dockerfile"
 MODEL_BUNDLE = ROOT / "config/player_perception/p1_openmmlab.json"
 PROVIDER_CONFIG = ROOT / "config/providers/modal_p1_smoke.json"
 APPROVAL_FILE = ROOT / ".modal_smoke_approval.json"
+CALL_RECORD_FILE = ROOT / ".modal_smoke_function_call.json"
 OUTPUT_DIR = ROOT / "outputs/nivel_a2_01/stage_p1_modal_smoke"
 GPU_FALLBACK = ["L4", "A10", "T4"]
+run_smoke: Any = None
 EXPECTED_OUTPUTS = (
     "player_tracks.csv",
     "player_pose.jsonl",
@@ -72,6 +74,12 @@ def _validate_provider_config(config: dict[str, Any]) -> None:
         raise ValueError("Modal smoke must remain ephemeral, attached and unreserved")
     if config["budget_status"] != "NOT_CONFIGURED" or config["authentication_status"] != "NOT_CONFIGURED":
         raise ValueError("Modal financial/authentication guards must start NOT_CONFIGURED")
+    if config["subscription_cost_usd"] != 0 or config["included_monthly_credits_usd"] != 30:
+        raise ValueError("Modal Starter static cost/credit declaration is invalid")
+    if config["expected_charge_usd"] is not None or config["max_out_of_pocket_approved_usd"] != 0:
+        raise ValueError("Modal smoke must not guarantee or approve a real charge")
+    if config["pricing_status"] != "VERIFIED_STATIC" or not config["requires_free_credit"]:
+        raise ValueError("Modal pricing/free-credit guards are invalid")
 
 
 def _validate_approval(path: Path = APPROVAL_FILE) -> bool:
@@ -96,6 +104,10 @@ def _validate_core_is_provider_neutral() -> None:
 
 def _package_path(output_root: Path = DEFAULT_OUTPUT) -> Path:
     return output_root / "inputs/p1_smoke_manifest.json"
+
+
+def _package_id(package_path: Path) -> str:
+    return _sha256(package_path)
 
 
 def validate_local_contract() -> dict[str, Any]:
@@ -127,7 +139,7 @@ def validate_local_contract() -> dict[str, Any]:
         raise ValueError("Modal package must contain exactly ten frames")
     return {
         "dockerfile": str(DOCKERFILE.relative_to(ROOT)),
-        "image_source": "modal.Image.from_dockerfile(containers/player-perception/Dockerfile)",
+        "image_source": "modal.Image.from_dockerfile(DOCKERFILE, context_dir=ROOT)",
         "platform": "linux/amd64 via Modal worker",
         "frame_ids": package["frame_ids"],
         "expected_outputs": list(EXPECTED_OUTPUTS),
@@ -172,7 +184,7 @@ def _ensure_checkpoint(section: dict[str, Any], assets_root: Path) -> Path:
 
 
 def _build_modal_app(modal_module: Any) -> Any:
-    image = modal_module.Image.from_dockerfile("containers/player-perception/Dockerfile")
+    image = modal_module.Image.from_dockerfile(str(DOCKERFILE), context_dir=ROOT)
     assets = modal_module.Volume.from_name("tennisai-p1-assets", create_if_missing=True)
     results = modal_module.Volume.from_name("tennisai-p1-results", create_if_missing=True)
     app = modal_module.App("tennis-ai-p1-modal-smoke")
@@ -185,7 +197,7 @@ def _build_modal_app(modal_module: Any) -> Any:
         retries=0,
         timeout=900,
     )
-    def run_smoke() -> dict[str, Any]:
+    def run_smoke(package_id: str, run_slug: str) -> dict[str, Any]:
         import csv
         import json as remote_json
         import subprocess as remote_subprocess
@@ -193,6 +205,10 @@ def _build_modal_app(modal_module: Any) -> Any:
 
         import cv2
         import torch
+        import modal as remote_modal
+
+        if not torch.cuda.is_available():
+            raise RuntimeError("CUDA is mandatory for the Modal P1 smoke; refusing CPU fallback")
 
         from src.player_perception.backends.openmmlab_backend import OpenMMLabBackend
         from src.player_perception.court_projection import CourtProjector
@@ -202,11 +218,13 @@ def _build_modal_app(modal_module: Any) -> Any:
         from src.player_perception.schemas import FrameInput
 
         started = _utc_now()
+        input_id = remote_modal.current_input_id()
         assets_root = RemotePath("/assets")
         bundle_path = RemotePath("/workspace/config/player_perception/p1_openmmlab.json")
         bundle = remote_json.loads(bundle_path.read_text(encoding="utf-8"))
         _ensure_checkpoint(bundle["detector"], assets_root)
         _ensure_checkpoint(bundle["pose"], assets_root)
+        assets.commit()
         package = remote_json.loads((assets_root / "inputs/p1_smoke_manifest.json").read_text(encoding="utf-8"))
         if package.get("frame_count") != 10:
             raise RuntimeError("remote smoke package is not exactly ten frames")
@@ -217,8 +235,7 @@ def _build_modal_app(modal_module: Any) -> Any:
             if image is None:
                 raise RuntimeError(f"missing smoke frame: {image_path}")
             frame_inputs.append(FrameInput(record["frame_id"], record["timestamp_seconds"], image, record["width"], record["height"]))
-        run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-        output_dir = RemotePath("/results") / run_id
+        output_dir = RemotePath("/results") / run_slug
         output_dir.mkdir(parents=True, exist_ok=True)
         backend = OpenMMLabBackend(bundle_path, "/assets/models", "/opt/openmmlab", device="cuda")
         pipeline = PerceptionPipeline(backend, CourtProjector(assets_root / "homography.json"))
@@ -235,20 +252,49 @@ def _build_modal_app(modal_module: Any) -> Any:
         paths["player_pose_overlay.mp4"] = write_pose_overlay(frame_inputs, report.frames, output_dir / "player_pose_overlay.mp4")
         paths["contact_audit_contact_sheet.png"] = write_contact_sheet(frame_inputs, report.frames, output_dir / "contact_audit_contact_sheet.png")
         gpu = remote_subprocess.run(["nvidia-smi", "--query-gpu=name,memory.total,driver_version", "--format=csv,noheader"], check=True, capture_output=True, text=True).stdout.strip()
+        pose_counts = [len(pose.keypoints) for frame in report.frames for pose in frame.poses]
+        if not pose_counts:
+            raise RuntimeError("Modal smoke produced no poses")
+        expected_keypoints = int(bundle["pose"]["keypoint_count"])
+        if any(count != expected_keypoints for count in pose_counts):
+            raise RuntimeError(f"whole-body keypoint count mismatch: {pose_counts}")
+        names_present = sorted({point.name for frame in report.frames for pose in frame.poses for point in pose.keypoints})
+        required_names = {"left_wrist", "right_wrist", "left_ankle", "right_ankle", "left_heel", "right_heel", "left_big_toe", "right_big_toe"}
+        missing_names = sorted(required_names.difference(names_present))
+        if missing_names:
+            raise RuntimeError(f"whole-body required keypoints missing: {missing_names}")
+        detections_by_frame = {str(frame.frame_id): len(frame.detections) for frame in report.frames}
+        tracks_by_frame = {str(frame.frame_id): len(frame.tracks) for frame in report.frames}
+        poses_by_frame = {str(frame.frame_id): len(frame.poses) for frame in report.frames}
+        frames_without_people = [frame_id for frame_id, count in detections_by_frame.items() if count == 0]
+        frames_not_two_players = [frame_id for frame_id, count in tracks_by_frame.items() if count != 2]
+        run_id = input_id
         execution = {
             "schema_version": "1.0",
             "app_run_identifier": run_id,
+            "function_input_id": input_id,
+            "run_slug": run_slug,
+            "package_id": package_id,
             "started_utc": started,
             "ended_utc": _utc_now(),
             "gpu": gpu,
             "cuda": torch.version.cuda,
             "torch_cuda_available": bool(torch.cuda.is_available()),
             "torch_device_name": torch.cuda.get_device_name() if torch.cuda.is_available() else None,
-            "peak_vram_bytes": torch.cuda.max_memory_reserved() if torch.cuda.is_available() else 0,
+            "compute_capability": list(torch.cuda.get_device_capability()) if torch.cuda.is_available() else None,
+            "peak_vram_bytes": torch.cuda.max_memory_reserved(),
             "frames_processed": report.frame_count,
-            "people_detected_by_frame": {str(frame.frame_id): len(frame.detections) for frame in report.frames},
-            "poses_generated": sum(len(frame.poses) for frame in report.frames),
-            "keypoint_count": 133,
+            "detections_by_frame": detections_by_frame,
+            "tracks_by_frame": tracks_by_frame,
+            "poses_by_frame": poses_by_frame,
+            "frames_without_people": frames_without_people,
+            "frames_not_two_players": frames_not_two_players,
+            "poses_generated": len(pose_counts),
+            "keypoint_count_min": min(pose_counts),
+            "keypoint_count_max": max(pose_counts),
+            "keypoint_count_distribution": {str(count): pose_counts.count(count) for count in sorted(set(pose_counts))},
+            "keypoint_names_present": names_present,
+            "keypoints_missing": missing_names,
             "warnings": ["visual precision requires human review", "SimpleIoUTracker is not ByteTrack"],
             "status": "COMPLETED",
         }
@@ -256,12 +302,13 @@ def _build_modal_app(modal_module: Any) -> Any:
         execution_path.write_text(remote_json.dumps(execution, indent=2) + "\n", encoding="utf-8")
         paths["modal_execution_report.json"] = execution_path
         paths["artifact_manifest.json"] = write_artifact_manifest(paths.values(), output_dir)
-        execution["output_checksums"] = {name: _sha256(path) for name, path in paths.items()}
+        execution["output_checksums"] = {name: _sha256(path) for name, path in paths.items() if name not in {"modal_execution_report.json", "artifact_manifest.json"}}
         execution_path.write_text(remote_json.dumps(execution, indent=2) + "\n", encoding="utf-8")
+        paths["artifact_manifest.json"] = write_artifact_manifest(paths.values(), output_dir)
         results.commit()
         return execution
 
-    app._p1_run_smoke = run_smoke
+    globals()["run_smoke"] = run_smoke
 
     @app.local_entrypoint()
     def _local_entrypoint() -> None:
@@ -271,7 +318,11 @@ def _build_modal_app(modal_module: Any) -> Any:
 
 
 def _upload_inputs(volume: Any, package_root: Path) -> None:
-    with volume.batch_upload() as batch:
+    package_path = package_root / "inputs/p1_smoke_manifest.json"
+    package = verify_package(package_path)
+    if package["frame_count"] != 10 or len(package["frames"]) != 10:
+        raise ValueError("refusing to upload a package that is not exactly ten frames")
+    with volume.batch_upload(force=True) as batch:
         batch.put_file(str(package_root / "inputs/p1_smoke_manifest.json"), "/inputs/p1_smoke_manifest.json")
         for frame in sorted((package_root / "inputs/frames").glob("*.jpg")):
             batch.put_file(str(frame), f"/inputs/frames/{frame.name}")
@@ -299,6 +350,17 @@ def _download_results(volume: Any, remote_prefix: str, destination: Path) -> Non
                 handle.write(block)
 
 
+def _verify_downloaded_outputs(destination: Path) -> None:
+    missing = [name for name in EXPECTED_OUTPUTS if not (destination / name).is_file()]
+    if missing:
+        raise RuntimeError(f"Modal output download is incomplete: {missing}")
+    manifest = _load_json(destination / "artifact_manifest.json")
+    for entry in manifest.get("artifacts", []):
+        path = destination / entry["path"]
+        if not path.is_file() or _sha256(path) != entry["sha256"]:
+            raise RuntimeError(f"downloaded output checksum mismatch: {path}")
+
+
 def run_authenticated() -> dict[str, Any]:
     if not _validate_approval():
         raise RuntimeError(".modal_smoke_approval.json must contain four true approvals")
@@ -309,13 +371,33 @@ def run_authenticated() -> dict[str, Any]:
         raise RuntimeError("install/authenticate Modal only for the explicitly approved run") from exc
     assets = modal.Volume.from_name("tennisai-p1-assets", create_if_missing=True)
     results = modal.Volume.from_name("tennisai-p1-results", create_if_missing=True)
+    package_path = _package_path()
+    package_id = _package_id(package_path)
+    run_slug = f"p1-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}-{package_id[:12]}"
     _upload_inputs(assets, DEFAULT_OUTPUT)
+    assets.commit()
     global app
     if app is None:
         app = _build_modal_app(modal)
     # The call is deliberately unreachable without the approval file above.
-    result = app._p1_run_smoke.remote()
-    _download_results(results, f"/{result['app_run_identifier']}", OUTPUT_DIR)
+    call = run_smoke.spawn(package_id, run_slug)
+    function_call_id = call.object_id
+    CALL_RECORD_FILE.write_text(json.dumps({"function_call_id": function_call_id, "run_slug": run_slug}, indent=2) + "\n", encoding="utf-8")
+    try:
+        result = call.get()
+    except KeyboardInterrupt:
+        call.cancel()
+        print(f"Cancelled Modal FunctionCall {function_call_id}")
+        raise
+    except Exception:
+        try:
+            call.cancel()
+        finally:
+            print(f"Modal FunctionCall failed and cancellation was attempted: {function_call_id}")
+        raise
+    results.reload()
+    _download_results(results, f"/{result['run_slug']}", OUTPUT_DIR)
+    _verify_downloaded_outputs(OUTPUT_DIR)
     from scripts.validate_stage_p1_outputs import validate
 
     validate(OUTPUT_DIR, contract["frame_ids"])
