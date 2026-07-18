@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "agent": "stroke-ball-analytics",
+  "worktree": "/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2-analytics",
+  "branch": "agent/analytics-stroke-speed-foundation",
+  "base_sha": "e81949bc01cbd2adfca12bd5b3a6a28c3e792fea",
+  "scope_status": "SAFE_FOR_PARALLEL_WORK",
+  "allowed_paths": ["src/analytics/**", "docs/analytics/**", "config/analytics/**", "tests/test_analytics_*.py", "tests/fixtures/analytics/**", "scripts/check_analytics_agent_scope.py", "docs/agent/tracks/A1_*", ".github/workflows/a1-analytics-foundation-gate.yml"],
+  "forbidden_paths": ["src/player_perception/**", "src/events/**", "src/video/**", "src/project/**", "infrastructure/**", "containers/**", "data/**", "outputs/**", "models/**", "pyproject.toml", "uv.lock", "docs/agent/CURRENT_STATE.json"],
+  "upstream_contracts_read_only": ["Stage 4 events", "P1 output contract", "future P2 contract", "proposed Stage 5B XYZ contract"],
+  "overlapping_files_with_agent_1": [],
+  "cloud_calls": 0,
+  "gpu_calls": 0,
+  "real_video_inference": false
+}

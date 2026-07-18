@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "stroke_side": ["serve", "forehand", "backhand", "overhead", "unknown"],
+  "contact_mode": ["serve", "return", "groundstroke", "volley", "half_volley", "overhead", "unknown"],
+  "spin_family": ["flat", "topspin", "slice", "unknown"],
+  "tactical_shape": ["drive", "drop", "lob", "approach", "passing_shot", "defensive", "neutral", "unknown"],
+  "hitting_hand": ["left", "right", "unknown"]
+}
