@@ -2,7 +2,7 @@
   "schema_version": 1,
   "branch": "agent/player-perception-p1-modal-adapter",
   "base_sha": "154c8476268dbb9ead9061d83a02d11a91e38abd",
-  "head_sha": "c0d258f35ce49a1706d5860f56b5644669cc4838",
+  "head_sha": "5640d8308bda6030b4e466a5892539f345ce853a",
   "task": "Prepare a guarded Modal P1 ten-frame GPU smoke adapter",
   "status": "READY_FOR_MODAL_AUTH",
   "stages": {"stage_1_to_5a1": "VALIDATED", "stage_5b_v1": "REJECTED_BY_HUMAN_GATE", "stage_5b_v2": "REJECTED_BY_HUMAN_GATE", "stage_5c": "NOT_STARTED", "stage_6": "NOT_STARTED", "stage_p1": "READY_FOR_MODAL_AUTH"},
