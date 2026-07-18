@@ -20,6 +20,9 @@ jobs:
       - name: Install pinned Modal SDK
         run: python -m pip install --disable-pip-version-check -r infrastructure/modal/requirements-modal.txt
 
+      - name: Install uv for project tests
+        run: python -m pip install --disable-pip-version-check uv
+
       - name: Print SDK and CLI versions
         run: |
           python -c 'import importlib.metadata; print("modal", importlib.metadata.version("modal"))'
