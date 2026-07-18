@@ -13,3 +13,8 @@ They return `unavailable` when evidence is insufficient.
 The contract reserves incoming/outgoing, peak outgoing, net, and pre/post-bounce metrics. A metric
 remains null unless its event window and evidence exist. A two-sample result is warned; a larger
 window is preferred. Values produced from synthetic tests validate mathematics, not real footage.
+
+Contact-centered results expose independent `incoming_status` and `outgoing_status`. Global status is
+`available` when both windows are available, `partial` when exactly one is available, and
+`unavailable` when neither is available. The simple estimator represents its one computed result as
+an available outgoing side. Its unit is explicit and constrained by the selected method.

@@ -26,7 +26,7 @@ def test_json_schemas_are_valid_json_with_required_identity():
 
 def test_stroke_schema_models_value_and_full_confidence_for_every_dimension():
     schema = json.loads(Path("config/analytics/stroke_analytics.schema.json").read_text())
-    dimensions = schema["properties"]["stroke"]
+    dimensions = schema["$defs"]["classifiedStroke"]
     assert dimensions["required"] == [
         "stroke_side", "contact_mode", "spin_family", "tactical_shape", "hitting_hand"
     ]

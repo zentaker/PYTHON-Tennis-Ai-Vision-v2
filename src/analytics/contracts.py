@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from enum import StrEnum
+from math import isfinite
 from typing import Any, Mapping
 
 
@@ -53,6 +54,15 @@ def _confidence(value: float) -> float:
     value = float(value)
     if not 0.0 <= value <= 1.0:
         raise ValueError("confidence must be between 0 and 1")
+    return value
+
+
+def _json_value(value: Any) -> Any:
+    """Convert immutable Python containers to JSON-native values."""
+    if isinstance(value, Mapping):
+        return {str(key): _json_value(item) for key, item in value.items()}
+    if isinstance(value, (tuple, list)):
+        return [_json_value(item) for item in value]
     return value
 
 
@@ -164,7 +174,7 @@ class ClassifiedStroke:
         return {
             name: {
                 "value": getattr(self, name).value,
-                "confidence": asdict(getattr(self, f"{name}_confidence")),
+                "confidence": _json_value(asdict(getattr(self, f"{name}_confidence"))),
             }
             for name in (
                 "stroke_side",
@@ -181,6 +191,8 @@ class BallKinematics:
     status: str
     method: str
     speed_unit: str
+    incoming_status: str = "unavailable"
+    outgoing_status: str = "unavailable"
     incoming_speed_mps: float | None = None
     incoming_speed_kmh: float | None = None
     outgoing_speed_mps: float | None = None
@@ -203,9 +215,60 @@ class BallKinematics:
     warnings: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
+        if self.status not in {"available", "partial", "unavailable"}:
+            raise ValueError("invalid kinematics status")
+        for name in ("incoming_status", "outgoing_status"):
+            if getattr(self, name) not in {"available", "unavailable"}:
+                raise ValueError(f"invalid {name}")
+        expected_units = {
+            "pixel_apparent": "pixels_per_second",
+            "court_planar_xy": "metres_per_second",
+            "estimated_3d": "metres_per_second",
+        }
+        if self.method not in expected_units:
+            raise ValueError("invalid kinematics method")
+        if self.speed_unit != expected_units[self.method]:
+            raise ValueError("speed_unit is inconsistent with method")
+        for name in (
+            "samples_used",
+            "rejected_samples",
+            "incoming_samples_used",
+            "incoming_rejected_samples",
+            "outgoing_samples_used",
+            "outgoing_rejected_samples",
+        ):
+            value = getattr(self, name)
+            if not isinstance(value, int) or value < 0:
+                raise ValueError(f"{name} must be a non-negative integer")
+        for name in (
+            "incoming_speed_mps",
+            "incoming_speed_kmh",
+            "outgoing_speed_mps",
+            "outgoing_speed_kmh",
+            "peak_outgoing_speed_kmh",
+            "speed_at_net_kmh",
+            "speed_before_bounce_kmh",
+            "speed_after_bounce_kmh",
+        ):
+            value = getattr(self, name)
+            if value is not None and (not isfinite(value) or value < 0):
+                raise ValueError(f"{name} must be finite and non-negative")
+        for name in ("window_start_seconds", "window_end_seconds"):
+            value = getattr(self, name)
+            if value is not None and not isfinite(value):
+                raise ValueError(f"{name} must be finite")
+        if (
+            self.window_start_seconds is not None
+            and self.window_end_seconds is not None
+            and self.window_start_seconds > self.window_end_seconds
+        ):
+            raise ValueError("window_start_seconds must not exceed window_end_seconds")
         object.__setattr__(self, "confidence", _confidence(self.confidence))
         object.__setattr__(self, "incoming_confidence", _confidence(self.incoming_confidence))
         object.__setattr__(self, "outgoing_confidence", _confidence(self.outgoing_confidence))
+
+    def to_dict(self) -> dict[str, Any]:
+        return _json_value(asdict(self))
 
 
 @dataclass(frozen=True, slots=True)
@@ -219,8 +282,8 @@ class StrokeAnalyticsRecord:
     def to_dict(self) -> dict[str, Any]:
         return {
             "schema_version": self.schema_version,
-            "event": asdict(self.event),
+            "event": _json_value(asdict(self.event)),
             "stroke": self.stroke.to_dict(),
-            "kinematics": asdict(self.kinematics) if self.kinematics else None,
-            "evidence": [asdict(item) for item in self.evidence],
+            "kinematics": self.kinematics.to_dict() if self.kinematics else None,
+            "evidence": [_json_value(asdict(item)) for item in self.evidence],
         }

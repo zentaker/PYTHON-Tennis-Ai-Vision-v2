@@ -18,6 +18,9 @@ def test_planar_speed_uses_vfr_and_converts_units(fixture):
     assert result.outgoing_speed_mps == pytest.approx(5.0)
     assert result.outgoing_speed_kmh == pytest.approx(18.0)
     assert "not real 3D" in result.warnings[-1]
+    assert result.status == "available"
+    assert result.incoming_status == "unavailable"
+    assert result.outgoing_status == "available"
 
 
 def test_3d_speed_requires_z_and_computes_known_synthetic_value():
@@ -50,6 +53,8 @@ def test_contact_windows_keep_incoming_and_outgoing_independent_with_vfr():
     )
     assert result.incoming_speed_mps == pytest.approx(10.0)
     assert result.outgoing_speed_mps == pytest.approx(20.0)
+    assert result.status == "available"
+    assert result.incoming_status == result.outgoing_status == "available"
     assert result.incoming_samples_used == 5
     assert result.outgoing_samples_used == 5
     assert result.speed_at_net_kmh is None
@@ -77,12 +82,18 @@ def test_gap_or_insufficient_evidence_is_unavailable_per_side():
         samples, 0.5, "court_planar_xy", pre_window_seconds=0.05
     )
     assert result.incoming_speed_mps is None
+    assert result.status == "partial"
+    assert result.incoming_status == "unavailable"
+    assert result.outgoing_status == "available"
     assert result.incoming_samples_used == 0
     assert result.outgoing_speed_mps == pytest.approx(20.0)
     after_missing = estimate_event_kinematics(
         samples, 0.5, "court_planar_xy", post_window_seconds=0.05
     )
     assert after_missing.outgoing_speed_mps is None
+    assert after_missing.status == "partial"
+    assert after_missing.incoming_status == "available"
+    assert after_missing.outgoing_status == "unavailable"
     one_side_gap = estimate_event_kinematics(
         samples, 0.5, "court_planar_xy", max_gap_seconds=0.1
     )
@@ -93,6 +104,7 @@ def test_contact_outside_range_and_planar_vs_3d():
     samples = load("contact_vfr")
     outside = estimate_event_kinematics(samples, 2.0, "court_planar_xy")
     assert outside.status == "unavailable"
+    assert outside.incoming_status == outside.outgoing_status == "unavailable"
     assert outside.incoming_speed_mps is None and outside.outgoing_speed_mps is None
     no_z = estimate_event_kinematics(samples, 0.5, "estimated_3d")
     assert no_z.status == "unavailable"

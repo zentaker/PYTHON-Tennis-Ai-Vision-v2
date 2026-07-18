@@ -89,6 +89,7 @@ def estimate_speed(
         status="available",
         method=method,
         speed_unit=speed_unit,
+        outgoing_status="available",
         outgoing_speed_mps=outgoing_mps,
         outgoing_speed_kmh=outgoing_kmh,
         peak_outgoing_speed_kmh=(float(np.max(candidates)) * MPS_TO_KMH
@@ -141,7 +142,12 @@ def estimate_event_kinematics(
     outgoing_result = estimate_speed(outgoing, method, **common)
     incoming_available = incoming_result.status == "available"
     outgoing_available = outgoing_result.status == "available"
-    status = "available" if incoming_available or outgoing_available else "unavailable"
+    if incoming_available and outgoing_available:
+        status = "available"
+    elif incoming_available or outgoing_available:
+        status = "partial"
+    else:
+        status = "unavailable"
     warnings = tuple(f"incoming: {warning}" for warning in incoming_result.warnings) + tuple(
         f"outgoing: {warning}" for warning in outgoing_result.warnings
     )
@@ -157,6 +163,8 @@ def estimate_event_kinematics(
         status=status,
         method=method,
         speed_unit=_speed_unit(method),
+        incoming_status="available" if incoming_available else "unavailable",
+        outgoing_status="available" if outgoing_available else "unavailable",
         incoming_speed_mps=(incoming_result.outgoing_speed_mps if incoming_available else None),
         incoming_speed_kmh=(incoming_result.outgoing_speed_kmh if incoming_available else None),
         outgoing_speed_mps=(outgoing_result.outgoing_speed_mps if outgoing_available else None),

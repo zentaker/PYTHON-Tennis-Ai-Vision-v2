@@ -20,32 +20,59 @@ jobs:
       - name: Install existing dependencies
         run: uv sync --extra dev
       - name: Analytics tests
-        run: uv run pytest tests/test_analytics_*.py
+        run: |
+          mkdir -p analytics-gate-report
+          uv run --with "jsonschema>=4.23,<5" pytest tests/test_analytics_*.py --junitxml=analytics-gate-report/pytest.xml
       - name: Ruff
         run: uv run ruff check src/analytics tests/test_analytics_*.py scripts/check_analytics_agent_scope.py
       - name: Compile
         run: uv run python -m compileall src/analytics tests scripts/check_analytics_agent_scope.py
-      - name: Validate Analytics JSON
+      - name: Validate serialized Analytics contracts
         run: |
-          uv run python - <<'PY'
-          import json
-          import pathlib
-          paths = list(pathlib.Path("config/analytics").glob("*.json"))
-          documents = {path.name: json.loads(path.read_text()) for path in paths}
-          schema = documents["stroke_analytics.schema.json"]
-          required = {"stroke_side", "contact_mode", "spin_family", "tactical_shape", "hitting_hand"}
-          assert set(schema["properties"]["stroke"]["required"]) == required
-          confidence = set(schema["$defs"]["confidence"]["required"])
-          assert confidence == {"source", "method", "confidence", "warnings", "dependencies", "human_labeled", "model_inferred", "geometry_derived"}
-          print(f"validated {len(documents)} analytics JSON documents")
-          PY
+          uv run --with "jsonschema>=4.23,<5" python -m src.analytics.schema_validation
+          echo INSTANCE_VALIDATED > analytics-gate-report/schema-status.txt
       - name: Scope gate
-        run: uv run python scripts/check_analytics_agent_scope.py
+        run: |
+          set -o pipefail
+          uv run python scripts/check_analytics_agent_scope.py | tee analytics-gate-report/scope.txt
       - name: Create report
         if: always()
         run: |
-          mkdir -p analytics-gate-report
-          uv run python -c 'import json,os,pathlib; pathlib.Path("analytics-gate-report/report.json").write_text(json.dumps({"schema_version":"1.0","commit":os.environ["GITHUB_SHA"],"analytics_test_count":24,"schema_status":"STRUCTURALLY_VALID","scope_status":"SAFE_FOR_PARALLEL_WORK","forbidden_files_count":0,"cloud_calls":0,"gpu_calls":0,"real_video_inference":False}, indent=2)+"\n")'
+          uv run python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import re
+          import xml.etree.ElementTree as ET
+
+          report_dir = pathlib.Path("analytics-gate-report")
+          report_dir.mkdir(exist_ok=True)
+          xml_path = report_dir / "pytest.xml"
+          suite = ET.parse(xml_path).getroot() if xml_path.exists() else {}
+          if getattr(suite, "tag", None) == "testsuites":
+              suite = next(iter(suite))
+          count = lambda name: int(suite.attrib.get(name, 0)) if hasattr(suite, "attrib") else 0
+          scope = (report_dir / "scope.txt").read_text() if (report_dir / "scope.txt").exists() else ""
+          forbidden_match = re.search(r"forbidden files: \[(.*?)\]", scope)
+          forbidden_count = 0 if forbidden_match and not forbidden_match.group(1).strip() else 1
+          schema_status = ((report_dir / "schema-status.txt").read_text().strip()
+                           if (report_dir / "schema-status.txt").exists() else "NOT_VALIDATED")
+          payload = {
+              "schema_version": "1.0",
+              "commit": os.environ["GITHUB_SHA"],
+              "analytics_test_count": count("tests"),
+              "failures": count("failures"),
+              "errors": count("errors"),
+              "skipped": count("skipped"),
+              "schema_status": schema_status,
+              "scope_status": "SAFE_FOR_PARALLEL_WORK" if "status: SAFE_FOR_PARALLEL_WORK" in scope else "UNSAFE_ANALYTICS_SCOPE",
+              "forbidden_files_count": forbidden_count,
+              "cloud_calls": 0,
+              "gpu_calls": 0,
+              "real_video_inference": False,
+          }
+          (report_dir / "report.json").write_text(json.dumps(payload, indent=2) + "\n")
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
