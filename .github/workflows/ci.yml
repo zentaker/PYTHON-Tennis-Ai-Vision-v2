@@ -52,3 +52,16 @@ jobs:
 
       - name: Validate serialized Analytics schemas
         run: uv run --with "jsonschema>=4.23,<5" python -m src.analytics.schema_validation
+
+      - name: Publish player selection visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: p1-player-selection-visual-evidence
+          path: |
+            docs/validation/assets/p1_player_selection_contact_sheet.jpg
+            docs/validation/assets/p1_player_selection_before_after.jpg
+            docs/validation/P1_PLAYER_SELECTION_VISUAL_AUDIT.md
+            config/player_perception/p1_player_selection_result.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
