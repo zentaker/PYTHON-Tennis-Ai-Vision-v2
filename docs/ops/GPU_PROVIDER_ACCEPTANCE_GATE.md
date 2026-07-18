@@ -71,4 +71,4 @@ not being opened in this pass.
 | Custom launch image on Free | Enterprise-only launch-image capability | LIMITATION |
 | Upload/download, cancel, recovery, preparation time | Not tested | PENDING |
 
-Provider status: `READY_FOR_LIGHTNING_OFFLINE_SDK_GATE`.
+Provider status: `READY_FOR_LIGHTNING_ACCOUNT_REVIEW`.
