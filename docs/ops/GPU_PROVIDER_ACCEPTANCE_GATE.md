@@ -71,4 +71,6 @@ not being opened in this pass.
 | Custom launch image on Free | Enterprise-only launch-image capability | LIMITATION |
 | Upload/download, cancel, recovery, preparation time | Not tested | PENDING |
 
-Provider status: `READY_FOR_LIGHTNING_ACCOUNT_REVIEW`.
+Provider status: `READY_FOR_LIGHTNING_ACCOUNT_REVIEW`; SDK gate:
+`SDK_API_SHAPE_VALIDATED`. Account, phone, credits and GPU remain unverified and
+remote execution remains unauthorized.

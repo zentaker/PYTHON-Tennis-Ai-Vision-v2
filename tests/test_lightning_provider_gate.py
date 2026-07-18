@@ -17,7 +17,13 @@ def test_lightning_config_is_free_and_ten_frame_guarded() -> None:
     assert config["max_out_of_pocket_approved_usd"] == 0
     assert config["max_frames"] == 10
     assert config["max_gpu_count"] == 1
-    assert config["provider_status"] == "READY_FOR_LIGHTNING_OFFLINE_SDK_GATE"
+    assert config["sdk_gate_status"] == "SDK_API_SHAPE_VALIDATED"
+    assert config["provider_status"] == "READY_FOR_LIGHTNING_ACCOUNT_REVIEW"
+    assert config["account_status"] == "NOT_CREATED"
+    assert config["payment_method_account_verified"] is False
+    assert config["credits_status"] == "NOT_VERIFIED"
+    assert config["gpu_status"] == "NOT_VERIFIED"
+    assert config["remote_execution_authorized"] is False
 
 
 def test_lightning_sdk_is_concretely_pinned_and_gate_is_offline() -> None:
@@ -31,6 +37,7 @@ def test_lightning_sdk_is_concretely_pinned_and_gate_is_offline() -> None:
     assert "Studio.download_file" in source
     assert "Job.logs" in source
     assert "Job.stop" in source
+    assert "resources_created\": 0" in source
 
 
 def test_modal_is_rejected_and_runtime_call_record_is_ignored() -> None:

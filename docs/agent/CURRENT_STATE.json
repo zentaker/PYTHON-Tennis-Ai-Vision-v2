@@ -1,13 +1,14 @@
 {
   "schema_version": 1,
   "branch": "agent/player-perception-p1-provider-pivot",
-  "base_sha": "dc4d3a11f6d884aa1b2b36317855976cfcf6ef4d",
-  "head_sha": "e81949bc01cbd2adfca12bd5b3a6a28c3e792fea",
+  "base_sha": "e81949bc01cbd2adfca12bd5b3a6a28c3e792fea",
+  "tested_sha": "a763ea040bff090da67e6f644ed26685d4bc7286",
+  "workflow_run": "29644499053",
   "task": "Reject Modal payment policy and validate Lightning SDK offline",
   "status": "READY_FOR_LIGHTNING_ACCOUNT_REVIEW",
   "stages": {"stage_1_to_5a1": "VALIDATED", "stage_5b_v1": "REJECTED_BY_HUMAN_GATE", "stage_5b_v2": "REJECTED_BY_HUMAN_GATE", "stage_5c": "NOT_STARTED", "stage_6": "NOT_STARTED", "stage_p1": "READY_FOR_LIGHTNING_ACCOUNT_REVIEW"},
-  "tests": {"pytest": "209 passed", "ruff": "passed", "compileall": "passed", "replit_smoke": "passed", "offline_sdk_gate": "SDK_API_SHAPE_VALIDATED", "diff_check": "passed", "workflow_run": "29644467760 success", "readiness": "READY_FOR_LIGHTNING_ACCOUNT_REVIEW", "cloud_calls": 0, "spend_generated": 0},
-  "artifacts": ["infrastructure/modal", "config/providers/modal_p1_smoke.json", "config/player_perception/p1_smoke_frames.json", "scripts/prepare_p1_modal_smoke_inputs.py", "scripts/audit_modal_cleanup.py", "tests/test_modal_adapter.py", "docs/ops/GPU_PROVIDER_ACCEPTANCE_GATE.md"],
+  "tests": {"pytest": "209 passed", "ruff": "passed", "compileall": "passed", "replit_smoke": "passed", "offline_sdk_gate": "SDK_API_SHAPE_VALIDATED", "diff_check": "passed", "workflow_status": "success", "readiness": "READY_FOR_LIGHTNING_ACCOUNT_REVIEW", "cloud_calls": 0, "gpu_calls": 0, "spend_generated": 0},
+  "artifacts": ["infrastructure/lightning/", "config/providers/lightning_p1_smoke.json", "scripts/lightning_sdk_gate.py", "tests/test_lightning_provider_gate.py", "docs/ops/LIGHTNING_PROVIDER_EVIDENCE.md", ".github/workflows/p1-lightning-sdk-free-gate.yml", "infrastructure/modal", "config/providers/modal_p1_smoke.json"],
   "blocker": null,
-  "next_action": "Revisión humana de Lightning; no crear cuenta, autenticar ni ejecutar GPU automáticamente."
+  "next_action": "Realizar revisión humana de registro Lightning sin autorizar recursos ni GPU. Confirmar dentro de la cuenta que no se exige método de pago, que aparecen los créditos gratuitos y que el límite de gasto de bolsillo continúa en US$0."
 }

@@ -2,11 +2,16 @@
   "schema_version": "1.0",
   "provider": "lightning-ai",
   "plan": "Free",
+  "sdk_gate_status": "SDK_API_SHAPE_VALIDATED",
+  "provider_status": "READY_FOR_LIGHTNING_ACCOUNT_REVIEW",
   "subscription_cost_usd": 0,
   "included_monthly_credits": 15,
   "credit_value_usd": 1,
   "payment_method_required": false,
+  "payment_method_required_static": false,
+  "payment_method_account_verified": false,
   "phone_verification_required": true,
+  "phone_verification_status": "NOT_VERIFIED",
   "max_out_of_pocket_approved_usd": 0,
   "max_frames": 10,
   "max_gpu_count": 1,
@@ -15,5 +20,5 @@
   "authentication_status": "NOT_CONFIGURED",
   "credits_status": "NOT_VERIFIED",
   "gpu_status": "NOT_VERIFIED",
-  "provider_status": "READY_FOR_LIGHTNING_OFFLINE_SDK_GATE"
+  "remote_execution_authorized": false
 }

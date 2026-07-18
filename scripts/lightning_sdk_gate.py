@@ -54,16 +54,25 @@ def _check_config() -> dict[str, Any]:
     expected = {
         "provider": "lightning-ai",
         "plan": "Free",
+        "sdk_gate_status": "SDK_API_SHAPE_VALIDATED",
+        "provider_status": "READY_FOR_LIGHTNING_ACCOUNT_REVIEW",
         "subscription_cost_usd": 0,
         "included_monthly_credits": 15,
         "credit_value_usd": 1,
         "payment_method_required": False,
+        "payment_method_required_static": False,
+        "payment_method_account_verified": False,
         "phone_verification_required": True,
+        "phone_verification_status": "NOT_VERIFIED",
         "max_out_of_pocket_approved_usd": 0,
         "max_frames": 10,
         "max_gpu_count": 1,
         "preferred_gpu_order": ["T4", "L4"],
-        "provider_status": "READY_FOR_LIGHTNING_OFFLINE_SDK_GATE",
+        "account_status": "NOT_CREATED",
+        "authentication_status": "NOT_CONFIGURED",
+        "credits_status": "NOT_VERIFIED",
+        "gpu_status": "NOT_VERIFIED",
+        "remote_execution_authorized": False,
     }
     for key, value in expected.items():
         if config.get(key) != value:
@@ -107,6 +116,13 @@ def run() -> dict[str, Any]:
             raise RuntimeError(f"Lightning SDK API gate failed: {required}")
         return {
             "status": "SDK_API_SHAPE_VALIDATED",
+            "sdk_gate_status": config["sdk_gate_status"],
+            "provider_status": config["provider_status"],
+            "account_status": config["account_status"],
+            "payment_method_account_verified": config["payment_method_account_verified"],
+            "credits_status": config["credits_status"],
+            "gpu_status": config["gpu_status"],
+            "remote_execution_authorized": config["remote_execution_authorized"],
             "sdk_version": importlib.metadata.version("lightning-sdk"),
             "sdk_module_version": getattr(lightning_sdk, "__version__", None),
             "cli_available": bool(shutil.which("lightning")),
