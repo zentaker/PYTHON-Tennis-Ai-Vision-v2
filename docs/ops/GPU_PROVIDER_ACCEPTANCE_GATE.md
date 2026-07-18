@@ -24,3 +24,29 @@ real inference is authorised.
 | 17 | Preparation under 15 minutes after setup |  | PENDING |
 
 This execution does not configure, recommend or access any provider.
+
+## Modal P1 adapter evaluation
+
+The isolated adapter in `infrastructure/modal/` is prepared from the validated
+`containers/player-perception/Dockerfile` and has a local dry-run that reports
+`READY_FOR_MODAL_AUTH` without importing Modal or making a cloud call. Static evidence
+is present for no managed IP, no normal SSH, disposable workers, v1 Volumes independent
+of the worker, one future authentication, one future command, the same Dockerfile,
+ten-frame input packaging, automatic upload/download design, L4 → A10 → T4 fallback,
+900-second/zero-retry guards, CLI logs/cancellation, provider-neutral core and budget
+guards.
+
+| Modal requirement | Evidence | Status |
+|---|---|---|
+| Same validated Dockerfile | `infrastructure/modal/p1_smoke.py` uses `Image.from_dockerfile` | PASS (static) |
+| Disposable GPU worker | `single_use_containers=True`, no deploy/web/schedule/detach | PASS (static) |
+| GPU fallback | L4, A10, T4 in `config/providers/modal_p1_smoke.json` | PASS (static) |
+| Independent v1 storage | `Volume.from_name(..., create_if_missing=True)` at `/assets` and `/results` | PASS (static) |
+| Ten-frame smoke and guarded cost | exact package, 900 s, one GPU, zero retries, approval file | PASS (static) |
+| Authentication and workspace budget | approval file remains absent/false | PENDING |
+| Recovery and cleanup | CLI checklist prepared, not executed remotely | PENDING |
+| GPU execution and visual outputs | no Modal call has been made | PENDING |
+| Preparation under 15 minutes after setup | not measured | PENDING |
+
+Provider status: `READY_FOR_MODAL_AUTH`; Modal is not accepted and no GPU smoke has
+been executed.

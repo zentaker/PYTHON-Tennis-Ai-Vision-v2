@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "branch": "agent/player-perception-p1-free-ci-gate",
+  "branch": "agent/player-perception-p1-modal-adapter",
   "base_sha": "154c8476268dbb9ead9061d83a02d11a91e38abd",
   "head_sha": "85a70b593ecf198a5bdcb3dd5f7eebe6f3f0d3a0",
-  "task": "Create and execute a free GitHub Actions P1 runtime gate",
-  "status": "READY_FOR_FREEMIUM_GPU_SMOKE",
-  "stages": {"stage_1_to_5a1": "VALIDATED", "stage_5b_v1": "REJECTED_BY_HUMAN_GATE", "stage_5b_v2": "REJECTED_BY_HUMAN_GATE", "stage_5c": "NOT_STARTED", "stage_6": "NOT_STARTED", "stage_p1": "READY_FOR_FREEMIUM_GPU_SMOKE"},
-  "tests": {"pytest": "200 passed", "ruff": "passed", "compileall": "passed", "replit_smoke": "passed", "diff_check": "passed", "readiness": "READY_FOR_FREEMIUM_GPU_SMOKE", "free_ci_run": "29623031561", "keypoints": "133"},
-  "artifacts": ["src/player_perception", "config/player_perception", "tests/test_player_perception.py", "tests/test_player_perception_runtime.py", "containers/player-perception", "scripts/run_stage_p1_smoke.sh", "scripts/validate_stage_p1_outputs.py", "scripts/audit_p1_runtime_readiness.py", "scripts/fetch_player_perception_models.py", "docs/agent/P1_RUNTIME_READINESS.json"],
+  "task": "Prepare a guarded Modal P1 ten-frame GPU smoke adapter",
+  "status": "READY_FOR_MODAL_AUTH",
+  "stages": {"stage_1_to_5a1": "VALIDATED", "stage_5b_v1": "REJECTED_BY_HUMAN_GATE", "stage_5b_v2": "REJECTED_BY_HUMAN_GATE", "stage_5c": "NOT_STARTED", "stage_6": "NOT_STARTED", "stage_p1": "READY_FOR_MODAL_AUTH"},
+  "tests": {"pytest": "204 passed", "ruff": "passed", "compileall": "passed", "replit_smoke": "passed", "dry_run": "READY_FOR_MODAL_AUTH", "diff_check": "passed", "readiness": "READY_FOR_MODAL_AUTH", "cloud_calls": 0, "spend_generated": 0},
+  "artifacts": ["infrastructure/modal", "config/providers/modal_p1_smoke.json", "config/player_perception/p1_smoke_frames.json", "scripts/prepare_p1_modal_smoke_inputs.py", "scripts/audit_modal_cleanup.py", "tests/test_modal_adapter.py", "docs/ops/GPU_PROVIDER_ACCEPTANCE_GATE.md"],
   "blocker": null,
-  "next_action": "Evaluate GPU_PROVIDER_ACCEPTANCE_GATE and authorize a GPU smoke; no 527-frame run, Stage 5B, Stage 5C or Stage 6."
+  "next_action": "ChatGPT debe auditar el adaptador. Después el usuario realizará una sola autenticación Modal y configurará el presupuesto mínimo permitido antes de un único smoke GPU de diez frames."
 }

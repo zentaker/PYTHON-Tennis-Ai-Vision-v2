@@ -1,7 +1,6 @@
 # Current task
 
-Create and execute a free GitHub Actions runtime gate for the provider-neutral Stage P1
-runtime. Pin official MMPose whole-body and MMDetection assets, validate dataset-meta
-keypoint mapping, build the CUDA container in CI, and run one CPU fixture inference.
-Do not run Stage 5B, use a cloud/GPU provider, or download model weights on this Mac.
-Preserve all historical outputs and approved inputs.
+Prepare a guarded, provider-isolated Modal adapter for one future P1 GPU smoke of
+exactly ten approved frames. Reuse the validated Dockerfile, v1 Volumes and explicit
+financial/authentication approval file. Do not authenticate, call Modal, spend credits,
+run the 527-frame job, use RunPod/SSH, or alter the core pipeline.

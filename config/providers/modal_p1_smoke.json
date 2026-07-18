@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "provider": "modal",
+  "plan": "Starter",
+  "monthly_credits_usd": 30,
+  "gpu_allowlist": ["L4", "A10", "T4"],
+  "gpu_fallback_order": ["L4", "A10", "T4"],
+  "max_execution_seconds": 900,
+  "retries": 0,
+  "max_frames": 10,
+  "max_gpu_count": 1,
+  "deployed": false,
+  "detached": false,
+  "reservation": false,
+  "expected_actual_charge": 0,
+  "payment_method_required": true,
+  "workspace_budget_required": true,
+  "pricing_verified_at": "2026-07-17",
+  "official_pricing_source": "https://modal.com/pricing",
+  "budget_status": "NOT_CONFIGURED",
+  "authentication_status": "NOT_CONFIGURED",
+  "approval_file": ".modal_smoke_approval.json",
+  "volume_names": {
+    "assets": "tennisai-p1-assets",
+    "results": "tennisai-p1-results"
+  }
+}
