@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stroke_analytics.schema.json",
+  "title": "Stroke Analytics v1",
+  "type": "object",
+  "required": ["schema_version", "event_id", "stroke"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "event_id": {"type": "string", "minLength": 1},
+    "stroke": {
+      "type": "object",
+      "required": ["stroke_side", "contact_mode", "spin_family", "tactical_shape", "hitting_hand"],
+      "properties": {
+        "stroke_side": {"enum": ["serve", "forehand", "backhand", "overhead", "unknown"]},
+        "contact_mode": {"enum": ["serve", "return", "groundstroke", "volley", "half_volley", "overhead", "unknown"]},
+        "spin_family": {"enum": ["flat", "topspin", "slice", "unknown"]},
+        "tactical_shape": {"enum": ["drive", "drop", "lob", "approach", "passing_shot", "defensive", "neutral", "unknown"]},
+        "hitting_hand": {"enum": ["left", "right", "unknown"]}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
