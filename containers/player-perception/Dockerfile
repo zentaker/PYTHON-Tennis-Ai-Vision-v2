@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.3.1-cuda12.1-cudnn8-runtime
+FROM pytorch/pytorch:2.1.2-cuda12.1-cudnn8-runtime
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
@@ -20,8 +20,8 @@ ENV P1_CONFIG_ROOT=/opt/openmmlab
 COPY containers/player-perception/constraints.txt containers/player-perception/requirements-runtime.txt containers/player-perception/requirements-openmmlab.txt /workspace/containers/player-perception/
 RUN python -m pip install --upgrade pip \
     && python -m pip install --no-cache-dir --only-binary=mmcv --no-deps \
-        --find-links https://download.openmmlab.com/mmcv/dist/cu121/torch2.3/index.html \
-        mmcv==2.2.0 \
+        --find-links https://download.openmmlab.com/mmcv/dist/cu121/torch2.1/index.html \
+        mmcv==2.1.0 \
     && python -m pip install --no-cache-dir --no-build-isolation chumpy==0.70 \
     && python -m pip install -c /workspace/containers/player-perception/constraints.txt \
         -r /workspace/containers/player-perception/requirements-runtime.txt \
