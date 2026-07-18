@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "status": "BLOCKED",
+  "status": "READY_FOR_FREEMIUM_GPU_SMOKE",
   "checks": {
     "model_manifest": true,
     "canonical_decoder_import": true,
@@ -14,13 +14,13 @@
     "real_video_decoding": true,
     "mock_real_frame_e2e": true,
     "all_static_and_local_checks": true,
-    "free_ci_gate": false
+    "free_ci_gate": true,
+    "dependency_preflight": true,
+    "real_cpu_wholebody_inference": true
   },
   "reasons": [
-    "OpenMMLab real inference has not completed in CI",
-    "whole-body mapping now requires model dataset metainfo validation",
     "SimpleIoUTracker is an explicit fallback, not authentic ByteTrack",
-    "Free CI run 29620264364 resolved the asset-gate failure by pinning verified checkpoint SHA-256 values, but run 29620560537 then failed during backend import with ModuleNotFoundError: No module named 'addict'"
+    "GPU execution, provider acceptance and full-video validation remain intentionally pending"
   ],
   "not_executed": [
     "OpenMMLab model inference",
@@ -30,5 +30,5 @@
     "full 527-frame job",
     "Stage 5B/5C/6"
   ],
-  "next_action": "Add the missing OpenMMLab runtime dependency and authorize a new CI pass; do not promote readiness or use a GPU provider until it passes."
+  "next_action": "Evaluate the provider acceptance gate and perform a separately authorized GPU smoke; do not run the 527-frame job yet."
 }
