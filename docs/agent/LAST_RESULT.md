@@ -1,7 +1,7 @@
 # Last result
 
 - Branch: `agent/player-perception-p1-provider-pivot`.
-- Tested SHA: `a763ea040bff090da67e6f644ed26685d4bc7286`.
+- Tested SHA: `66abdb1d10c530bb9b93f0df3e7b237563d9ee9a`.
 - Implementation SHA: `66abdb1d10c530bb9b93f0df3e7b237563d9ee9a`.
 - Workflow: `29645157386` — success.
 - SDK: `lightning-sdk==2026.7.9.post0`.
