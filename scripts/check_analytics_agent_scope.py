@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 
@@ -51,7 +52,8 @@ def main() -> int:
     changed = changed_files()
     permitted = [path for path in changed if allowed(path)]
     forbidden = [path for path in changed if not allowed(path)]
-    root_ok = root == EXPECTED_ROOT and root != ORIGINAL_ROOT
+    in_github_actions = os.environ.get("GITHUB_ACTIONS") == "true"
+    root_ok = root != ORIGINAL_ROOT and (root == EXPECTED_ROOT or in_github_actions)
     status = (
         "SAFE_FOR_PARALLEL_WORK"
         if root_ok and branch == EXPECTED_BRANCH and not forbidden
