@@ -1,6 +1,6 @@
 # Current task
 
-Prepare a guarded, provider-isolated Modal adapter for one future P1 GPU smoke of
-exactly ten approved frames. Reuse the validated Dockerfile, v1 Volumes and explicit
-financial/authentication approval file. Do not authenticate, call Modal, spend credits,
-run the 527-frame job, use RunPod/SSH, or alter the core pipeline.
+Validate the guarded, provider-isolated Modal adapter against the official pinned
+SDK (`modal==1.5.2`) without authentication, cloud calls, GPU execution, ignored
+runtime assets, RunPod/SSH, or changes to the core pipeline. Account, billing and
+GPU smoke remain human-gated.

@@ -28,8 +28,10 @@ This execution does not configure, recommend or access any provider.
 ## Modal P1 adapter evaluation
 
 The isolated adapter in `infrastructure/modal/` is prepared from the validated
-`containers/player-perception/Dockerfile` and has a local dry-run that reports
-`READY_FOR_MODAL_AUTH` without importing Modal or making a cloud call. Static evidence
+`containers/player-perception/Dockerfile` and pins the official `modal==1.5.2`
+SDK. GitHub Actions run `29629324522` instantiated the real SDK objects in memory;
+the offline dry-run reports `READY_FOR_MODAL_SDK_OFFLINE` without authentication or
+a cloud call. Static evidence
 is present for no managed IP, no normal SSH, disposable workers, v1 Volumes independent
 of the worker, one future authentication, one future command, the same Dockerfile,
 ten-frame input packaging, automatic upload/download design, L4 → A10 → T4 fallback,
@@ -39,6 +41,7 @@ guards.
 | Modal requirement | Evidence | Status |
 |---|---|---|
 | Same validated Dockerfile | `infrastructure/modal/p1_smoke.py` uses `Image.from_dockerfile` | PASS (static) |
+| Official SDK API shape | `modal==1.5.2`, workflow `29629324522` | PASS (offline) |
 | Disposable GPU worker | `single_use_containers=True`, no deploy/web/schedule/detach | PASS (static) |
 | GPU fallback | L4, A10, T4 in `config/providers/modal_p1_smoke.json` | PASS (static) |
 | Independent v1 storage | `Volume.from_name(..., create_if_missing=True)` at `/assets` and `/results` | PASS (static) |
@@ -48,5 +51,5 @@ guards.
 | GPU execution and visual outputs | no Modal call has been made | PENDING |
 | Preparation under 15 minutes after setup | not measured | PENDING |
 
-Provider status: `READY_FOR_MODAL_AUTH`; Modal is not accepted and no GPU smoke has
-been executed.
+Provider status: `READY_FOR_MODAL_ACCOUNT_REVIEW`; SDK/API gate passed, but Modal is
+not authenticated or accepted and no GPU smoke has been executed.
