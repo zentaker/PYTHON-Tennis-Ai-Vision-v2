@@ -19,6 +19,12 @@ jobs:
       - uses: astral-sh/setup-uv@v6
       - name: Install existing dependencies
         run: uv sync --extra dev
+      - name: Scope gate
+        run: |
+          scope_output="$(uv run python scripts/check_analytics_agent_scope.py)"
+          printf '%s\n' "$scope_output"
+          mkdir -p analytics-gate-report
+          printf '%s\n' "$scope_output" > analytics-gate-report/scope.txt
       - name: Analytics tests
         run: |
           mkdir -p analytics-gate-report
@@ -31,10 +37,6 @@ jobs:
         run: |
           uv run --with "jsonschema>=4.23,<5" python -m src.analytics.schema_validation
           echo INSTANCE_VALIDATED > analytics-gate-report/schema-status.txt
-      - name: Scope gate
-        run: |
-          set -o pipefail
-          uv run python scripts/check_analytics_agent_scope.py | tee analytics-gate-report/scope.txt
       - name: Create report
         if: always()
         run: |
