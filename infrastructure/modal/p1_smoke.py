@@ -151,12 +151,32 @@ def validate_local_contract() -> dict[str, Any]:
     }
 
 
-def dry_run() -> dict[str, Any]:
-    contract = validate_local_contract()
+def validate_offline_contract() -> dict[str, Any]:
+    """Validate the provider contract without ignored video/output assets."""
+    for required in (DOCKERFILE, MODEL_BUNDLE, PROVIDER_CONFIG):
+        if not required.is_file():
+            raise FileNotFoundError(required)
+    config = _load_json(PROVIDER_CONFIG)
+    _validate_provider_config(config)
+    _validate_core_is_provider_neutral()
+    return {
+        "dockerfile": str(DOCKERFILE.relative_to(ROOT)),
+        "image_source": "modal.Image.from_dockerfile(DOCKERFILE, context_dir=ROOT)",
+        "platform": "linux/amd64 via Modal worker",
+        "expected_outputs": list(EXPECTED_OUTPUTS),
+        "gpu_fallback": GPU_FALLBACK,
+        "timeout_seconds": 900,
+        "retries": 0,
+        "approval_configured": _validate_approval(),
+    }
+
+
+def dry_run(*, offline: bool = False) -> dict[str, Any]:
+    contract = validate_offline_contract() if offline else validate_local_contract()
     if contract["approval_configured"]:
         raise ValueError("dry-run refuses an approval file with all values true")
     return {
-        "status": "READY_FOR_MODAL_AUTH",
+        "status": "READY_FOR_MODAL_SDK_OFFLINE" if offline else "READY_FOR_MODAL_AUTH",
         "remote_calls": 0,
         "spend_generated": 0,
         "financial_status": "NOT_CONFIGURED",
@@ -416,8 +436,9 @@ else:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--offline", action="store_true", help="skip ignored runtime assets")
     args = parser.parse_args()
-    result = dry_run() if args.dry_run else run_authenticated()
+    result = dry_run(offline=args.offline) if args.dry_run else run_authenticated()
     print(json.dumps(result, indent=2))
     return 0
 

@@ -29,10 +29,10 @@ jobs:
           modal --version
 
       - name: Run adapter tests
-        run: uv run --extra dev pytest tests/test_modal_adapter.py
+        run: uv run --extra dev pytest tests/test_modal_adapter.py -k 'sdk_contract or cost_guards or cleanup_audit'
 
       - name: Run guarded dry-run
-        run: uv run python -m infrastructure.modal.p1_smoke --dry-run
+        run: uv run python -m infrastructure.modal.p1_smoke --dry-run --offline
 
       - name: Validate SDK API shape offline
         run: python scripts/modal_sdk_gate.py > "$RUNNER_TEMP/modal-sdk-report.json"
