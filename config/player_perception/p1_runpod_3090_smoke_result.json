@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "status": "P1_GPU_SMOKE_PARTIAL",
+  "pod_id": "jhvv98pfxdndz6",
+  "gpu": "NVIDIA GeForce RTX 3090",
+  "gpu_count": 1,
+  "source_sha": "9c80d548f3222436fd70b0aa14fcb08b9813214b",
+  "frame_count": 10,
+  "frame_ids": [138, 139, 140, 199, 200, 201, 286, 287, 351, 434],
+  "backend": "openmmlab",
+  "models": {
+    "detector": "RTMDet-M COCO",
+    "pose": "RTMPose-M COCO-WholeBody 133"
+  },
+  "cuda_used": true,
+  "cuda_runtime": "12.1",
+  "inference_runtime_seconds": 34,
+  "retry_count": 1,
+  "track_rows": 58,
+  "pose_keypoints_per_detection": 133,
+  "contact_audit_rows": 5,
+  "near_far_identity_switches_reported": 0,
+  "exactly_two_relevant_players_validated": false,
+  "human_visual_result": "PENDING",
+  "failures": [
+    "Detector returned five or six person detections per frame, including spectators; exactly two relevant players were not isolated.",
+    "Automatic provider-level Pod stop unavailable because no RunPod API credential was configured locally."
+  ],
+  "results_archive": ".artifacts/p1-runpod-3090-smoke/p1-runpod-3090-smoke-results.tar.gz",
+  "results_sha256": "b872f8c3aa586cf7111afc717e4d25f45d65f6e917aa05eafa294437b168bd17",
+  "provider_api_calls": 0,
+  "estimated_additional_spend_usd": 0.12,
+  "shutdown_time_utc": null,
+  "pod_stopped_automatically": false,
+  "pod_final_status": "RUNNING_UNVERIFIED_API_UNAVAILABLE"
+}
