@@ -1,6 +1,10 @@
 {
   "schema_version": "1.0",
   "provider": "modal",
+  "adapter_status": "VALIDATED_OFFLINE",
+  "provider_status": "REJECTED_PAYMENT_METHOD_POLICY",
+  "rejection_reason": "Modal requires a payment method on file",
+  "remote_execution_authorized": false,
   "plan": "Starter",
   "subscription_cost_usd": 0,
   "included_monthly_credits_usd": 30,

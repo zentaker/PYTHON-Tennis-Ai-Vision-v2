@@ -1,22 +1,15 @@
 # Last result
 
-- Branch: `agent/player-perception-p1-modal-sdk-gate`.
-- Tested commit: `232b6c596cb082667eb1a51fdf9ef0ea125e2509`.
-- Workflow: `29629324522` — success.
-- Modal SDK: `1.5.2` (pinned in `infrastructure/modal/requirements-modal.txt`).
-- Status: `READY_FOR_MODAL_ACCOUNT_REVIEW`.
+- Branch: `agent/player-perception-p1-provider-pivot`.
+- Modal reference SHA: `e81949bc01cbd2adfca12bd5b3a6a28c3e792fea`.
+- Modal workflow: `29629375190` — success.
+- Modal SDK: `modal==1.5.2`.
+- Modal adapter status: `VALIDATED_OFFLINE`.
+- Modal provider status: `REJECTED_PAYMENT_METHOD_POLICY`.
 
-## Validation
+Modal remains in the repository as a technical reference. Its documented payment
+method requirement conflicts with `max_out_of_pocket_approved_usd=0` and the
+project's `no_payment_method_for_trials=true` policy. Remote execution is disabled.
 
-- `uv run pytest` — 206 passed.
-- `uv run ruff check .` — passed.
-- `uv run python -m compileall src scripts tests infrastructure` — passed.
-- `uv run python scripts/replit_smoke_test.py` — passed.
-- `uv run python -m infrastructure.modal.p1_smoke --dry-run` — `READY_FOR_MODAL_AUTH` locally.
-- `uv run python -m infrastructure.modal.p1_smoke --dry-run --offline` — `READY_FOR_MODAL_SDK_OFFLINE`.
-- `git diff --check` — passed.
-- GitHub gate — adapter contract tests, offline dry-run and real SDK API-shape validation passed.
-- Cloud calls: `0`. Spend: `0`.
-
-The SDK gate instantiated Modal objects in memory only. Authentication, billing,
-workspace budget, GPU execution, visual review and the 527-frame job remain pending.
+The current pass prepares a Lightning AI SDK-only offline gate. No account, phone,
+card, credentials, cloud call, GPU, credit or runtime asset is used.

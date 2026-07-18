@@ -1,6 +1,6 @@
 # Current task
 
-Validate the guarded, provider-isolated Modal adapter against the official pinned
-SDK (`modal==1.5.2`) without authentication, cloud calls, GPU execution, ignored
-runtime assets, RunPod/SSH, or changes to the core pipeline. Account, billing and
-GPU smoke remain human-gated.
+Reject Modal under the zero-payment-method policy, preserve its validated adapter as
+reference, and validate only the official Lightning SDK offline. Do not authenticate,
+create resources, call cloud APIs, consume credits, run GPU inference, use RunPod/SSH,
+or change the core pipeline.

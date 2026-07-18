@@ -51,5 +51,24 @@ guards.
 | GPU execution and visual outputs | no Modal call has been made | PENDING |
 | Preparation under 15 minutes after setup | not measured | PENDING |
 
-Provider status: `READY_FOR_MODAL_ACCOUNT_REVIEW`; SDK/API gate passed, but Modal is
-not authenticated or accepted and no GPU smoke has been executed.
+Provider status: `REJECTED_PAYMENT_METHOD_POLICY`; SDK/API gate passed offline, but
+Modal requires a payment method on file and remote execution is disabled by policy.
+
+## Lightning AI offline provider evaluation
+
+Official evidence is recorded in `docs/ops/LIGHTNING_PROVIDER_EVIDENCE.md`. The Free
+plan is financially compatible on paper, but account, phone, credit and GPU gates are
+not being opened in this pass.
+
+| Lightning requirement | Evidence | Status |
+|---|---|---|
+| Free plan, no card, monthly credits | Official pricing/account/billing pages | PASS (static) |
+| Persistent Studio storage/environment | Official Studio and persistence pages | PASS (static) |
+| SDK and CLI | Official SDK/CLI docs; pinned package | PASS (static) |
+| No managed IP or normal SSH requirement | Studio UI/SDK flow | PASS (static) |
+| Phone verification | Official account FAQ | PENDING |
+| Credits, GPU, CUDA, ten-frame run | Not attempted | PENDING |
+| Custom launch image on Free | Enterprise-only launch-image capability | LIMITATION |
+| Upload/download, cancel, recovery, preparation time | Not tested | PENDING |
+
+Provider status: `READY_FOR_LIGHTNING_OFFLINE_SDK_GATE`.

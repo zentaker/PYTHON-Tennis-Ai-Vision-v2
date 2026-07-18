@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "branch": "agent/player-perception-p1-modal-sdk-gate",
+  "branch": "agent/player-perception-p1-provider-pivot",
   "base_sha": "dc4d3a11f6d884aa1b2b36317855976cfcf6ef4d",
-  "head_sha": "232b6c596cb082667eb1a51fdf9ef0ea125e2509",
-  "task": "Validate Modal adapter against the official SDK offline",
-  "status": "READY_FOR_MODAL_ACCOUNT_REVIEW",
-  "stages": {"stage_1_to_5a1": "VALIDATED", "stage_5b_v1": "REJECTED_BY_HUMAN_GATE", "stage_5b_v2": "REJECTED_BY_HUMAN_GATE", "stage_5c": "NOT_STARTED", "stage_6": "NOT_STARTED", "stage_p1": "READY_FOR_MODAL_ACCOUNT_REVIEW"},
-  "tests": {"pytest": "206 passed locally; SDK gate 3 selected passed", "ruff": "passed", "compileall": "passed", "replit_smoke": "passed", "dry_run": "READY_FOR_MODAL_SDK_OFFLINE", "diff_check": "passed", "workflow_run": "29629324522 success", "readiness": "READY_FOR_MODAL_ACCOUNT_REVIEW", "cloud_calls": 0, "spend_generated": 0},
+  "head_sha": "e81949bc01cbd2adfca12bd5b3a6a28c3e792fea",
+  "task": "Reject Modal payment policy and validate Lightning SDK offline",
+  "status": "READY_FOR_LIGHTNING_OFFLINE_SDK_GATE",
+  "stages": {"stage_1_to_5a1": "VALIDATED", "stage_5b_v1": "REJECTED_BY_HUMAN_GATE", "stage_5b_v2": "REJECTED_BY_HUMAN_GATE", "stage_5c": "NOT_STARTED", "stage_6": "NOT_STARTED", "stage_p1": "READY_FOR_LIGHTNING_OFFLINE_SDK_GATE"},
+  "tests": {"pytest": "pending", "ruff": "pending", "compileall": "pending", "replit_smoke": "pending", "dry_run": "pending", "diff_check": "pending", "readiness": "READY_FOR_LIGHTNING_OFFLINE_SDK_GATE", "cloud_calls": 0, "spend_generated": 0},
   "artifacts": ["infrastructure/modal", "config/providers/modal_p1_smoke.json", "config/player_perception/p1_smoke_frames.json", "scripts/prepare_p1_modal_smoke_inputs.py", "scripts/audit_modal_cleanup.py", "tests/test_modal_adapter.py", "docs/ops/GPU_PROVIDER_ACCEPTANCE_GATE.md"],
   "blocker": null,
-  "next_action": "Revisión humana de cuenta, créditos y presupuesto Modal; después, si se aprueba, un único smoke GPU de diez frames."
+  "next_action": "Ejecutar el gate offline del SDK Lightning; no crear cuenta ni ejecutar GPU."
 }
