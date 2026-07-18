@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "integration_branch": "agent/integration-p1-analytics",
+  "common_base_sha": "e81949bc01cbd2adfca12bd5b3a6a28c3e792fea",
+  "p1_source_sha": "a15b91fadb2b0b1badb6ce1009896458b3dac718",
+  "analytics_source_sha": "bab71a7b49e2b8de7aeccef61eb9836a3722f56e",
+  "merge_sha": "f652be17d8c8fcf9165b65a725d4e8730cb62916",
+  "p1_source_status": "READY_FOR_LIGHTNING_ACCOUNT_REVIEW",
+  "analytics_source_status": "ANALYTICS_FOUNDATION_READY_FOR_INTEGRATION",
+  "integration_status": "P1_ANALYTICS_FOUNDATIONS_COEXISTENCE_VALIDATED",
+  "functional_data_wiring": false,
+  "real_video_inference": false,
+  "cloud_calls": 0,
+  "gpu_calls": 0,
+  "spend_usd": 0
+}
