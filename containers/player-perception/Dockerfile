@@ -22,6 +22,7 @@ RUN python -m pip install --upgrade pip \
     && python -m pip install --no-cache-dir --only-binary=mmcv --no-deps \
         --find-links https://download.openmmlab.com/mmcv/dist/cu121/torch2.3/index.html \
         mmcv==2.2.0 \
+    && python -m pip install --no-cache-dir --no-build-isolation chumpy==0.70 \
     && python -m pip install -c /workspace/containers/player-perception/constraints.txt \
         -r /workspace/containers/player-perception/requirements-runtime.txt \
     && python -m pip install -c /workspace/containers/player-perception/constraints.txt \

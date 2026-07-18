@@ -26,6 +26,9 @@ MMDetection 3.2.0, while OpenMMLab's CUDA 12.1/PyTorch 2.3 wheel index exposes t
 2.2.0 wheel used here. The package's base runtime requirements do not activate that
 optional extra; `pip check` and the real CPU inference gate are therefore mandatory
 compatibility evidence before any readiness promotion.
+MMPose's official runtime requirements include `chumpy==0.70`; its legacy build setup
+requires the already-installed environment and therefore is installed once with
+`--no-build-isolation` before the normal dependency-resolving requirements install.
 Versions were recorded on 2026-07-17. The image must be rebuilt and smoke-tested on the
 target NVIDIA runtime before any provider is accepted. No weights are downloaded by the
 Docker build; model assets are mounted at `/models` and checked by their manifest.
