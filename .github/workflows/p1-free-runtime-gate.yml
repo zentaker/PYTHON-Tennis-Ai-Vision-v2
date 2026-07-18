@@ -62,6 +62,7 @@ jobs:
 
       - name: Run one-image CPU inference through the real backend
         run: |
+          chmod 777 "$RUNNER_TEMP/p1-output"
           docker run --rm --entrypoint python \
             -v "$RUNNER_TEMP/p1-models:/models:ro" \
             -v "$RUNNER_TEMP/p1-output:/output" \
