@@ -1,0 +1,88 @@
+name: P1 Analytics Integration Gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [agent/integration-p1-analytics]
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+      - name: Install fixed dependencies
+        run: |
+          uv sync --extra dev
+          uv pip install -r infrastructure/lightning/requirements-lightning.txt
+      - name: Integration scope gate
+        run: |
+          mkdir -p integration-gate-report
+          uv run python scripts/check_p1_analytics_integration.py | tee integration-gate-report/scope.txt
+      - name: Combined integration tests
+        run: |
+          uv run --with "jsonschema>=4.23,<5" pytest tests/test_analytics_*.py tests/test_lightning_provider_gate.py tests/test_p1_analytics_integration.py --junitxml=integration-gate-report/integration.xml
+      - name: Clean baseline
+        run: |
+          uv run --with "jsonschema>=4.23,<5" pytest \
+            --deselect=tests/test_modal_adapter.py::test_modal_adapter_is_import_safe_and_core_stays_provider_neutral \
+            --deselect=tests/test_modal_adapter.py::test_modal_contract_uses_one_dockerfile_and_guarded_limits \
+            --deselect=tests/test_modal_adapter.py::test_smoke_package_has_exactly_ten_verified_frames \
+            --deselect=tests/test_vertical_reference_tool.py::test_self_test_passes_without_gpu_or_event_annotator_state \
+            --deselect=tests/test_vertical_reference_tool.py::test_post_classification_uses_regulation_geometry \
+            --junitxml=integration-gate-report/baseline.xml
+      - name: Static and offline gates
+        run: |
+          uv run ruff check .
+          uv run python -m compileall src scripts tests infrastructure
+          uv run python scripts/replit_smoke_test.py
+          uv run --with "jsonschema>=4.23,<5" python -m src.analytics.schema_validation | tee integration-gate-report/schema.txt
+          uv run python scripts/lightning_sdk_gate.py | tee integration-gate-report/lightning.txt
+      - name: Create report
+        if: always()
+        run: |
+          uv run python - <<'PY'
+          import json, os, pathlib, xml.etree.ElementTree as ET
+          root = pathlib.Path("integration-gate-report")
+          root.mkdir(exist_ok=True)
+          def counts(name):
+              path = root / name
+              if not path.exists(): return {key: 0 for key in ("tests", "failures", "errors", "skipped")}
+              node = ET.parse(path).getroot()
+              if node.tag == "testsuites":
+                  return {key: sum(int(s.attrib.get(key, 0)) for s in node) for key in ("tests", "failures", "errors", "skipped")}
+              return {key: int(node.attrib.get(key, 0)) for key in ("tests", "failures", "errors", "skipped")}
+          integration, baseline = counts("integration.xml"), counts("baseline.xml")
+          manifest = json.loads(pathlib.Path("config/integration/p1_analytics_integration.json").read_text())
+          scope = (root / "scope.txt").read_text() if (root / "scope.txt").exists() else ""
+          schema = (root / "schema.txt").read_text() if (root / "schema.txt").exists() else ""
+          lightning = (root / "lightning.txt").read_text() if (root / "lightning.txt").exists() else ""
+          report = {
+              "commit": os.environ["GITHUB_SHA"], "merge_sha": manifest["merge_sha"],
+              "p1_source_sha": manifest["p1_source_sha"], "analytics_source_sha": manifest["analytics_source_sha"],
+              "integration_test_count": integration["tests"], "clean_baseline_count": baseline["tests"],
+              "failures": integration["failures"] + baseline["failures"],
+              "errors": integration["errors"] + baseline["errors"], "skipped": integration["skipped"] + baseline["skipped"],
+              "deselected_asset_dependent_tests": 5,
+              "schema_status": "INSTANCE_VALIDATED" if "INSTANCE_VALIDATED" in schema else "NOT_VALIDATED",
+              "lightning_sdk_status": "SDK_API_SHAPE_VALIDATED" if "SDK_API_SHAPE_VALIDATED" in lightning else "NOT_VALIDATED",
+              "integration_scope_status": "SAFE_P1_ANALYTICS_INTEGRATION" if "SAFE_P1_ANALYTICS_INTEGRATION" in scope else "UNSAFE",
+              "functional_data_wiring": False, "cloud_calls": 0, "gpu_calls": 0,
+              "real_video_inference": False, "spend_usd": 0,
+          }
+          (root / "report.json").write_text(json.dumps(report, indent=2) + "\n")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p1-analytics-integration-report
+          path: |
+            integration-gate-report/report.json
+            integration-gate-report/integration.xml
+            integration-gate-report/baseline.xml

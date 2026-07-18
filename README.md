@@ -9,8 +9,9 @@ Proyecto para analizar video de broadcast de tenis y generar progresivamente:
 
 Stage 3 esta cerrada y validada. Stage 4 Nivel A2 esta cerrada con gate humano A y usa
 eventos anotados manualmente; no intenta detectar golpes o botes automaticamente.
-Stage 5A/5A.1 están cerradas. El baseline Stage 5B v1 fue rechazado por el gate humano;
-la reimplementación anclada v2 está en progreso.
+Stage 5A/5A.1 están cerradas. Los baselines Stage 5B v1 y v2 fueron rechazados por el
+gate humano; la preparación de la arquitectura Player-Aware P1 está completa, sin
+ejecutar todavía inferencia pesada.
 
 La pasada historica Madrid R1 se conserva como Nivel A. La pasada activa Nivel A2 tiene
 Stage 1–4 cerradas y continúa con Stage 5A. Ver
@@ -25,10 +26,13 @@ Stage 1–4 cerradas y continúa con Stage 5A. Ver
 | 4 - Eventos Nivel A | `CLOSED_SUCCESSFULLY` (A2, gate A) |
 | 5A - Calibracion/observabilidad 3D | `CLOSED_WITH_REFINED_VERTICAL_CALIBRATION` |
 | 5A.1 - Referencia vertical de red | Cerrada exitosamente |
-| 5B - Reconstruccion X,Y,Z | `V1_REJECTED_REIMPLEMENTATION_IN_PROGRESS` |
+| 5B - Reconstruccion X,Y,Z | `V1_V2_REJECTED_BY_HUMAN_GATE` |
 | 5C - Vista superior derivada | No iniciada |
 | 6 - Vista lateral derivada | No iniciada |
 | 7 - Validacion final | No iniciada |
+
+La base reusable de Player-Aware P1 está en la rama `agent/player-perception-p1`.
+Su ejecución real requiere pasar primero el [GPU provider acceptance gate](docs/ops/GPU_PROVIDER_ACCEPTANCE_GATE.md).
 
 Roadmap completo: [ROADMAP.md](ROADMAP.md).
 

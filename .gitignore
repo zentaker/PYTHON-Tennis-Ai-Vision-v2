@@ -23,6 +23,9 @@ models/*
 
 outputs/*
 !outputs/README.md
+.modal_smoke/
+.modal_smoke_approval.json
+.modal_smoke_function_call.json
 
 third_party/
 transfer/

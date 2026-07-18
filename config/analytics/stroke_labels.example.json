@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "annotation_kind": "example_only_not_rally_ground_truth",
+  "event_id": "example-event",
+  "frame_range": {"start": 100, "end": 106},
+  "timestamp_range_seconds": {"start": 3.337, "end": 3.541},
+  "stroke": {
+    "stroke_side": "unknown",
+    "contact_mode": "unknown",
+    "spin_family": "unknown",
+    "tactical_shape": "unknown",
+    "hitting_hand": "unknown"
+  },
+  "evidence": [],
+  "warnings": ["Replace example values only after evidence-backed annotation."]
+}

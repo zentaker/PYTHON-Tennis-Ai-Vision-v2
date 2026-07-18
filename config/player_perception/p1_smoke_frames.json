@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "clip_id": "nivel_a2_01",
+  "selection": "approved ten-frame P1 Modal smoke package",
+  "frame_ids": [138, 139, 140, 199, 200, 201, 286, 287, 351, 434],
+  "events": {
+    "138": ["ev_001_neighbor"],
+    "139": ["ev_001"],
+    "140": ["ev_001_neighbor"],
+    "199": ["ev_003_neighbor"],
+    "200": ["ev_003"],
+    "201": ["ev_003_neighbor"],
+    "286": ["ev_005_neighbor"],
+    "287": ["ev_005"],
+    "351": ["ev_007"],
+    "434": ["ev_009"]
+  },
+  "event_coverage": [
+    {"event_id": "ev_001", "type": "serve", "side": "near", "frame_id": 139},
+    {"event_id": "ev_003", "type": "hit", "side": "far", "frame_id": 200},
+    {"event_id": "ev_005", "type": "hit", "side": "near", "frame_id": 287},
+    {"event_id": "ev_007", "type": "hit", "side": "far", "frame_id": 351},
+    {"event_id": "ev_009", "type": "hit", "side": "near", "frame_id": 434}
+  ],
+  "source": {
+    "video": "data/clips/nivel_a2_01/source.mp4",
+    "clip_manifest": "data/clips/nivel_a2_01/clip_manifest.json",
+    "timestamps": "data/clips/nivel_a2_01/frame_timestamps.json",
+    "events": "outputs/nivel_a2_01/stage_4/events.json",
+    "trajectory": "outputs/nivel_a2_01/stage_3/smoothed_trajectory.csv"
+  }
+}
