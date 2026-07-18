@@ -29,7 +29,7 @@ jobs:
           modal --version
 
       - name: Run adapter tests
-        run: uv run pytest tests/test_modal_adapter.py
+        run: uv run --extra dev pytest tests/test_modal_adapter.py
 
       - name: Run guarded dry-run
         run: uv run python -m infrastructure.modal.p1_smoke --dry-run
