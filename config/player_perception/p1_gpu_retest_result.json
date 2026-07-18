@@ -1,6 +1,7 @@
 {
   "schema_version": "1.0",
-  "status": "P1_GPU_RETEST_PASSED",
+  "status": "P1_TEN_FRAME_ACCEPTANCE_PASSED",
+  "gpu_retest_status": "P1_GPU_RETEST_PASSED",
   "pod_id": "1p5zqs4dmgqity",
   "source_sha": "d0ab1a059efac2c069d2747b7e80254fec7a3ae3",
   "gpu": "NVIDIA GeForce RTX 3090",
@@ -20,5 +21,14 @@
   "inference_runtime_seconds": 47,
   "retry_count": 0,
   "results_sha256": "a2e2c138cff1076b9531c24d690a48a44b993a8168e3b52a5d274a50ed11feba",
-  "human_visual_approval": "pending"
+  "human_visual_approval": "passed",
+  "visual_reviewer": "ChatGPT visual audit",
+  "visual_approval_timestamp_utc": "2026-07-18T20:55:03Z",
+  "frames_reviewed": 10,
+  "near_correct": 10,
+  "far_correct": 10,
+  "visible_identity_switches": 0,
+  "spectators_selected": 0,
+  "artifact_id": 8434013725,
+  "workflow_run_id": 29659956028
 }

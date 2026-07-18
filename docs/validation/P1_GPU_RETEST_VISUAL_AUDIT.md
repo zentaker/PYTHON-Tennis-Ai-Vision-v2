@@ -1,6 +1,8 @@
 # P1 GPU Retest Visual Audit
 
-Status: `P1_GPU_RETEST_PASSED`
+Acceptance status: `P1_TEN_FRAME_ACCEPTANCE_PASSED`
+
+GPU retest status: `P1_GPU_RETEST_PASSED`
 
 The migrated RunPod workspace executed real RTMDet-M and RTMPose-M WholeBody inference with CUDA on one NVIDIA GeForce RTX 3090. Exactly ten canonical frames were decoded and inferred again; the court-player selector was then applied to those new raw outputs. No mocks, manual output adjustment, full-rally processing, or Analytics inference were used.
 
@@ -9,4 +11,6 @@ Automated gates report 10 near selections, 10 far selections, 38 rejected person
 - [GPU retest contact sheet](assets/p1_gpu_retest_contact_sheet.jpg)
 - [GPU retest before/after sheet](assets/p1_gpu_retest_before_after.jpg)
 
-Human visual approval: **pending**. This result does not declare P1 complete, Analytics integrated, Stage 5B ready, or the project complete.
+Human visual approval: **passed** by **ChatGPT visual audit** at `2026-07-18T20:55:03Z`. Ten frames were reviewed: near correct 10/10, far correct 10/10, visible identity switches 0, and spectators selected 0. Evidence is GitHub artifact `8434013725` from workflow run `29659956028`.
+
+Player Perception P1 is accepted to continue to functional integration. The full rally remains unvalidated. This does not declare Analytics integrated, Stage 5B ready, or the project complete.
