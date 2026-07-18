@@ -1,0 +1,41 @@
+name: A1 Analytics Foundation Gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [agent/analytics-stroke-speed-foundation]
+
+permissions:
+  contents: read
+
+jobs:
+  analytics-foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+      - name: Install existing dependencies
+        run: uv sync --extra dev
+      - name: Analytics tests
+        run: uv run pytest tests/test_analytics_*.py
+      - name: Ruff
+        run: uv run ruff check src/analytics tests/test_analytics_*.py scripts/check_analytics_agent_scope.py
+      - name: Compile
+        run: uv run python -m compileall src/analytics tests scripts/check_analytics_agent_scope.py
+      - name: Validate Analytics JSON
+        run: uv run python -c 'import json,pathlib; [json.loads(p.read_text()) for p in pathlib.Path("config/analytics").glob("*.json")]'
+      - name: Scope gate
+        run: uv run python scripts/check_analytics_agent_scope.py
+      - name: Create report
+        if: always()
+        run: |
+          mkdir -p analytics-gate-report
+          uv run python -c 'import json,os,pathlib; pathlib.Path("analytics-gate-report/report.json").write_text(json.dumps({"schema_version":"1.0","commit":os.environ["GITHUB_SHA"],"cloud_calls":0,"gpu_calls":0,"real_video_inference":False}, indent=2)+"\n")'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: analytics-foundation-report
+          path: analytics-gate-report/report.json
