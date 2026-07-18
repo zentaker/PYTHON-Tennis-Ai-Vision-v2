@@ -1,15 +1,29 @@
 {
   "schema_version": 1,
-  "branch": "agent/player-perception-p1-provider-pivot",
-  "base_sha": "e81949bc01cbd2adfca12bd5b3a6a28c3e792fea",
-  "tested_sha": "66abdb1d10c530bb9b93f0df3e7b237563d9ee9a",
-  "implementation_sha": "66abdb1d10c530bb9b93f0df3e7b237563d9ee9a",
-  "workflow_run": "29645157386",
-  "task": "Reject Modal payment policy and validate Lightning SDK offline",
-  "status": "READY_FOR_LIGHTNING_ACCOUNT_REVIEW",
-  "stages": {"stage_1_to_5a1": "VALIDATED", "stage_5b_v1": "REJECTED_BY_HUMAN_GATE", "stage_5b_v2": "REJECTED_BY_HUMAN_GATE", "stage_5c": "NOT_STARTED", "stage_6": "NOT_STARTED", "stage_p1": "READY_FOR_LIGHTNING_ACCOUNT_REVIEW"},
-  "tests": {"pytest": "209 passed", "ruff": "passed", "compileall": "passed", "replit_smoke": "passed", "offline_sdk_gate": "SDK_API_SHAPE_VALIDATED", "diff_check": "passed", "workflow_status": "success", "readiness": "READY_FOR_LIGHTNING_ACCOUNT_REVIEW", "cloud_calls": 0, "gpu_calls": 0, "spend_generated": 0},
-  "artifacts": ["infrastructure/lightning/", "config/providers/lightning_p1_smoke.json", "scripts/lightning_sdk_gate.py", "tests/test_lightning_provider_gate.py", "docs/ops/LIGHTNING_PROVIDER_EVIDENCE.md", ".github/workflows/p1-lightning-sdk-free-gate.yml", "infrastructure/modal", "config/providers/modal_p1_smoke.json"],
-  "blocker": null,
-  "next_action": "Realizar revisión humana de registro Lightning sin autorizar recursos ni GPU. Confirmar dentro de la cuenta que no se exige método de pago, que aparecen los créditos gratuitos y que el límite de gasto de bolsillo continúa en US$0."
+  "branch": "agent/p1-analytics-functional-wiring",
+  "base_sha": "772e4624de20a2012578e0ab68ba1eeb8ee03099",
+  "task": "Wire accepted P1 contact evidence into Analytics",
+  "status": "P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED",
+  "stages": {
+    "stage_1_to_5a1": "VALIDATED",
+    "stage_5b": "BLOCKED_PENDING_APPROVED_XYZ",
+    "stage_p1": "P1_TEN_FRAME_ACCEPTANCE_PASSED",
+    "analytics_p1_wiring": "P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED"
+  },
+  "result": {
+    "contacts": 5,
+    "analytics_records": 5,
+    "schema_valid_records": 5,
+    "stage4_labels_matched": 1,
+    "stage4_labels_unavailable": 4,
+    "unknown_stroke_dimensions": 23,
+    "kinematics": "APPROVED_STAGE5B_XYZ_REQUIRED"
+  },
+  "tests": {
+    "cloud_calls": 0,
+    "gpu_calls": 0,
+    "spend_generated": 0
+  },
+  "blocker": "APPROVED_STAGE5B_XYZ_REQUIRED",
+  "next_action": "Approve a reproducible Stage 5B XYZ source before implementing real 3D ball-speed analytics."
 }
