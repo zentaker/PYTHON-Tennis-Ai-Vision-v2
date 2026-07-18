@@ -17,9 +17,15 @@
     "speed_after_bounce_kmh": {"type": ["number", "null"]},
     "samples_used": {"type": "integer", "minimum": 0},
     "rejected_samples": {"type": "integer", "minimum": 0},
+    "incoming_samples_used": {"type": "integer", "minimum": 0},
+    "incoming_rejected_samples": {"type": "integer", "minimum": 0},
+    "outgoing_samples_used": {"type": "integer", "minimum": 0},
+    "outgoing_rejected_samples": {"type": "integer", "minimum": 0},
     "window_start_seconds": {"type": ["number", "null"]},
     "window_end_seconds": {"type": ["number", "null"]},
     "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "incoming_confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "outgoing_confidence": {"type": "number", "minimum": 0, "maximum": 1},
     "warnings": {"type": "array", "items": {"type": "string"}}
   },
   "additionalProperties": false

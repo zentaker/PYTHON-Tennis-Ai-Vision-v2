@@ -22,3 +22,16 @@ def test_json_schemas_are_valid_json_with_required_identity():
     for path in Path("config/analytics").glob("*.json"):
         payload = json.loads(path.read_text())
         assert isinstance(payload, dict)
+
+
+def test_stroke_schema_models_value_and_full_confidence_for_every_dimension():
+    schema = json.loads(Path("config/analytics/stroke_analytics.schema.json").read_text())
+    dimensions = schema["properties"]["stroke"]
+    assert dimensions["required"] == [
+        "stroke_side", "contact_mode", "spin_family", "tactical_shape", "hitting_hand"
+    ]
+    confidence = schema["$defs"]["confidence"]
+    assert set(confidence["required"]) == {
+        "source", "method", "confidence", "warnings", "dependencies", "human_labeled",
+        "model_inferred", "geometry_derived"
+    }

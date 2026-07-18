@@ -159,6 +159,22 @@ class ClassifiedStroke:
         default_factory=lambda: _unknown_confidence("hitting_hand")
     )
 
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize dimensions as schema-compatible value/confidence pairs."""
+        return {
+            name: {
+                "value": getattr(self, name).value,
+                "confidence": asdict(getattr(self, f"{name}_confidence")),
+            }
+            for name in (
+                "stroke_side",
+                "contact_mode",
+                "spin_family",
+                "tactical_shape",
+                "hitting_hand",
+            )
+        }
+
 
 @dataclass(frozen=True, slots=True)
 class BallKinematics:
@@ -175,13 +191,21 @@ class BallKinematics:
     speed_after_bounce_kmh: float | None = None
     samples_used: int = 0
     rejected_samples: int = 0
+    incoming_samples_used: int = 0
+    incoming_rejected_samples: int = 0
+    outgoing_samples_used: int = 0
+    outgoing_rejected_samples: int = 0
     window_start_seconds: float | None = None
     window_end_seconds: float | None = None
     confidence: float = 0.0
+    incoming_confidence: float = 0.0
+    outgoing_confidence: float = 0.0
     warnings: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "confidence", _confidence(self.confidence))
+        object.__setattr__(self, "incoming_confidence", _confidence(self.incoming_confidence))
+        object.__setattr__(self, "outgoing_confidence", _confidence(self.outgoing_confidence))
 
 
 @dataclass(frozen=True, slots=True)
@@ -193,4 +217,10 @@ class StrokeAnalyticsRecord:
     evidence: tuple[EvidenceItem, ...] = ()
 
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        return {
+            "schema_version": self.schema_version,
+            "event": asdict(self.event),
+            "stroke": self.stroke.to_dict(),
+            "kinematics": asdict(self.kinematics) if self.kinematics else None,
+            "evidence": [asdict(item) for item in self.evidence],
+        }

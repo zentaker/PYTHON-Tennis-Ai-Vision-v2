@@ -9,3 +9,4 @@ def test_components_remain_transparent():
     assert validate_confidence_components({"speed_confidence": value})["speed_confidence"] == value
     with pytest.raises(ValueError):
         validate_confidence_components({"opaque_total": value})
+    assert validate_confidence_components({"hitting_hand_confidence": value})

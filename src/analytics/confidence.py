@@ -16,6 +16,7 @@ COMPONENTS = (
     "contact_mode_confidence",
     "spin_family_confidence",
     "tactical_shape_confidence",
+    "hitting_hand_confidence",
 )
 
 
