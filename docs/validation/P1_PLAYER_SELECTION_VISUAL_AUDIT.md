@@ -9,3 +9,10 @@ From 58 original person detections, the selector retained one near and one far p
 Per-frame automated gates report 10 PASS, 0 PARTIAL, and 0 FAIL. The compact contact sheet and ten selected/diagnostic overlays are stored under the ignored local artifact directory `.artifacts/p1-runpod-3090-smoke/player-selection/`, alongside the six machine-readable selected outputs. The geometry is suitable for a new GPU retest, but the current images are not declared human-approved and the full rally remains unvalidated.
 
 The reusable baseline allowance is 8.5 m behind a baseline and the lateral allowance is 1.5 m beyond the doubles sideline. These are global court-relative parameters, not frame-specific or track-specific coordinates.
+
+## Published visual evidence
+
+- [Selected near/far contact sheet](assets/p1_player_selection_contact_sheet.jpg)
+- [Before/after player-selection sheet](assets/p1_player_selection_before_after.jpg)
+
+Automated gate: **10 PASS**. Human visual approval: **pending**. GPU retest: **pending**. P1 complete: **no**.
