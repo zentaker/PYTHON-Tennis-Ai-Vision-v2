@@ -212,6 +212,7 @@ class OpenMMLabBackend:
         self._init_detector = init_detector_fn
         self._init_pose = init_pose_fn
         self._keypoint_names: tuple[str, ...] | None = None
+        self._set_default_scope: Callable[[str], Any] | None = None
         tracker_config = (self.bundle or {}).get("tracker", {})
         self.tracker = SimpleIoUTracker(
             float(tracker_config.get("high_threshold", 0.55)),
@@ -246,11 +247,17 @@ class OpenMMLabBackend:
         if self._init_detector is None or self._init_pose is None:
             try:
                 from mmdet.apis import inference_detector, init_detector
+                from mmdet.utils import register_all_modules as register_mmdet_modules
                 from mmpose.apis import inference_topdown, init_model
+                from mmpose.utils import register_all_modules as register_mmpose_modules
+                from mmengine.registry import init_default_scope
             except ImportError as exc:
                 raise OpenMMLabRuntimeError(
                     "OpenMMLab runtime missing; install pinned MMEngine/MMCV/MMDetection/MMPose extras"
                 ) from exc
+            register_mmdet_modules(init_default_scope=False)
+            register_mmpose_modules(init_default_scope=False)
+            self._set_default_scope = init_default_scope
             self._init_detector = init_detector
             self._inference_detector = self._inference_detector or inference_detector
             self._init_pose = init_model
@@ -291,6 +298,8 @@ class OpenMMLabBackend:
             raise OpenMMLabRuntimeError(
                 "OpenMMLab backend is not initialized; use a model bundle and runtime"
             )
+        if self._set_default_scope is not None:
+            self._set_default_scope("mmdet")
         result = self._inference_detector(self._detector, frame.image)
         boxes, scores, labels = _prediction_fields(result)
         threshold = float(self.bundle["detector"].get("confidence_threshold", 0.35))
@@ -304,6 +313,8 @@ class OpenMMLabBackend:
         tracks = self.tracker.update(frame.frame_id, detections)
         poses: list[PlayerPose] = []
         if tracks:
+            if self._set_default_scope is not None:
+                self._set_default_scope("mmpose")
             bboxes = np.asarray(
                 [[track.bbox.x1, track.bbox.y1, track.bbox.x2, track.bbox.y2] for track in tracks],
                 dtype=np.float32,
