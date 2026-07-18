@@ -1,0 +1,327 @@
+[
+  {
+    "event_id": "ev_001",
+    "expected_player": "near",
+    "track_id": "track_0001",
+    "frame_id": 139,
+    "court_position": {
+      "frame_id": 139,
+      "track_id": "track_0001",
+      "x_m": 1.211784479916102,
+      "y_m": -10.757166693734927,
+      "confidence": 0.38011810183525085,
+      "distance_to_near_baseline_m": 1.1278333062650727,
+      "distance_to_far_baseline_m": 22.64216669373493,
+      "inside_court": true,
+      "behind_near_baseline": false,
+      "behind_far_baseline": false,
+      "left_outside": false,
+      "right_outside": false
+    },
+    "ball_pixel": [
+      1512.445,
+      646.79
+    ],
+    "wrist_pixels": {
+      "left_wrist": [
+        1561.68994140625,
+        928.4089965820312
+      ],
+      "right_wrist": [
+        1569.046875,
+        742.3831176757812
+      ]
+    },
+    "ball_wrist_distance_px": 111.09372799799006,
+    "confidence": 0.38011810183525085,
+    "warnings": [],
+    "frame_end": 139,
+    "expected_identity": "unknown",
+    "bbox": {
+      "x1": 1506.218994140625,
+      "y1": 707.9104614257812,
+      "x2": 1600.3448486328125,
+      "y2": 1138.3975830078125,
+      "confidence": 0.7636073231697083
+    },
+    "foot_anchor": {
+      "frame_id": 139,
+      "track_id": "track_0001",
+      "x_pixel": 1566.4193929036458,
+      "y_pixel": 1117.237569173177,
+      "method": "pose_heel-toe",
+      "confidence": 0.38011810183525085,
+      "airborne_possible": false,
+      "fallback_used": false,
+      "support_side": "both",
+      "low_confidence": true,
+      "occluded": false,
+      "smoothing_applied": false
+    },
+    "identity": "near",
+    "identity_confidence": 0.8,
+    "identity_reason": "temporal_continuity",
+    "selection_status": "SELECTED_AUTOMATICALLY",
+    "selection_score": 0.909335
+  },
+  {
+    "event_id": "ev_003",
+    "expected_player": "far",
+    "track_id": "track_0008",
+    "frame_id": 200,
+    "court_position": {
+      "frame_id": 200,
+      "track_id": "track_0008",
+      "x_m": -4.224643103138453,
+      "y_m": 19.91021461748285,
+      "confidence": 0.4766348600387573,
+      "distance_to_near_baseline_m": 31.79521461748285,
+      "distance_to_far_baseline_m": -8.02521461748285,
+      "inside_court": false,
+      "behind_near_baseline": false,
+      "behind_far_baseline": true,
+      "left_outside": false,
+      "right_outside": false
+    },
+    "ball_pixel": [
+      1113.417,
+      161.949
+    ],
+    "wrist_pixels": {
+      "left_wrist": [
+        1058.6702880859375,
+        164.05050659179688
+      ],
+      "right_wrist": [
+        1050.13720703125,
+        169.86849975585938
+      ]
+    },
+    "ball_wrist_distance_px": 54.78703126978783,
+    "confidence": 0.44094470143318176,
+    "warnings": [],
+    "frame_end": 200,
+    "expected_identity": "unknown",
+    "bbox": {
+      "x1": 991.0399169921875,
+      "y1": 118.74773406982422,
+      "x2": 1038.642822265625,
+      "y2": 277.61773681640625,
+      "confidence": 0.44094470143318176
+    },
+    "foot_anchor": {
+      "frame_id": 200,
+      "track_id": "track_0008",
+      "x_pixel": 1009.1526692708334,
+      "y_pixel": 268.2572326660156,
+      "method": "pose_heel-toe",
+      "confidence": 0.4766348600387573,
+      "airborne_possible": false,
+      "fallback_used": false,
+      "support_side": "both",
+      "low_confidence": true,
+      "occluded": false,
+      "smoothing_applied": false
+    },
+    "identity": "far",
+    "identity_confidence": 0.8,
+    "identity_reason": "temporal_continuity",
+    "selection_status": "SELECTED_AUTOMATICALLY",
+    "selection_score": 0.503805
+  },
+  {
+    "event_id": "ev_005",
+    "expected_player": "near",
+    "track_id": "track_0010",
+    "frame_id": 287,
+    "court_position": {
+      "frame_id": 287,
+      "track_id": "track_0010",
+      "x_m": 0.7012187874073946,
+      "y_m": -13.019178744487865,
+      "confidence": 0.5725719332695007,
+      "distance_to_near_baseline_m": -1.1341787444878655,
+      "distance_to_far_baseline_m": 24.904178744487865,
+      "inside_court": false,
+      "behind_near_baseline": true,
+      "behind_far_baseline": false,
+      "left_outside": false,
+      "right_outside": false
+    },
+    "ball_pixel": [
+      1662.617,
+      927.11
+    ],
+    "wrist_pixels": {
+      "left_wrist": [
+        1456.8341064453125,
+        993.8585205078125
+      ],
+      "right_wrist": [
+        1476.12548828125,
+        973.690185546875
+      ]
+    },
+    "ball_wrist_distance_px": 192.22070031275496,
+    "confidence": 0.5725719332695007,
+    "warnings": [],
+    "frame_end": 288,
+    "expected_identity": "unknown",
+    "bbox": {
+      "x1": 1433.4422607421875,
+      "y1": 931.7750854492188,
+      "x2": 1573.1756591796875,
+      "y2": 1290.947021484375,
+      "confidence": 0.7742769718170166
+    },
+    "foot_anchor": {
+      "frame_id": 287,
+      "track_id": "track_0010",
+      "x_pixel": 1493.3709309895833,
+      "y_pixel": 1240.7015380859375,
+      "method": "pose_heel-toe",
+      "confidence": 0.5725719332695007,
+      "airborne_possible": false,
+      "fallback_used": false,
+      "support_side": "both",
+      "low_confidence": false,
+      "occluded": false,
+      "smoothing_applied": false
+    },
+    "identity": "near",
+    "identity_confidence": 0.8,
+    "identity_reason": "temporal_continuity",
+    "selection_status": "SELECTED_AUTOMATICALLY",
+    "selection_score": 0.835137
+  },
+  {
+    "event_id": "ev_007",
+    "expected_player": "far",
+    "track_id": "track_0002",
+    "frame_id": 351,
+    "court_position": {
+      "frame_id": 351,
+      "track_id": "track_0002",
+      "x_m": -4.271139363120871,
+      "y_m": 18.772505098450463,
+      "confidence": 0.4751158058643341,
+      "distance_to_near_baseline_m": 30.657505098450464,
+      "distance_to_far_baseline_m": -6.887505098450463,
+      "inside_court": false,
+      "behind_near_baseline": false,
+      "behind_far_baseline": true,
+      "left_outside": false,
+      "right_outside": false
+    },
+    "ball_pixel": [
+      870.192,
+      186.084
+    ],
+    "wrist_pixels": {
+      "left_wrist": [
+        1005.406982421875,
+        181.93519592285156
+      ],
+      "right_wrist": [
+        924.9436645507812,
+        185.7128143310547
+      ]
+    },
+    "ball_wrist_distance_px": 54.752922751960064,
+    "confidence": 0.4751158058643341,
+    "warnings": [],
+    "frame_end": 351,
+    "expected_identity": "unknown",
+    "bbox": {
+      "x1": 944.9603271484375,
+      "y1": 149.52320861816406,
+      "x2": 1049.9876708984375,
+      "y2": 304.25457763671875,
+      "confidence": 0.5233505964279175
+    },
+    "foot_anchor": {
+      "frame_id": 351,
+      "track_id": "track_0002",
+      "x_pixel": 998.8591105143229,
+      "y_pixel": 285.5049743652344,
+      "method": "pose_heel-toe",
+      "confidence": 0.4751158058643341,
+      "airborne_possible": false,
+      "fallback_used": false,
+      "support_side": "both",
+      "low_confidence": true,
+      "occluded": false,
+      "smoothing_applied": false
+    },
+    "identity": "far",
+    "identity_confidence": 0.7,
+    "identity_reason": "projected_foot_y_sign",
+    "selection_status": "SELECTED_AUTOMATICALLY",
+    "selection_score": 0.563668
+  },
+  {
+    "event_id": "ev_009",
+    "expected_player": "near",
+    "track_id": "track_0013",
+    "frame_id": 434,
+    "court_position": {
+      "frame_id": 434,
+      "track_id": "track_0013",
+      "x_m": 4.795864263111862,
+      "y_m": -10.441111900514377,
+      "confidence": 0.5708538293838501,
+      "distance_to_near_baseline_m": 1.4438880994856227,
+      "distance_to_far_baseline_m": 22.326111900514377,
+      "inside_court": true,
+      "behind_near_baseline": false,
+      "behind_far_baseline": false,
+      "left_outside": false,
+      "right_outside": false
+    },
+    "ball_pixel": [
+      2246.142,
+      831.287
+    ],
+    "wrist_pixels": {
+      "left_wrist": [
+        2078.154541015625,
+        887.4639282226562
+      ],
+      "right_wrist": [
+        2143.929443359375,
+        843.06591796875
+      ]
+    },
+    "ball_wrist_distance_px": 102.88901614617315,
+    "confidence": 0.5708538293838501,
+    "warnings": [],
+    "frame_end": 435,
+    "expected_identity": "unknown",
+    "bbox": {
+      "x1": 2059.41845703125,
+      "y1": 804.5877075195312,
+      "x2": 2182.397705078125,
+      "y2": 1141.354736328125,
+      "confidence": 0.774578332901001
+    },
+    "foot_anchor": {
+      "frame_id": 434,
+      "track_id": "track_0013",
+      "x_pixel": 2127.0746256510415,
+      "y_pixel": 1101.917236328125,
+      "method": "pose_heel-toe",
+      "confidence": 0.5708538293838501,
+      "airborne_possible": false,
+      "fallback_used": false,
+      "support_side": "both",
+      "low_confidence": false,
+      "occluded": false,
+      "smoothing_applied": false
+    },
+    "identity": "near",
+    "identity_confidence": 0.8,
+    "identity_reason": "temporal_continuity",
+    "selection_status": "SELECTED_AUTOMATICALLY",
+    "selection_score": 0.78356
+  }
+]

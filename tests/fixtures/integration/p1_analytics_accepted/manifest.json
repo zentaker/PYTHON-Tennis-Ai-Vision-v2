@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "source": "accepted P1 GPU retest machine-readable subset",
+  "source_sha": "ec24ac0f34f787b6b86258076186c7f90c2b2c4e",
+  "source_artifact_sha256": "a2e2c138cff1076b9531c24d690a48a44b993a8168e3b52a5d274a50ed11feba",
+  "events": [
+    "ev_001",
+    "ev_003",
+    "ev_005",
+    "ev_007",
+    "ev_009"
+  ],
+  "files": {
+    "perception_report.json": "813c1841ce4fa0c20258c3486f874d81cb47b04625e6e2c3e98a4dbe9b16784b",
+    "selected_contact_audit.json": "680203193beedcf472c008e03f3bb55f8bc71d7ebf1c55965176dba415f1861c",
+    "selected_player_court_positions.csv": "4343603d39dea9b1df6cf0d971988d852b50dfa64131fea0175a214232b58098",
+    "selected_player_pose.jsonl": "ce7dfcc292868ceecb586bf51c55be824c00be250672e592eb8d6fed25149167",
+    "selected_player_tracks.csv": "333d2fd3a15351fbb3a7fac621af7b9a16c6f86b84b2c2f07d64ca360496e9d0",
+    "stage4_events.json": "8a5ab2bd2ee21fa10d329c4e6465fb3744fb5c5888b77e97e9941071c618f9ed"
+  }
+}

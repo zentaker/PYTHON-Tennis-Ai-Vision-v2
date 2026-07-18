@@ -1,0 +1,24 @@
+{
+  "frames": [
+    {
+      "frame_id": 139,
+      "timestamp_seconds": 2.771667
+    },
+    {
+      "frame_id": 200,
+      "timestamp_seconds": 3.955
+    },
+    {
+      "frame_id": 287,
+      "timestamp_seconds": 5.688333
+    },
+    {
+      "frame_id": 351,
+      "timestamp_seconds": 6.971667
+    },
+    {
+      "frame_id": 434,
+      "timestamp_seconds": 8.638333
+    }
+  ]
+}
