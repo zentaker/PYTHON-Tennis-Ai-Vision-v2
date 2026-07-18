@@ -6,10 +6,14 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
 import cv2
+
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.project.clip_manifest import ClipManifest
 from src.video.canonical_frames import iter_canonical_frames

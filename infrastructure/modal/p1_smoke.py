@@ -315,7 +315,7 @@ def run_authenticated() -> dict[str, Any]:
         app = _build_modal_app(modal)
     # The call is deliberately unreachable without the approval file above.
     result = app._p1_run_smoke.remote()
-    _download_results(results, result["app_run_identifier"], OUTPUT_DIR)
+    _download_results(results, f"/{result['app_run_identifier']}", OUTPUT_DIR)
     from scripts.validate_stage_p1_outputs import validate
 
     validate(OUTPUT_DIR, contract["frame_ids"])
