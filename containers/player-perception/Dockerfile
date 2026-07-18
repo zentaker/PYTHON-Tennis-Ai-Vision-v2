@@ -24,7 +24,9 @@ RUN python -m pip install --upgrade pip \
         mmcv==2.2.0 \
     && python -m pip install -c /workspace/containers/player-perception/constraints.txt \
         -r /workspace/containers/player-perception/requirements-runtime.txt \
-    && python -m pip install --no-deps -r /workspace/containers/player-perception/requirements-openmmlab.txt
+    && python -m pip install -c /workspace/containers/player-perception/constraints.txt \
+        -r /workspace/containers/player-perception/requirements-openmmlab.txt \
+    && python -m pip check
 
 COPY src /workspace/src
 COPY scripts /workspace/scripts

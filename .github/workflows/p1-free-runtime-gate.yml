@@ -26,6 +26,11 @@ jobs:
           -m src.player_perception.cli --backend openmmlab --validate-only
           --model-bundle /workspace/config/player_perception/p1_openmmlab.json
 
+      - name: Preflight dependency closure
+        run: >-
+          docker run --rm --entrypoint python tennis-p1-free-ci:sha-${GITHUB_SHA}
+          -m pip check
+
       - name: Inspect OpenMMLab stack and GPU absence
         run: |
           docker run --rm --entrypoint python tennis-p1-free-ci:sha-${GITHUB_SHA} - <<'PY'
