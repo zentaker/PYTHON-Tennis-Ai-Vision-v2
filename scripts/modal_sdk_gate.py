@@ -57,6 +57,7 @@ def run() -> dict[str, object]:
             single_use_containers=True,
             retries=0,
             timeout=900,
+            serialized=True,
         )
         def probe() -> str:
             return "never executed"

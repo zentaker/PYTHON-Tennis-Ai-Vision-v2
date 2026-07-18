@@ -196,6 +196,7 @@ def _build_modal_app(modal_module: Any) -> Any:
         single_use_containers=True,
         retries=0,
         timeout=900,
+        serialized=True,
     )
     def run_smoke(package_id: str, run_slug: str) -> dict[str, Any]:
         import csv

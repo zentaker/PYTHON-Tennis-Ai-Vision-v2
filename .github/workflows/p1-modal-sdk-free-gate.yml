@@ -35,13 +35,8 @@ jobs:
         run: uv run python -m infrastructure.modal.p1_smoke --dry-run
 
       - name: Validate SDK API shape offline
-        run: python scripts/modal_sdk_gate.py
+        run: python scripts/modal_sdk_gate.py > "$RUNNER_TEMP/modal-sdk-report.json"
 
-      - name: Upload small SDK report
-        if: always()
-        run: |
-          python scripts/modal_sdk_gate.py > "$RUNNER_TEMP/modal-sdk-report.json"
-        # The report is uploaded only as a small local artifact; no Modal resource is used.
       - name: Store SDK report
         if: always()
         uses: actions/upload-artifact@v4
