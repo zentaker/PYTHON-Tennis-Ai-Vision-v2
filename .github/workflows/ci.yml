@@ -44,6 +44,12 @@ jobs:
       - name: Validate P1 Analytics functional wiring
         run: uv run python scripts/check_p1_analytics_functional_wiring.py
 
+      - name: Stage 5B v3 tests
+        run: uv run --with "jsonschema>=4.23,<5" pytest tests/test_stage5b_v3_*.py
+
+      - name: Validate Stage 5B v3 player-aware candidate
+        run: uv run --with "jsonschema>=4.23,<5" python scripts/check_stage5b_v3_player_aware.py
+
       - name: Ruff
         run: uv run ruff check .
 
@@ -65,6 +71,22 @@ jobs:
             docs/validation/assets/p1_gpu_retest_before_after.jpg
             docs/validation/P1_GPU_RETEST_VISUAL_AUDIT.md
             config/player_perception/p1_gpu_retest_result.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+
+      - name: Publish Stage 5B v3 player-aware evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage5b-v3-player-aware-evidence
+          path: |
+            docs/validation/assets/stage5b_v3_reprojection_overlay.jpg
+            docs/validation/assets/stage5b_v3_top_view.jpg
+            docs/validation/assets/stage5b_v3_side_view.jpg
+            docs/validation/assets/stage5b_v3_contact_audit.jpg
+            docs/validation/assets/stage5b_v3_hypothesis_comparison.jpg
+            docs/validation/STAGE5B_V3_PLAYER_AWARE_VISUAL_AUDIT.md
+            config/stage5b_v3/stage5b_v3_result.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 6
