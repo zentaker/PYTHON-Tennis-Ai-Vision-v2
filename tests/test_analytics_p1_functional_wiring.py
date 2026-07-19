@@ -3,14 +3,81 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from src.analytics.adapters.p1_outputs import load_accepted_p1_contacts
-from src.analytics.p1_wiring import load_stage4, wire_contacts, write_wiring_outputs
+from src.analytics.p1_wiring import (
+    Stage4InputError,
+    load_stage4,
+    wire_contacts,
+    write_wiring_outputs,
+)
 from src.analytics.schema_validation import validators
 
 
 FIXTURE = Path("tests/fixtures/integration/p1_analytics_accepted")
 SOURCE_SHA = "ec24ac0f34f787b6b86258076186c7f90c2b2c4e"
 RESULTS_SHA = "a2e2c138cff1076b9531c24d690a48a44b993a8168e3b52a5d274a50ed11feba"
+
+
+def _stage4_file(tmp_path: Path, payload: object) -> Path:
+    path = tmp_path / "stage4.json"
+    path.write_text(json.dumps(payload) + "\n")
+    return path
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        [{"id": "ev_001", "shot_type": "saque"}],
+        {"events": [{"event_id": "ev_001", "shot_type": "saque"}]},
+        {"narrative_events": [{"id": "ev_001", "shot_type": "saque"}]},
+    ],
+)
+def test_load_stage4_accepts_only_supported_shapes(tmp_path: Path, payload: object) -> None:
+    assert load_stage4(_stage4_file(tmp_path, payload))["ev_001"]["shot_type"] == "saque"
+
+
+def test_load_stage4_is_optional() -> None:
+    assert load_stage4(None) == {}
+
+
+@pytest.mark.parametrize(
+    ("payload", "message"),
+    [
+        (42, "JSON root must be a list or object"),
+        ({"metadata": []}, "requires 'events' or 'narrative_events'"),
+        ({"events": {}}, "'events' must be a list"),
+        ({"events": ["ev_001"]}, "event index 0 must be an object"),
+        ({"events": [{"shot_type": "saque"}]}, "event index 0 requires string id"),
+        ({"events": [{"id": "  "}]}, "event index 0 has empty ID"),
+        (
+            {"events": [{"id": "ev_001"}, {"id": "ev_001"}]},
+            "event index 1 has duplicate ID 'ev_001'",
+        ),
+        (
+            {"events": [{"id": "ev_001"}, {"event_id": "ev_001"}]},
+            "event index 1 has duplicate ID 'ev_001'",
+        ),
+        (
+            {"events": [{"id": "ev_001", "event_id": "ev_003"}]},
+            "event index 0 has conflicting id 'ev_001' and event_id 'ev_003'",
+        ),
+    ],
+)
+def test_load_stage4_fails_closed(
+    tmp_path: Path, payload: object, message: str
+) -> None:
+    path = _stage4_file(tmp_path, payload)
+    with pytest.raises(Stage4InputError, match=message):
+        load_stage4(path)
+
+
+def test_load_stage4_rejects_invalid_json_root(tmp_path: Path) -> None:
+    path = tmp_path / "stage4.json"
+    path.write_text("{")
+    with pytest.raises(Stage4InputError, match=r"stage4\.json: invalid JSON root"):
+        load_stage4(path)
 
 
 def test_wires_exactly_five_conservative_schema_valid_records() -> None:
@@ -62,6 +129,18 @@ def test_missing_and_ambiguous_stage4_labels_remain_conservative() -> None:
     assert ambiguous.stroke.spin_family.value == "slice"
     assert ambiguous.stroke.stroke_side.value == "unknown"
     assert ambiguous.stroke.contact_mode.value == "unknown"
+
+
+@pytest.mark.parametrize("event", [{"id": "ev_001", "shot_type": "unknown"}, {"id": "ev_001"}])
+def test_unknown_or_absent_stage4_label_keeps_all_dimensions_unknown(event: dict[str, str]) -> None:
+    record = wire_contacts(
+        load_accepted_p1_contacts(FIXTURE),
+        {"ev_001": event},
+        p1_source_sha=SOURCE_SHA,
+        p1_results_sha256=RESULTS_SHA,
+    )[0].to_dict()
+    assert record["event"]["legacy_shot_type"] is None
+    assert all(dimension["value"] == "unknown" for dimension in record["stroke"].values())
 
 
 def test_outputs_and_checksum_are_reproducible(tmp_path: Path) -> None:
