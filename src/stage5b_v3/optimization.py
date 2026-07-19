@@ -54,6 +54,10 @@ def optimize_segment(
     pixel_sigma = float(config["ball_pixel_uncertainty_px"])
     anchor_sigma = float(config.get("anchor_uncertainty_m", 0.75))
 
+    def anchor_scale(anchor: dict[str, Any]) -> np.ndarray:
+        total = anchor.get("total_uncertainty_m")
+        return np.asarray(total, dtype=float) if total is not None else np.full(3, anchor_sigma)
+
     def residual(parameters: np.ndarray) -> np.ndarray:
         xyz = _positions(parameters, times, gravity)
         try:
@@ -62,7 +66,10 @@ def optimize_segment(
         except ValueError:
             reprojection = np.full(expected.size, 1e3)
         endpoint = _positions(parameters, np.array([duration]), gravity)[0]
-        anchors = np.concatenate([(parameters[:3] - start_xyz) / anchor_sigma, (endpoint - end_xyz) / anchor_sigma])
+        anchors = np.concatenate([
+            (parameters[:3] - start_xyz) / anchor_scale(start_anchor),
+            (endpoint - end_xyz) / anchor_scale(end_anchor),
+        ])
         bounce = []
         bounce_tolerance = float(config.get("bounce_tolerance_m", 0.03))
         if float(start_anchor["z_m"]) == 0:
