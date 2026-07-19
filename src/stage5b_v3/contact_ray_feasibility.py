@@ -38,10 +38,15 @@ def solve_contact_ray(
     arm_allowance_m: float = 0.55,
     height_range_m: tuple[float, float] = (0.45, 3.25),
     samples: int = 80,
+    ball_pixel_covariance: list[list[float]] | None = None,
 ) -> dict[str, Any]:
     ci95 = np.asarray(anchor["total_ci95"], dtype=float)
     ground_center = np.asarray([anchor["fused_x_m"], anchor["fused_y_m"]])
     anchor_radius = float(np.linalg.norm((ci95[1] - ci95[0]) / 2))
+    pixel_allowance_m = 0.0
+    if ball_pixel_covariance is not None:
+        pixel_sigma = float(np.sqrt(np.max(np.linalg.eigvalsh(ball_pixel_covariance))))
+        pixel_allowance_m = min(0.5, pixel_sigma * 0.02)
     candidates: list[dict[str, Any]] = []
     by_hand: dict[str, list[dict[str, Any]]] = {}
     for hand, wrist_pixel in wrist_pixels.items():
@@ -59,6 +64,7 @@ def solve_contact_ray(
                 geometric_excess = max(0.0, racket_distance - racket_length_m) + max(
                     0.0, horizontal_reach - anchor_radius - racket_length_m - arm_allowance_m
                 )
+                geometric_excess = max(0.0, geometric_excess - pixel_allowance_m)
                 row = {
                     "hand": hand,
                     "ball_point_3d": ball_point.tolist(),
@@ -119,7 +125,8 @@ def solve_contact_ray(
         ],
         "geometric_residual_m": best_candidate["geometric_excess_m"] if best_candidate else None,
         "uncertainty": {
-            "ball_pixel": "reconciled_covariance",
+            "ball_pixel_covariance": ball_pixel_covariance,
+            "ball_pixel_allowance_m": pixel_allowance_m,
             "anchor": "total_ci95",
             "wrist_px": 6.0,
         },
