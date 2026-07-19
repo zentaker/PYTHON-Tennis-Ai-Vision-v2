@@ -32,7 +32,7 @@ def test_near_and_far_contacts_evaluate_both_wrists_and_global_reach() -> None:
         options = contact_hypotheses(contact, camera, config, 3)
         assert len(options) == 3
         assert all(item.player_identity == contact.identity for item in options)
-        assert all(item.ball_reprojection_error_px < 1e-6 for item in options)
+        assert all(item.ball_ray_constraint_residual_px < 1e-6 for item in options)
         assert all("HITTING_HAND_UNKNOWN_BOTH_WRISTS_EVALUATED" in item.warnings for item in options)
 
 
