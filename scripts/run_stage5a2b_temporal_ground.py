@@ -328,6 +328,8 @@ def main() -> None:
             if pose["selected_identity"] == "far"
             else "accepted_observation"
         )
+        if max_speed > 15.0:
+            decision = "unresolved"
         result = {
             "event_id": event_id,
             "frame_id": contact_frame,

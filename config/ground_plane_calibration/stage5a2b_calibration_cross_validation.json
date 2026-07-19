@@ -1,0 +1,9 @@
+{
+  "family_count": 8,
+  "families": ["stage1_original", "all_correspondences", "longitudinal_baselines", "interior_service", "leave_far_family_out", "leave_near_family_out", "deterministic_segment_subset", "radial_small_hypothesis"],
+  "leave_one_family_out": true,
+  "deterministic_subsets": true,
+  "radial_candidate_tested": true,
+  "correlated_geometry_sources": true,
+  "maximum_player_spread_m": 0.49837334333357775
+}

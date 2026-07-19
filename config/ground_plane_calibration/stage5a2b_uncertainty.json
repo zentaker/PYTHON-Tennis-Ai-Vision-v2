@@ -1,0 +1,9 @@
+{
+  "seed": 20260719,
+  "sources": ["line segments", "line families", "court corners", "foot pixel", "support foot", "temporal tracking", "radial model", "orientation/crop"],
+  "camera_parameter_perturbation": "excluded because camera and homography are correlated upstream",
+  "correlated_geometry_sources": true,
+  "maximum_calibration_family_spread_m": 0.49837334333357775,
+  "ev003_calibration_spread_m": 0.49837334333357775,
+  "ev007_calibration_spread_m": 0.47135817130379326
+}

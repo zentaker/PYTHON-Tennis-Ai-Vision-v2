@@ -1,0 +1,11 @@
+{
+  "detector": "OpenCV LSD constrained to conservative visible-ground polygon",
+  "image_line_segments_detected": 137,
+  "accepted_line_segments": 61,
+  "rejected_line_segments": 76,
+  "model_lines_evaluated": 9,
+  "model_lines_with_image_support": 9,
+  "model_lines_rejected": [],
+  "net_excluded_from_ground_paint_model": true,
+  "families": ["left_doubles", "right_doubles", "left_singles", "right_singles", "near_baseline", "far_baseline", "near_service", "far_service", "center_service"]
+}

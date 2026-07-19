@@ -1,0 +1,14 @@
+{
+  "temporal_frames_processed": 305,
+  "temporal_windows": 5,
+  "identity_switches": 0,
+  "ground_region_failures": 0,
+  "maximum_speed_diagnostic_mps": 143.14353116894293,
+  "events": {
+    "ev_001": {"foot_visually_valid": true, "baseline_distance_median": -0.7259890020067932, "baseline_distance_ci95": [-0.7424642515497482, -0.5784732484393473], "evidence_decision": "unresolved"},
+    "ev_003": {"foot_visually_valid": true, "baseline_distance_median": 7.514396802883315, "baseline_distance_ci95": [7.281437233763918, 7.917846419457465], "evidence_decision": "unresolved"},
+    "ev_005": {"foot_visually_valid": true, "baseline_distance_median": 1.5950944505452398, "baseline_distance_ci95": [1.56753040546242, 1.8101219489948004], "evidence_decision": "unresolved"},
+    "ev_007": {"foot_visually_valid": true, "baseline_distance_median": 6.430566842890389, "baseline_distance_ci95": [6.222465700378806, 6.810532047528454], "evidence_decision": "unresolved"},
+    "ev_009": {"foot_visually_valid": true, "baseline_distance_median": -1.2751330063561532, "baseline_distance_ci95": [-1.298784703319131, -1.1038122866478626], "evidence_decision": "unresolved"}
+  }
+}
