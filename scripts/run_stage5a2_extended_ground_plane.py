@@ -447,7 +447,7 @@ def main() -> None:
         "coordinate_system": "canonical rotated horizontal pixels; court X right/Y far metres",
         "inputs": [
             {
-                "path": str(path),
+                "path": str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path),
                 "sha256": digest(path),
                 "bytes": path.stat().st_size,
                 "accepted": True,
