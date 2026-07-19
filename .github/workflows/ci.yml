@@ -58,6 +58,12 @@ jobs:
           uv run python scripts/check_stage5b_v31_coordinates.py
           uv run --with "jsonschema>=4.23,<5" python scripts/check_stage5b_v31_player_aware.py
 
+      - name: Stage 5A.2 extended ground-plane tests
+        run: uv run pytest tests/test_ground_plane_calibration_*.py
+
+      - name: Validate Stage 5A.2 evidence
+        run: uv run python scripts/check_stage5a2_extended_ground_plane.py
+
       - name: Ruff
         run: uv run ruff check .
 
@@ -114,6 +120,25 @@ jobs:
             config/stage5b_v3/stage5b_v31_result.json
             config/stage5b_v3/coordinate_audit_result.json
             config/stage5b_v3/stage5b_v31_optimizer_report.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+
+      - name: Publish Stage 5A.2 extended ground-plane evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage5a2-extended-ground-plane-evidence
+          path: |
+            docs/validation/assets/stage5a2_court_line_overlay.jpg
+            docs/validation/assets/stage5a2_old_vs_refined_homography.jpg
+            docs/validation/assets/stage5a2_camera_homography_consistency.jpg
+            docs/validation/assets/stage5a2_player_foot_contact_sheet.jpg
+            docs/validation/assets/stage5a2_player_ground_top_view.jpg
+            docs/validation/assets/stage5a2_extrapolation_uncertainty.jpg
+            docs/validation/STAGE5A2_EXTENDED_GROUND_PLANE_VISUAL_AUDIT.md
+            config/ground_plane_calibration/stage5a2_result.json
+            config/ground_plane_calibration/player_ground_position_report.json
+            config/ground_plane_calibration/calibration_uncertainty.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 6

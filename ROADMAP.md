@@ -110,6 +110,11 @@ plausibles, p95 fuera de gate, homografía audit-only y métrica de ambigüedad 
 Stage 5A.2 debe corregir el plano de suelo antes de otra reconstrucción XYZ.
 Analytics y velocidad 3D real continúan bloqueados.
 
+Stage 5A.2 se ejecutó en CPU y quedó
+`STAGE5A2_EXTENDED_GROUND_PLANE_PARTIAL`: la evidencia de líneas pasa el gate y cámara
+y homografía concuerdan, pero ev_003/ev_007 siguen más de 5 m detrás de la baseline.
+La siguiente acción es el audit visual de Stage 5A.2; no se reejecutó XYZ.
+
 ### Stage 5C - Vista superior derivada
 
 Renderizar X,Y de la trayectoria 3D aprobada.

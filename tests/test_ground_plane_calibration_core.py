@@ -34,7 +34,9 @@ def test_synthetic_line_detection_and_refinement() -> None:
     distance = cv2.distanceTransform(255 - mask, cv2.DIST_L2, 3)
     court, _ = sample_court_lines(2)
     pixels = apply_homography(true, court)
-    perturbed = true.copy(); perturbed[0, 2] += 7; perturbed[1, 2] -= 5
+    perturbed = true.copy()
+    perturbed[0, 2] += 7
+    perturbed[1, 2] -= 5
     result = refine_homography(perturbed, distance, court, pixels, 0.02)
     assert np.median(result.refined_errors) < np.median(result.initial_errors)
     assert np.isfinite(result.condition)
@@ -72,7 +74,9 @@ def test_bbox_bottom_fallback() -> None:
 
 def test_elevated_foot_warning_and_temporal_aggregation() -> None:
     points = [_foot("left_heel", 10, 50), _foot("right_heel", 20, 100)]
-    result = estimate_foot_pixel(points, {"x1": 0, "x2": 30, "y1": 0, "y2": 110}, [(19, 101), (21, 99)])
+    result = estimate_foot_pixel(
+        points, {"x1": 0, "x2": 30, "y1": 0, "y2": 110}, [(19, 101), (21, 99)]
+    )
     assert "ELEVATED_OR_ASYMMETRIC_FOOT" in result["warnings"]
     assert result["temporal_support"] == 2
 
@@ -102,11 +106,15 @@ def test_calibration_changes_anchor_prior_and_objective() -> None:
     two = {"fused_xy_m": [2.0, 4.0], "metric_uncertainty_m": 0.2}
     candidate = np.array([1.5, 2.5, 1.0])
     assert not np.allclose(contact_prior_from_ground(one, 1.0), contact_prior_from_ground(two, 1.0))
-    assert not np.allclose(anchor_objective_residual(candidate, one), anchor_objective_residual(candidate, two))
+    assert not np.allclose(
+        anchor_objective_residual(candidate, one), anchor_objective_residual(candidate, two)
+    )
 
 
 def _solution(x_offset: float, cost: float = 10.0) -> SimpleNamespace:
-    samples = tuple({"xyz": [x_offset + index, index * 0.2, 1.0 + index * 0.1]} for index in range(4))
+    samples = tuple(
+        {"xyz": [x_offset + index, index * 0.2, 1.0 + index * 0.1]} for index in range(4)
+    )
     return SimpleNamespace(samples=samples, cost=cost, parameters=(x_offset, 0, 1, 0, 0, 0))
 
 
@@ -115,4 +123,8 @@ def test_ambiguity_uses_complete_trajectory_not_initial_z() -> None:
     metrics = trajectory_difference(reference, incompatible_xy)
     assert reference.parameters[2] == incompatible_xy.parameters[2]
     assert metrics["rms_xy_m"] == 2.0
-    assert materially_ambiguous(reference, incompatible_xy, {"ambiguity_cost_ratio": 1.1, "ambiguity_depth_threshold_m": 0.5})
+    assert materially_ambiguous(
+        reference,
+        incompatible_xy,
+        {"ambiguity_cost_ratio": 1.1, "ambiguity_depth_threshold_m": 0.5},
+    )

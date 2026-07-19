@@ -1,5 +1,14 @@
 # Validation Framework
 
+## Stage 5A.2 extended ground plane
+
+The automatic calibration gate requires court-line median/p95 <=4/10 px,
+homography/camera player disagreement <=1 m (otherwise unresolved), finite
+identity-stable positions, and far-Y uncertainty <=1.5 m. The general region allows
+the doubles court plus documented lateral margin and 5 m behind either baseline.
+Human observations are evaluation references only. Current automatic status is
+`PARTIAL`; human approval is pending and XYZ remains blocked.
+
 Regla fuerte: los criterios de exito se escriben antes de iniciar cada etapa. Si un criterio resulta inadecuado, no se mueve la meta silenciosamente; se cierra la etapa y se reabre con criterios nuevos.
 
 ## Stage 0 - Validacion
