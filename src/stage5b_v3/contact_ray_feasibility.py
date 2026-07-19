@@ -114,9 +114,15 @@ def solve_contact_ray(
         "feasible_wrist_candidates": feasible_hands,
         "candidate_3d_contact_points": candidates,
         "best_candidate": best_candidate,
-        "alternative_candidates": sorted(candidates, key=lambda row: row["geometric_excess_m"])[1:6],
+        "alternative_candidates": sorted(candidates, key=lambda row: row["geometric_excess_m"])[
+            1:6
+        ],
         "geometric_residual_m": best_candidate["geometric_excess_m"] if best_candidate else None,
-        "uncertainty": {"ball_pixel": "reconciled_covariance", "anchor": "total_ci95", "wrist_px": 6.0},
+        "uncertainty": {
+            "ball_pixel": "reconciled_covariance",
+            "anchor": "total_ci95",
+            "wrist_px": 6.0,
+        },
         "hand_ambiguity": len(feasible_hands) > 1,
         "round_trip_error_px": round_trip_error(camera, ball_pixel, 1.5),
     }

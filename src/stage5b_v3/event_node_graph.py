@@ -53,7 +53,11 @@ def allocate_event_and_interior_observations(
     timeline: list[dict[str, Any]], observations: list[dict[str, Any]]
 ) -> dict[str, Any]:
     event_frames = {event["frame_id"]: event for event in timeline}
-    node_observations = [row | {"event_id": event_frames[row["frame_id"]]["event_id"]} for row in observations if row["frame_id"] in event_frames]
+    node_observations = [
+        row | {"event_id": event_frames[row["frame_id"]]["event_id"]}
+        for row in observations
+        if row["frame_id"] in event_frames
+    ]
     interiors = [row for row in observations if row["frame_id"] not in event_frames]
     assigned = [row["frame_id"] for row in node_observations + interiors]
     if len(assigned) != len(set(assigned)):
@@ -61,8 +65,12 @@ def allocate_event_and_interior_observations(
     return {
         "event_node_observations": node_observations,
         "interior_observations": interiors,
-        "contact_node_observations": sum(event_frames[row["frame_id"]]["event_type"] == "contact" for row in node_observations),
-        "bounce_node_observations": sum(event_frames[row["frame_id"]]["event_type"] == "bounce" for row in node_observations),
+        "contact_node_observations": sum(
+            event_frames[row["frame_id"]]["event_type"] == "contact" for row in node_observations
+        ),
+        "bounce_node_observations": sum(
+            event_frames[row["frame_id"]]["event_type"] == "bounce" for row in node_observations
+        ),
         "duplicated_observations": 0,
     }
 
