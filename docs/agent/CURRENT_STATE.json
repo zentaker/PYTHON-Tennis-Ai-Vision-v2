@@ -3,13 +3,13 @@
   "branch": "agent/stage5b-v3-player-aware",
   "base_sha": "ecff19f4d131fd251ac2ee32b5fc0b84ae558811",
   "task": "Build Stage 5B v3 player-aware XYZ reconstruction candidate",
-  "status": "STAGE5B_V31_PARTIAL",
+  "status": "STAGE5B_V31_REJECTED_BY_HUMAN_GATE",
   "stages": {
     "stage_1_to_5a1": "VALIDATED",
     "stage_5b_v1": "REJECTED_BY_HUMAN_GATE",
     "stage_5b_v2": "REJECTED_BY_HUMAN_GATE",
     "stage_5b_v3": "REJECTED_BY_HUMAN_GATE",
-    "stage_5b_v31": "PARTIAL",
+    "stage_5b_v31": "REJECTED_BY_HUMAN_GATE",
     "stage_5c": "NOT_STARTED",
     "stage_6": "NOT_STARTED",
     "stage_p1": "P1_TEN_FRAME_ACCEPTANCE_PASSED",
@@ -22,11 +22,11 @@
     "resolved_segments": 9,
     "ambiguous_segments": 0,
     "schema_valid_xyz_samples": 314,
-    "human_visual_approval": "pending_v31",
+    "human_visual_approval": "rejected_v31",
     "analytics_consumes_xyz": false,
     "real_3d_speed_available": false
   },
   "tests": {"cloud_calls": 0, "gpu_calls": 0, "spend_generated": 0},
-  "blocker": "P95_REPROJECTION_AND_FAR_PLAYER_COORDINATE_PLAUSIBILITY",
-  "next_action": "Audit v3.1 as partial; resolve far-player ground coordinates and p95 reprojection before another approval candidate."
+  "blocker": "V31_HUMAN_GATE_REJECTED_GROUND_COORDINATES_AND_PHYSICAL_PLAUSIBILITY",
+  "next_action": "Build Stage 5A.2 extended ground-plane calibration before any further XYZ reconstruction."
 }

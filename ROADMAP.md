@@ -105,8 +105,9 @@ balística. El diseño está documentado, pero la implementación aún no comenz
 
 Estado: v1 y v2 `REJECTED_BY_HUMAN_GATE`. V3 player-aware produjo un candidato con
 cinco contactos P1, nueve vuelos, cinco botes, tres hipótesis e incertidumbre explícita.
-Los nueve vuelos conservan ambigüedad monocular. Estado automático:
-`STAGE5B_V3_PLAYER_AWARE_CANDIDATE_READY_FOR_HUMAN_GATE`; aprobación humana pendiente.
+V3.1 fue `STAGE5B_V31_REJECTED_BY_HUMAN_GATE`: contactos y coordenadas far no
+plausibles, p95 fuera de gate, homografía audit-only y métrica de ambigüedad incompleta.
+Stage 5A.2 debe corregir el plano de suelo antes de otra reconstrucción XYZ.
 Analytics y velocidad 3D real continúan bloqueados.
 
 ### Stage 5C - Vista superior derivada

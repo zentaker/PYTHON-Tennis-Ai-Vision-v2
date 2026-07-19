@@ -1,6 +1,12 @@
 # Stage 5B v3.1 metric correction report
 
-Status: `STAGE5B_V31_PARTIAL`.
+Status: `STAGE5B_V31_REJECTED_BY_HUMAN_GATE`.
+
+`human_visual_approval: rejected`: contacts were not physically plausible;
+ev_003/ev_007 were 8.025/6.888 m behind the far baseline; optimized p95 27.106 px
+exceeded 24 px. Homography was audit-only, ambiguity used initial Z instead of full
+trajectories, near-equivalent costs hid incompatible flights, and the top view retained
+doubtful play-space exits.
 
 V3 was rejected by the ChatGPT visual gate. V3.1 renames the tautological ball-ray
 residual, lifts both wrist rays into candidate 3D points, uses racket extension in

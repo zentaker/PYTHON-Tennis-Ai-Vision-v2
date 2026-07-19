@@ -7,7 +7,8 @@
   "cloud_calls": 0,
   "contacts_physically_plausible": false,
   "gpu_calls": 0,
-  "human_approval": "pending",
+  "human_approval": "rejected",
+  "human_visual_approval": "rejected",
   "improvement_percent": 73.31246758375993,
   "loss": "soft_l1",
   "max_bounce_residual_m": 0.017782493942457997,
@@ -21,7 +22,7 @@
   "segments_reconstructed": 9,
   "sensitivity_runs_executed": 9,
   "spend": 0,
-  "status": "STAGE5B_V31_PARTIAL",
+  "status": "STAGE5B_V31_REJECTED_BY_HUMAN_GATE",
   "schema_version": "1.0",
   "coordinate_convention": "X right, Y far, Z up; net Y=0; near baseline -11.885m; far baseline +11.885m",
   "ev001_player_baseline_distance_m": 1.1278333062650727,
@@ -29,5 +30,15 @@
   "p1_stored_recomputed_maximum_xy_difference_m": 1.7763568394002505E-15,
   "homography_used": true,
   "racket_extension_used": true,
-  "blocker": "P95_REPROJECTION_AND_FAR_PLAYER_COORDINATE_PLAUSIBILITY"
+  "blocker": "HUMAN_GATE_REJECTED_PHYSICALLY_IMPLAUSIBLE_CONTACTS_AND_TRAJECTORIES",
+  "human_gate_rejection_reasons": [
+    "contacts_physically_plausible=false",
+    "ev_003 is 8.025 m behind the far baseline",
+    "ev_007 is 6.888 m behind the far baseline",
+    "optimized p95 27.106 px exceeds the 24 px gate",
+    "homography is audit-only and does not affect XYZ optimization",
+    "ambiguity classification compares only initial Z",
+    "near-equivalent hypothesis costs hide materially different flights",
+    "top view contains physically doubtful flights outside useful play space"
+  ]
 }
