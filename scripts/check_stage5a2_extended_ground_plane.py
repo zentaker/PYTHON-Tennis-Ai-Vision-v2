@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / ".artifacts/stage5a2-extended-ground-plane/output"
-STATUS = "STAGE5A2_EXTENDED_GROUND_PLANE_PARTIAL"
+STATUS = "STAGE5A2_REJECTED_BY_HUMAN_GATE_EVIDENCE_INSUFFICIENT"
 
 
 def require(value: bool, message: str) -> None:
@@ -43,12 +43,12 @@ def main() -> int:
         (ROOT / "config/ground_plane_calibration/calibration_uncertainty.json").read_text()
     )
     require(result["status"] == STATUS, "status mismatch")
-    require(result["human_visual_approval"] == "pending", "human approval must be pending")
+    require(result["human_visual_approval"] == "rejected", "human rejection not recorded")
     require(
         result["refined_line_median_px"] <= 4 and result["refined_line_p95_px"] <= 10,
         "line gate failed",
     )
-    require(result["court_lines_detected"] >= 8, "insufficient court lines")
+    require(result["model_lines_evaluated"] >= 8, "insufficient model-line evaluation")
     require(
         player_report["frames_processed"] == result["player_frames_processed"],
         "player count mismatch",
