@@ -72,6 +72,9 @@ class XYZSample:
         payload = asdict(self)
         payload["constraint_sources"] = list(self.constraint_sources)
         payload["warnings"] = list(self.warnings)
+        for key, value in payload.items():
+            if isinstance(value, float):
+                payload[key] = round(value, 6)
         return payload
 
 

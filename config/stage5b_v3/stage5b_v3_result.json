@@ -13,7 +13,7 @@
   "contact_anchor_residuals_px": [2.5421149729252077e-13, 3.8657704262548816e-13, 5.684341886080801e-13, 5.859285502108464e-13, 9.713407672867936e-13],
   "negative_z_violations": 0,
   "schema_valid_xyz_samples": 322,
-  "deterministic_xyz_checksum": "ed7c8ce75c6332bb511c539ea41e8e7b602618cbcc3793b77de027d44ef9424a",
+  "deterministic_xyz_checksum": "6312b67a295f8ff9032e876b2fd895fede9a3282bfafe956215fe9fdb8cce618",
   "human_visual_approval": "pending",
   "analytics_consumes_xyz": false,
   "real_3d_speed_available": false,

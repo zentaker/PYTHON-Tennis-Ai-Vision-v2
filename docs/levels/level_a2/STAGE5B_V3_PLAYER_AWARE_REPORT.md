@@ -13,7 +13,7 @@ distance, height, confidence, and warnings remain in the contact audit. All nine
 remain ambiguous because alternative monocular contact depths are materially different.
 Uncertainty is carried on every sample rather than hidden.
 
-XYZ checksum: `ed7c8ce75c6332bb511c539ea41e8e7b602618cbcc3793b77de027d44ef9424a`.
+XYZ checksum: `6312b67a295f8ff9032e876b2fd895fede9a3282bfafe956215fe9fdb8cce618`.
 
 This is not `STAGE5B_APPROVED` or `APPROVED_STAGE5B_XYZ`. Human visual approval is
 pending. Analytics remains blocked, real 3D speed is unavailable, and Stage 5C/6 have
