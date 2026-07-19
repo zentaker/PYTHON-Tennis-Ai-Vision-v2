@@ -1,5 +1,4 @@
 # Current task
 
-Audit v3.5 measurement-integrity and observation-conditioned Gate A evidence. Gate D
-passed, Gate A is partial from coarse reprojection, Gate B was not executed, and
-Analytics remains blocked.
+V3.5.1 truthful measurement Gate D and real observation-conditioned Gate A rerun.
+Prior V3.5 evidence was rejected; Gate B remains unexecuted and Analytics blocked.

@@ -1,5 +1,11 @@
 # Last result
 
+- V3.5 human evidence gate rejected: Gate D was unconditional, anomalies were not weighted,
+  V3.4 nodes were reused, drag was an alias, and residual/visual evidence was incomplete.
+- V3.5.1 truthful rerun: 314 accounted, 76 downweighted, 0 invalid, 19 event candidates,
+  12 contact candidates, 7 bounce candidates, two global hypotheses, 314 residual rows.
+- V3.5.1 Gate D passed dynamically; Gate A is measurement-limited; Gate B not executed.
+
 - V3.5 Gate D passed: 314 observations; 49 frozen/duplicate, 13 suspicious, 0 invalid.
 - Gate A partial: observation-conditioned coarse median/p95 29.2917/68.3043 px.
 - Gate B not executed; global `STAGE5B_V35_MEASUREMENT_LIMITED`.

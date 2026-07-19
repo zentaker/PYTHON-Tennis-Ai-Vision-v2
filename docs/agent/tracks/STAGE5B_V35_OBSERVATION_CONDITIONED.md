@@ -9,3 +9,6 @@
 - Measurement-limited segments: 7; physically valid coarse segments: 2.
 - Next gate: ChatGPT Stage 5B v3.5 visual audit.
 - Cloud/GPU/spend: 0/0/0.
+
+V3.5.1 truthfulness gate: prior V3.5 human gate rejected; dynamic Gate D and
+candidate-based Gate A rerun are measurement-limited; Gate B remains blocked.

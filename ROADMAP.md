@@ -206,6 +206,10 @@ Principios:
 
 ## 6. Gobernanza
 
+V3.5.1 is the truthful Gate D/Gate A audit track. The prior V3.5 evidence is
+rejected and remains historical; no Gate B or final XYZ is permitted until the
+new evidence passes human audit.
+
 Los cambios de alcance o tecnologia requieren ADR. Los artefactos pesados permanecen
 fuera de Git y deben transferirse con un inventario verificable entre maquinas.
 

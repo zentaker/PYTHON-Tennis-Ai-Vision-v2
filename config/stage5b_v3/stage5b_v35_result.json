@@ -1,0 +1,15 @@
+{
+  "static_contact_anchors": "STATIC_CONTACT_ANCHORS_REMAIN_APPROVED",
+  "stage5b_v35_measurement_gate": "STAGE5B_V35_MEASUREMENT_GATE_REJECTED",
+  "stage5b_v35_gate_a": "STAGE5B_V35_GATE_A_NOT_IMPLEMENTED_AS_SPECIFIED",
+  "stage5b_v35_visual_evidence": "STAGE5B_V35_VISUAL_EVIDENCE_REJECTED",
+  "gate_b": "NOT_EXECUTED",
+  "reviewer": "ChatGPT implementation and artifact audit",
+  "reasons": [
+    "Gate D was unconditional; anomalies retained full weight.",
+    "Gate A reused v3.4 selected nodes and published one constant hypothesis.",
+    "Linear-drag model was an alias with zero drag.",
+    "Residual and visual evidence was incomplete or generic.",
+    "Gate B was correctly not executed."
+  ]
+}
