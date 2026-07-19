@@ -1,0 +1,11 @@
+{
+  "baseline_median_error_px": 25.2663075,
+  "baseline_p95_error_px": 68.65636795,
+  "improvement_percent": 73.31246758375993,
+  "loss": "soft_l1",
+  "max_bounce_residual_m": 0.017782493942457997,
+  "method": "scipy.optimize.least_squares",
+  "observations_in_objective": 314,
+  "optimized_median_error_px": 6.7429540044493965,
+  "optimized_p95_error_px": 27.10560052792941
+}

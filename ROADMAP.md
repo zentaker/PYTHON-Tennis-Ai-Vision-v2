@@ -3,7 +3,7 @@
 **Version:** 0.3
 **Fecha de creacion:** 2026-05-18
 **Fecha de reconciliacion:** 2026-07-13
-**Estado:** Activo - Stage 5B v3 player-aware candidato pendiente de gate humano
+**Estado:** Activo - Stage 5B v3 rechazado; v3.1 corrección parcial
 
 La pasada de datos activa es Nivel A2. Stage 1–4 están cerradas con gates aprobados y la
 la auditoría de cámara Stage 5A terminó con `READY_FOR_STAGE_5B` tras evaluar Stage 5A.1.
@@ -26,7 +26,7 @@ Construir un sistema que, dado un video de broadcast de tenis con camara fija, g
 - [x] Stage 4 - Eventos. A2 cerrada exitosamente con gate humano A.
 - [x] Stage 5A - Calibración de cámara 3D y observabilidad. Cerrada con referencia refinada.
 - [x] Stage 5A.1 - Referencia vertical de red. Cuatro clics y evaluación cerrados.
-- [ ] Stage 5B - V3 player-aware candidato reproducible; aprobación visual pendiente.
+- [ ] Stage 5B - V3 rechazado; v3.1 PARTIAL por p95 y coordenadas far.
 - [ ] Stage 5C - Vista superior derivada de X,Y. No iniciada.
 - [ ] Stage 6 - Vista lateral derivada de distancia,Z. No iniciada.
 - [ ] Stage 7 - Metricas y validacion final. No iniciada.

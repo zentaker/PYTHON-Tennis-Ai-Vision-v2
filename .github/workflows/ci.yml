@@ -50,6 +50,14 @@ jobs:
       - name: Validate Stage 5B v3 player-aware candidate
         run: uv run --with "jsonschema>=4.23,<5" python scripts/check_stage5b_v3_player_aware.py
 
+      - name: Stage 5B v3.1 tests
+        run: uv run --with "jsonschema>=4.23,<5" pytest tests/test_stage5b_v31_*.py
+
+      - name: Validate Stage 5B v3.1 correction
+        run: |
+          uv run python scripts/check_stage5b_v31_coordinates.py
+          uv run --with "jsonschema>=4.23,<5" python scripts/check_stage5b_v31_player_aware.py
+
       - name: Ruff
         run: uv run ruff check .
 
@@ -87,6 +95,25 @@ jobs:
             docs/validation/assets/stage5b_v3_hypothesis_comparison.jpg
             docs/validation/STAGE5B_V3_PLAYER_AWARE_VISUAL_AUDIT.md
             config/stage5b_v3/stage5b_v3_result.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+
+      - name: Publish Stage 5B v3.1 player-aware evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage5b-v31-player-aware-evidence
+          path: |
+            docs/validation/assets/stage5b_v31_top_view.jpg
+            docs/validation/assets/stage5b_v31_side_view.jpg
+            docs/validation/assets/stage5b_v31_reprojection_contact_sheet.jpg
+            docs/validation/assets/stage5b_v31_contact_audit.jpg
+            docs/validation/assets/stage5b_v31_hypothesis_comparison.jpg
+            docs/validation/assets/stage5b_v31_coordinate_audit.jpg
+            docs/validation/STAGE5B_V31_VISUAL_AUDIT.md
+            config/stage5b_v3/stage5b_v31_result.json
+            config/stage5b_v3/coordinate_audit_result.json
+            config/stage5b_v3/stage5b_v31_optimizer_report.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 6

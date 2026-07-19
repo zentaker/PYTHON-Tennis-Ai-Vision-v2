@@ -3,12 +3,13 @@
   "branch": "agent/stage5b-v3-player-aware",
   "base_sha": "ecff19f4d131fd251ac2ee32b5fc0b84ae558811",
   "task": "Build Stage 5B v3 player-aware XYZ reconstruction candidate",
-  "status": "STAGE5B_V3_PLAYER_AWARE_CANDIDATE_READY_FOR_HUMAN_GATE",
+  "status": "STAGE5B_V31_PARTIAL",
   "stages": {
     "stage_1_to_5a1": "VALIDATED",
     "stage_5b_v1": "REJECTED_BY_HUMAN_GATE",
     "stage_5b_v2": "REJECTED_BY_HUMAN_GATE",
-    "stage_5b_v3": "CANDIDATE_READY_FOR_HUMAN_GATE",
+    "stage_5b_v3": "REJECTED_BY_HUMAN_GATE",
+    "stage_5b_v31": "PARTIAL",
     "stage_5c": "NOT_STARTED",
     "stage_6": "NOT_STARTED",
     "stage_p1": "P1_TEN_FRAME_ACCEPTANCE_PASSED",
@@ -17,14 +18,15 @@
   "result": {
     "contacts": 5,
     "segments": 9,
-    "hypotheses": 3,
-    "ambiguous_segments": 9,
-    "schema_valid_xyz_samples": 322,
-    "human_visual_approval": "pending",
+    "hypotheses_per_segment": 3,
+    "resolved_segments": 9,
+    "ambiguous_segments": 0,
+    "schema_valid_xyz_samples": 314,
+    "human_visual_approval": "pending_v31",
     "analytics_consumes_xyz": false,
     "real_3d_speed_available": false
   },
   "tests": {"cloud_calls": 0, "gpu_calls": 0, "spend_generated": 0},
-  "blocker": "CHATGPT_HUMAN_VISUAL_AUDIT_REQUIRED",
-  "next_action": "Audit the published Stage 5B v3 visual evidence; do not connect XYZ to Analytics before explicit approval."
+  "blocker": "P95_REPROJECTION_AND_FAR_PLAYER_COORDINATE_PLAUSIBILITY",
+  "next_action": "Audit v3.1 as partial; resolve far-player ground coordinates and p95 reprojection before another approval candidate."
 }

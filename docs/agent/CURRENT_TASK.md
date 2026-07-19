@@ -1,5 +1,5 @@
 # Current task
 
-Publish the reproducible Stage 5B v3 player-aware XYZ candidate and its uncertainty,
-ambiguity, schema validation, and compact visual evidence. Human visual approval is
-pending; Analytics, real 3D speed, Stage 5C, and Stage 6 remain blocked.
+Publish the v3 rejection and Stage 5B v3.1 real observation optimization as an honest
+`PARTIAL` correction. Human approval remains pending; Analytics, real 3D speed, Stage
+5C, and Stage 6 remain blocked.
