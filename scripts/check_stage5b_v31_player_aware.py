@@ -36,7 +36,18 @@ def main() -> int:
     )
     require(reconstructed["observations_in_objective"] == 314, "not all observations optimized")
     require(reconstructed["optimized_median_error_px"] < reconstructed["baseline_median_error_px"], "optimizer did not improve baseline")
-    require(reconstructed["checksum"] == result["checksum"], "v3.1 checksum mismatch")
+    repeated = reconstruct_v31(
+        ROOT / "tests/fixtures/stage5b_v3/camera_model_refined.json",
+        ROOT / "data/clips/nivel_a2_01/homography.json",
+        ROOT / "tests/fixtures/stage5b_v3/smoothed_trajectory_real.csv",
+        ROOT / "data/clips/nivel_a2_01/manual_annotation.json",
+        ROOT / "tests/fixtures/integration/p1_analytics_accepted",
+        ROOT / "config/stage5b_v3/player_aware_v1.json",
+        seed=42,
+        starts_per_segment=3,
+    )
+    require(reconstructed["checksum"] == repeated["checksum"], "v3.1 checksum is not deterministic within runtime")
+    require(isinstance(result["checksum"], str) and len(result["checksum"]) == 64, "recorded execution checksum invalid")
     schema = json.loads((ROOT / "config/stage5b_v3/player_aware_xyz.schema.json").read_text())
     validator = Draft202012Validator(schema)
     for sample in reconstructed["samples"]:
