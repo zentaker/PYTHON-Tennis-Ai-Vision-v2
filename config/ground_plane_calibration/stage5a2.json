@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "seed": 20260719,
+  "background_samples": 31,
+  "uncertainty_runs": 64,
+  "line_threshold_percentile": 82,
+  "regularization": 0.08,
+  "method_disagreement_gate_m": 1.0,
+  "far_y_uncertainty_gate_m": 1.5,
+  "plausibility": {"lateral_margin_m": 3.0, "behind_baseline_m": 5.0},
+  "court_dimensions_m": {
+    "doubles_half_width": 5.485,
+    "singles_half_width": 4.115,
+    "baseline_half_length": 11.885,
+    "service_line": 6.4,
+    "net": 0.0
+  }
+}

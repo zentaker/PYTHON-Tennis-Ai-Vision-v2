@@ -1,0 +1,58 @@
+{
+  "clip_id": "nivel_a2_01",
+  "coordinate_system": "canonical rotated horizontal pixels; court X right/Y far metres",
+  "image_resolution": [
+    2746,
+    1536
+  ],
+  "inputs": [
+    {
+      "accepted": true,
+      "bytes": 24944366,
+      "path": "/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2/data/clips/nivel_a2_01/source.mp4",
+      "sha256": "e2a05a8eda9be4d821ae1acc60355c7c0403e450ac0febd6bb3c6a62e0aa5774"
+    },
+    {
+      "accepted": true,
+      "bytes": 3867,
+      "path": "/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2-integration/data/clips/nivel_a2_01/homography.json",
+      "sha256": "5ad0c3a78e4c90c8ea11045a400aa207df8afc3692a0a0b783220f453bcbfb54"
+    },
+    {
+      "accepted": true,
+      "bytes": 808,
+      "path": "/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2-integration/data/clips/nivel_a2_01/court_corners_pixel.json",
+      "sha256": "5221ee80771bc5d7f261492adf674f74a5c77624ef58c8aea07b96ad6e9339c8"
+    },
+    {
+      "accepted": true,
+      "bytes": 24618,
+      "path": "/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2-integration/tests/fixtures/stage5b_v3/camera_model_refined.json",
+      "sha256": "b091dac99a0320fd1bc451234258c2c1b2d36676867e5f030480e7ad4092fd2a"
+    },
+    {
+      "accepted": true,
+      "bytes": 82781,
+      "path": "/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2-integration/tests/fixtures/integration/p1_analytics_accepted/selected_player_pose.jsonl",
+      "sha256": "ce7dfcc292868ceecb586bf51c55be824c00be250672e592eb8d6fed25149167"
+    },
+    {
+      "accepted": true,
+      "bytes": 1319,
+      "path": "/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2-integration/tests/fixtures/integration/p1_analytics_accepted/selected_player_tracks.csv",
+      "sha256": "333d2fd3a15351fbb3a7fac621af7b9a16c6f86b84b2c2f07d64ca360496e9d0"
+    },
+    {
+      "accepted": true,
+      "bytes": 8901,
+      "path": "/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2-integration/tests/fixtures/integration/p1_analytics_accepted/selected_contact_audit.json",
+      "sha256": "680203193beedcf472c008e03f3bb55f8bc71d7ebf1c55965176dba415f1861c"
+    }
+  ],
+  "missing_inventory": [
+    "original extracted frames",
+    "per-frame serialized net vertical reference"
+  ],
+  "schema_version": "1.0",
+  "video_frames": 527
+}
