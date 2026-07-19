@@ -1,6 +1,6 @@
 # Stage 5B v3 player-aware candidate report
 
-Status: `STAGE5B_V3_PLAYER_AWARE_CANDIDATE_READY_FOR_HUMAN_GATE`.
+Status: `STAGE5B_V3_REJECTED_BY_HUMAN_GATE`.
 
 The real Level A2 execution consumed five accepted P1 contacts and 314 unique Stage 3
 ball observations with VFR timestamps. It reconstructed nine event-delimited flights,
@@ -15,6 +15,7 @@ Uncertainty is carried on every sample rather than hidden.
 
 XYZ checksum: `6312b67a295f8ff9032e876b2fd895fede9a3282bfafe956215fe9fdb8cce618`.
 
-This is not `STAGE5B_APPROVED` or `APPROVED_STAGE5B_XYZ`. Human visual approval is
-pending. Analytics remains blocked, real 3D speed is unavailable, and Stage 5C/6 have
+This is not `STAGE5B_APPROVED` or `APPROVED_STAGE5B_XYZ`. Human visual approval was
+rejected by ChatGPT visual audit for the reasons recorded in the visual audit. Analytics
+remains blocked, real 3D speed is unavailable, and Stage 5C/6 have
 not started. GPU calls, cloud calls, and spend were zero.

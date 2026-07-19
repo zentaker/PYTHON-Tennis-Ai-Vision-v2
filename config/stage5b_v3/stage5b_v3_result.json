@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "status": "STAGE5B_V3_PLAYER_AWARE_CANDIDATE_READY_FOR_HUMAN_GATE",
+  "status": "STAGE5B_V3_REJECTED_BY_HUMAN_GATE",
   "input_inventory_status": "CANONICAL_INPUTS_VERIFIED",
   "contacts_consumed": 5,
   "segments_reconstructed": 9,
@@ -14,7 +14,8 @@
   "negative_z_violations": 0,
   "schema_valid_xyz_samples": 322,
   "deterministic_xyz_checksum": "6312b67a295f8ff9032e876b2fd895fede9a3282bfafe956215fe9fdb8cce618",
-  "human_visual_approval": "pending",
+  "human_visual_approval": "rejected",
+  "reviewer": "ChatGPT visual audit",
   "analytics_consumes_xyz": false,
   "real_3d_speed_available": false,
   "stage5c_started": false,

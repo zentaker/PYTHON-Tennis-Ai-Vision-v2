@@ -2,11 +2,11 @@
 
 - V1: rejected by human gate.
 - V2: rejected by human gate.
-- V3: `STAGE5B_V3_PLAYER_AWARE_CANDIDATE_READY_FOR_HUMAN_GATE`.
+- V3: `STAGE5B_V3_REJECTED_BY_HUMAN_GATE` (ChatGPT visual audit).
 - P1 contacts used: 5; flights: 9; bounces: 5.
 - Hypotheses: 3; ambiguous flights: 9.
 - Samples: 322 schema-valid; negative Z: 0.
-- Human visual approval: pending.
+- Human visual approval: rejected.
 - Analytics: blocked; no XYZ consumption.
 - Real speed: unavailable.
 - Stage 5C / Stage 6: not started / not started.
