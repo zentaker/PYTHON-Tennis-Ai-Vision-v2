@@ -14,6 +14,8 @@ converged without incompatible-depth alternatives, yielding nine resolved and ze
 ambiguous segments. Maximum bounce residual is 0.0178 m, negative Z is zero, and 314
 samples validate. Nine sensitivity reruns were executed.
 
+Canonical XYZ checksum: `acd75021f827211fc4dfb99b7e33af80e3564af0c3af654940ae022ae6d34483`.
+
 READY is not declared: p95 remains above the 24 px gate and the far P1 coordinates are
 physically implausible because homography extrapolation places them 6.9–8.0 m behind
 the far baseline. Human approval remains pending. Analytics, real speed, Stage 5C, and
