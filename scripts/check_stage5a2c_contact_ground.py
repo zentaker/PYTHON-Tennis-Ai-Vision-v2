@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "config/ground_plane_calibration"
-STATUS = "STAGE5A2C_CONTACT_GROUND_ANCHORS_PARTIAL"
+STATUS = "CONTACT_GROUND_ANCHORS_VISUAL_AND_GEOMETRIC_GATE_PASSED"
 
 
 def load(name: str) -> dict:
@@ -25,7 +25,7 @@ def main() -> int:
     anchors = load("stage5a2c_contact_anchor_report.json")
     uncertainty = load("stage5a2c_uncertainty.json")
     require(result["status"] == STATUS, "status mismatch")
-    require(result["human_stage5a2c_approval"] == "pending", "human gate mismatch")
+    require(result["human_stage5a2c_approval"] == "approved_static_anchors", "human gate mismatch")
     require(
         result["contact_frame_foot_visual_gate"] == "CONTACT_FRAME_FOOT_VISUAL_GATE_PASSED",
         "contact visual gate lost",

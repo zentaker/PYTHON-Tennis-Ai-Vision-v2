@@ -53,7 +53,7 @@ def reconstruct_v32(
     consumed = []
     for anchor in anchors:
         event_id = anchor.get("event_id")
-        if event_id in accepted and anchor.get("type") == "contact":
+        if event_id in accepted and "player_x_m" in anchor:
             static = accepted[event_id]
             dx = static["fused_x_m"] - anchor["player_x_m"]
             dy = static["fused_y_m"] - anchor["player_y_m"]
@@ -126,8 +126,8 @@ def reconstruct_v32(
                     - np.median(errors)
                 ),
                 "contact_residual_m": max(
-                    start_residual if start.get("type") == "contact" else 0,
-                    end_residual if end.get("type") == "contact" else 0,
+                start_residual if "player_x_m" in start else 0,
+                end_residual if "player_x_m" in end else 0,
                 ),
                 "bounce_residual_m": best.bounce_residual_m,
                 "ambiguity_status": "AMBIGUOUS" if ambiguous else "RESOLVED",
