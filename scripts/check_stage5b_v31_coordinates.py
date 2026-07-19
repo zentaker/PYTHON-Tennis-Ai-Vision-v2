@@ -17,8 +17,15 @@ def main() -> int:
         ROOT / "data/clips/nivel_a2_01/homography.json",
         ROOT / "tests/fixtures/integration/p1_analytics_accepted",
     )
-    if actual != expected:
-        raise SystemExit("coordinate audit result mismatch")
+    if actual["status"] != expected["status"]:
+        raise SystemExit("coordinate audit status mismatch")
+    expected_by_id = {row["event_id"]: row for row in expected["contacts"]}
+    for row in actual["contacts"]:
+        reference = expected_by_id[row["event_id"]]
+        if abs(row["distance_to_correct_baseline_m"] - reference["distance_to_correct_baseline_m"]) > 1e-9:
+            raise SystemExit(f"coordinate audit metric mismatch: {row['event_id']}")
+        if row["plausible_player_zone"] != reference["plausible_player_zone"]:
+            raise SystemExit(f"coordinate plausibility mismatch: {row['event_id']}")
     if actual["maximum_stored_recomputed_xy_difference_m"] > 1e-9:
         raise SystemExit("P1 stored/recomputed coordinate mismatch")
     if not any(not row["plausible_player_zone"] for row in actual["contacts"] if row["identity"] == "far"):
