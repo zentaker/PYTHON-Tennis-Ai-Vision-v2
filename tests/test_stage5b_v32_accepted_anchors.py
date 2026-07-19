@@ -66,4 +66,4 @@ def test_v32_real_result_contact_bounce_and_schema_contract() -> None:
     assert result["negative_z_violations"] == 0
     assert result["maximum_bounce_residual_m"] < 0.05
     assert result["schema_valid_samples"] == 314
-    assert result["status"] == "STAGE5B_V32_PARTIAL"
+    assert result["status"] == "STAGE5B_V32_REJECTED_BY_HUMAN_GATE"

@@ -54,6 +54,9 @@ def load_observations(path: Path) -> list[dict[str, Any]]:
         return [
             {"frame_id": int(row["frame_id"]), "timestamp_seconds": float(row["timestamp_seconds"])}
             for row in csv.DictReader(handle)
+            if row.get("x_smooth")
+            and row.get("y_smooth")
+            and row.get("is_outlier", "false").lower() != "true"
         ]
 
 
@@ -68,7 +71,10 @@ def build_segment_topology(
             row
             for row in observations
             if start["timestamp_seconds"] <= row["timestamp_seconds"]
-            and (row["timestamp_seconds"] < end["timestamp_seconds"] or index == 9)
+            and (
+                row["timestamp_seconds"] < end["timestamp_seconds"]
+                or (index == 9 and row["timestamp_seconds"] <= end["timestamp_seconds"])
+            )
         ]
         overlap = assigned.intersection(row["frame_id"] for row in selected)
         if overlap:

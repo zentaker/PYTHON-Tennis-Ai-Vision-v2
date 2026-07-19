@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
 CONFIG = ROOT / "config/stage5b_v3"
-STATUS = "STAGE5B_V32_PARTIAL"
+STATUS = "STAGE5B_V32_REJECTED_BY_HUMAN_GATE"
 
 
 def require(condition: bool, message: str) -> None:
@@ -21,7 +21,7 @@ def load(name: str) -> dict:
 def main() -> int:
     result = load("stage5b_v32_result.json")
     anchors = load("stage5b_v32_anchor_v4_report.json")
-    require(result["status"] == STATUS and result["human_stage5b_v32_approval"] == "pending", "gate mismatch")
+    require(result["status"] == STATUS and result["human_stage5b_v32_approval"] == "rejected", "gate mismatch")
     require(result["contacts_consumed"] == 5 and result["observations_consumed"] == 314, "input contract mismatch")
     require(result["observations_rejected"] == 0 and result["negative_z_violations"] == 0, "invalid filtering or Z")
     require(result["schema_valid_samples"] == 314 and len(result["checksum"]) == 64, "schema/determinism mismatch")
