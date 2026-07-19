@@ -30,3 +30,18 @@ uv run python scripts/run_p1_analytics_wiring.py \
 ```
 
 The execution made zero GPU or cloud calls and generated zero spend.
+
+## Pre-merge hardening
+
+Stage 4 input now fails closed. Only a root event list or an object containing exactly
+one `events` or `narrative_events` list is accepted. Malformed roots, non-object event
+items, missing or empty identifiers, conflicting `id`/`event_id` values, and duplicate
+event identifiers are rejected with file and event-index context; duplicates are never
+silently overwritten.
+
+`scripts/check_p1_analytics_integration.py` remains an archival audit of the historical
+coexistence branch. The active, branch-agnostic validation is
+`scripts/check_p1_analytics_functional_wiring.py`; it verifies the recorded result,
+fixture hashes, package isolation, five-record reproduction, JSON Schema validity, and
+the deterministic checksum. It runs in the existing CI workflow. Hardening used zero
+GPU calls, zero cloud calls, and zero spend.

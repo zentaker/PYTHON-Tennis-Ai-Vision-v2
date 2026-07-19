@@ -41,6 +41,9 @@ jobs:
       - name: Analytics tests
         run: uv run --with "jsonschema>=4.23,<5" pytest tests/test_analytics_*.py
 
+      - name: Validate P1 Analytics functional wiring
+        run: uv run python scripts/check_p1_analytics_functional_wiring.py
+
       - name: Ruff
         run: uv run ruff check .
 

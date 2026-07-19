@@ -17,3 +17,12 @@
 The reduced regression fixture is
 `tests/fixtures/integration/p1_analytics_accepted/`. It contains only machine-readable
 data needed to reproduce the five-event wiring and records its source checksums.
+
+Pre-merge hardening makes Stage 4 ingestion fail closed: malformed structures and
+duplicate, missing, empty, or conflicting event IDs are rejected instead of normalized
+or overwritten. The historical `scripts/check_p1_analytics_integration.py` is retained
+as an archival audit of its original branch. Active validation is branch-agnostic via
+`scripts/check_p1_analytics_functional_wiring.py` and the existing CI job. The checker
+reproduces and schema-validates all five records and verifies every fixture-manifest
+hash and the deterministic output checksum. GPU calls, cloud calls, and spend remain
+zero. Stage 5B state is unchanged.
