@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["event_id", "frame_id", "timestamp_seconds", "identity", "track_id", "contact_anchor_status", "temporal_motion_status", "selected_foot", "foot_pixel", "fused_x_m", "fused_y_m", "calibration_ci50", "calibration_ci95", "total_ci50", "total_ci95", "uncertainty_x_m", "uncertainty_y_m", "calibration_spread_m", "foot_selection_spread_m", "tracker_cycle_closure_px", "line_fit_median_px", "line_fit_p95_px", "human_visual_approval", "warnings", "provenance"],
+  "properties": {
+    "event_id": {"type": "string"},
+    "frame_id": {"type": "integer"},
+    "timestamp_seconds": {"type": "number"},
+    "identity": {"enum": ["near", "far"]},
+    "track_id": {"type": "string"},
+    "contact_anchor_status": {"const": "accepted_observation"},
+    "temporal_motion_status": {"enum": ["validated", "partial", "unresolved", "insufficient_chain"]},
+    "selected_foot": {"type": "string"},
+    "foot_pixel": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}},
+    "fused_x_m": {"type": "number"}, "fused_y_m": {"type": "number"},
+    "calibration_ci50": {"type": "array"}, "calibration_ci95": {"type": "array"},
+    "total_ci50": {"type": "array"}, "total_ci95": {"type": "array"},
+    "uncertainty_x_m": {"type": "number", "exclusiveMinimum": 0},
+    "uncertainty_y_m": {"type": "number", "exclusiveMinimum": 0},
+    "calibration_spread_m": {"type": "number", "minimum": 0},
+    "foot_selection_spread_m": {"type": "number", "minimum": 0},
+    "tracker_cycle_closure_px": {"type": "number", "minimum": 0},
+    "line_fit_median_px": {"type": "number", "minimum": 0},
+    "line_fit_p95_px": {"type": "number", "minimum": 0},
+    "human_visual_approval": {"const": "approved"},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "provenance": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}
