@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "source": "reduced real Level A2 Stage 3 and Stage 5A.1 inputs",
+  "coordinate_system": "court_center_right_handed_metres",
+  "timing": "variable_frame_rate",
+  "frame_range": [139, 463],
+  "files": {
+    "camera_model_refined.json": "b091dac99a0320fd1bc451234258c2c1b2d36676867e5f030480e7ad4092fd2a",
+    "smoothed_trajectory_real.csv": "4763f151af71b1418ae15391cf728850012272290a3160a66cdf0e9e72e70663"
+  }
+}
