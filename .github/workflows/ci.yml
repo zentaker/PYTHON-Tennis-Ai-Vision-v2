@@ -95,7 +95,17 @@ jobs:
         run: uv run python scripts/check_stage5b_v34_contact_ray.py
 
       - name: Stage 5B v3.5 measurement and observation-conditioned tests
-        run: uv run pytest tests/test_stage5b_v35_*.py
+        run: |
+          uv run python scripts/run_stage5b_v35_observation_conditioned.py \
+            --ball-track tests/fixtures/stage5b_v3/smoothed_trajectory_real.csv \
+            --stage4-events data/clips/nivel_a2_01/manual_annotation.json \
+            --p1-poses tests/fixtures/integration/p1_analytics_accepted/selected_player_pose.jsonl \
+            --p1-contact-audit tests/fixtures/integration/p1_analytics_accepted/selected_contact_audit.json \
+            --camera tests/fixtures/stage5b_v3/camera_model_refined.json \
+            --anchors-v4 config/ground_plane_calibration/player_contact_ground_anchors_v4.jsonl \
+            --output-dir .artifacts/stage5b-v35-observation-conditioned/output \
+            --seed 42 --strict
+          uv run pytest tests/test_stage5b_v35_*.py
 
       - name: Validate Stage 5B v3.5 observation-conditioned evidence
         run: uv run python scripts/check_stage5b_v35_observation_conditioned.py

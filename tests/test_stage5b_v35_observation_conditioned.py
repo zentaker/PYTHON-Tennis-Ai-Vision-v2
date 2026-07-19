@@ -19,8 +19,7 @@ def test_body_contact_is_anchor_linked_and_not_uncertainty_reach() -> None:
     )
     anchor = json.loads(
         (
-            ROOT
-            / ".artifacts/stage5b-v32-accepted-anchors/output/player_contact_ground_anchors_v4.jsonl"
+                ROOT / "config/ground_plane_calibration/player_contact_ground_anchors_v4.jsonl"
         )
         .read_text()
         .splitlines()[0]
