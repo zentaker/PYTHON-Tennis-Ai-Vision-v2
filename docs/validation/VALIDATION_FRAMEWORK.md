@@ -149,6 +149,12 @@ Humano.
 
 ## Stage 5 - Validacion
 
+Stage 5B v3.2 publica siete visuales y reportes serializados. Su gate inicial exige
+mediana <= 8 px, p95 <= 24 px, cinco anchors consumidos, botes dentro de tolerancia,
+cero Z negativa, incertidumbre propagada y determinismo. El resultado actual es
+parcial porque p95 y residual máximo de contacto fallan; la revisión humana sigue
+pendiente.
+
 ### Criterios de exito
 
 - Botes del lado correcto.

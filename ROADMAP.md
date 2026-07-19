@@ -129,6 +129,11 @@ El gate humano posterior aprobó los cinco anchors estáticos y mantuvo la valid
 movimiento temporal como parcial. Stage 5B v3.2 puede consumir coordenadas estáticas e
 incertidumbre total, nunca trayectorias temporales del jugador.
 
+Stage 5B v3.2 consumió los cinco anchors v4 y 314 observaciones en CPU. El resultado
+es `STAGE5B_V32_PARTIAL`: mediana 7.0635 px, p95 27.4726 px, residual máximo de
+contacto 8.3071 m y de bote 0.01782 m. El gate humano está pendiente y Analytics
+continúa bloqueado.
+
 ### Stage 5C - Vista superior derivada
 
 Renderizar X,Y de la trayectoria 3D aprobada.

@@ -1,5 +1,12 @@
 # Last result
 
+- Stage 5B v3.2: `STAGE5B_V32_PARTIAL`; human approval pending.
+- Consumed 5/5 accepted anchors and 314 observations; 15 downweighted, zero rejected.
+- Nine resolved segments; median/p95 reprojection 7.0635/27.4726 px.
+- Maximum contact/bounce residual 8.3071/0.01782 m; zero negative-Z violations.
+- Blocker: `P95_REPROJECTION_AND_MAXIMUM_CONTACT_RESIDUAL`.
+- Analytics remains blocked; cloud/GPU/spend: 0/0/0.
+
 - Status: `STAGE5A2B_REJECTED_BY_HUMAN_GATE_TRACKER_INVALID`.
 - Contact-frame visual gate passed 5/5; near/far identity correct, zero visible switches.
 - Temporal validation rejected: 143.144 m/s is optical-flow drift, not real movement.

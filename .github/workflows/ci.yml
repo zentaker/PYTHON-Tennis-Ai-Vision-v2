@@ -76,6 +76,12 @@ jobs:
       - name: Validate Stage 5A.2C contact anchors
         run: uv run python scripts/check_stage5a2c_contact_ground.py
 
+      - name: Stage 5B v3.2 accepted-anchor tests
+        run: uv run --with "jsonschema>=4.23,<5" pytest tests/test_stage5b_v32_*.py
+
+      - name: Validate Stage 5B v3.2 accepted-anchor evidence
+        run: uv run python scripts/check_stage5b_v32_accepted_anchors.py
+
       - name: Ruff
         run: uv run ruff check .
 
@@ -195,6 +201,29 @@ jobs:
             config/ground_plane_calibration/stage5a2c_tracking_failures.json
             config/ground_plane_calibration/stage5a2c_contact_anchor_report.json
             config/ground_plane_calibration/stage5a2c_uncertainty.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+
+      - name: Publish Stage 5B v3.2 accepted-anchor evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage5b-v32-accepted-anchors-evidence
+          path: |
+            docs/validation/assets/stage5b_v32_reprojection_contact_sheet.jpg
+            docs/validation/assets/stage5b_v32_top_view.jpg
+            docs/validation/assets/stage5b_v32_side_view.jpg
+            docs/validation/assets/stage5b_v32_contact_anchor_audit.jpg
+            docs/validation/assets/stage5b_v32_bounce_audit.jpg
+            docs/validation/assets/stage5b_v32_hypothesis_comparison.jpg
+            docs/validation/assets/stage5b_v32_uncertainty.jpg
+            docs/validation/STAGE5B_V32_VISUAL_AUDIT.md
+            config/stage5b_v3/stage5b_v32_result.json
+            config/stage5b_v3/stage5b_v32_anchor_v4_report.json
+            config/stage5b_v3/stage5b_v32_reprojection_report.json
+            config/stage5b_v3/stage5b_v32_contact_residuals.json
+            config/stage5b_v3/stage5b_v32_bounce_residuals.json
+            config/stage5b_v3/stage5b_v32_uncertainty.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 6

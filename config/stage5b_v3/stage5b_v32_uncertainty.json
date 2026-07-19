@@ -1,0 +1,7 @@
+{
+  "anchor_uncertainty_consumed": true,
+  "temporal_player_positions_consumed": false,
+  "correlated_geometry_floor_used": true,
+  "xyz_sample_uncertainty_propagated": true,
+  "deterministic_monte_carlo_samples_per_anchor": 512
+}

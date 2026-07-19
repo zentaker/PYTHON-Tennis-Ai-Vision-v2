@@ -1,0 +1,14 @@
+{
+  "path": ".artifacts/stage5b-v32-accepted-anchors/output/player_contact_ground_anchors_v4.jsonl",
+  "anchors": 5,
+  "contact_anchor_status": "accepted_observation",
+  "events": {
+    "ev_001": {"temporal_motion_status": "partial", "total_ci95": [[0.049099650903891665, -12.208369892239716], [2.123615910730468, -10.12263794187871]]},
+    "ev_003": {"temporal_motion_status": "unresolved", "total_ci95": [[-5.679070874828477, 18.276029701513565], [-2.59186436701388, 21.009241896149426]]},
+    "ev_005": {"temporal_motion_status": "partial", "total_ci95": [[0.1803874791457162, -14.28140300908508], [1.760231468658337, -12.638989909114716]]},
+    "ev_007": {"temporal_motion_status": "insufficient_chain", "total_ci95": [[-6.371672757557556, 17.09398219348976], [-3.1402039383026215, 20.042719010168472]]},
+    "ev_009": {"temporal_motion_status": "unresolved", "total_ci95": [[4.255529868162415, -11.294422972023447], [5.835085868161138, -9.787545020165771]]}
+  },
+  "correlated_calibration_uncertainty_floor_m": {"near": 0.4, "far": 0.75},
+  "movement_added_as_measurement_uncertainty": false
+}
