@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import csv
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -31,7 +32,7 @@ from src.ground_plane_calibration.player_ground_position import (
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / ".artifacts/stage5a2-extended-ground-plane/output"
 ASSETS = ROOT / "docs/validation/assets"
-VIDEO = Path("/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2/data/clips/nivel_a2_01/source.mp4")
+VIDEO = ROOT / "data/clips/nivel_a2_01/source.mp4"
 H_PATH = ROOT / "data/clips/nivel_a2_01/homography.json"
 CORNERS_PATH = ROOT / "data/clips/nivel_a2_01/court_corners_pixel.json"
 CAMERA_PATH = ROOT / "tests/fixtures/stage5b_v3/camera_model_refined.json"
@@ -118,10 +119,45 @@ def save_jpg(name: str, image: np.ndarray) -> None:
     shutil.copy2(path, ASSETS / name)
 
 
-def main() -> None:
+def parser() -> argparse.ArgumentParser:
+    command = argparse.ArgumentParser(description=__doc__)
+    command.add_argument("--video", type=Path, required=True)
+    command.add_argument("--homography", type=Path, default=H_PATH)
+    command.add_argument("--court-corners", type=Path, default=CORNERS_PATH)
+    command.add_argument("--camera", type=Path, default=CAMERA_PATH)
+    command.add_argument("--p1-poses", type=Path, default=POSE_PATH)
+    command.add_argument("--p1-tracks", type=Path, default=TRACK_PATH)
+    command.add_argument("--p1-contact-audit", type=Path, default=AUDIT_PATH)
+    command.add_argument("--output-dir", type=Path, default=OUTPUT)
+    command.add_argument("--seed", type=int, default=20260719)
+    command.add_argument("--temporal-radius", type=int, default=30)
+    command.add_argument("--strict", action="store_true")
+    return command
+
+
+def main(argv: list[str] | None = None) -> None:
+    global VIDEO, H_PATH, CORNERS_PATH, CAMERA_PATH, POSE_PATH, TRACK_PATH, AUDIT_PATH, OUTPUT
+    args = parser().parse_args(argv)
+    VIDEO, H_PATH, CORNERS_PATH, CAMERA_PATH = (
+        args.video,
+        args.homography,
+        args.court_corners,
+        args.camera,
+    )
+    POSE_PATH, TRACK_PATH, AUDIT_PATH, OUTPUT = (
+        args.p1_poses,
+        args.p1_tracks,
+        args.p1_contact_audit,
+        args.output_dir,
+    )
+    required = (VIDEO, H_PATH, CORNERS_PATH, CAMERA_PATH, POSE_PATH, TRACK_PATH, AUDIT_PATH)
+    missing = [str(path) for path in required if not path.is_file()]
+    if missing:
+        raise SystemExit(f"missing required inputs: {missing}")
     OUTPUT.mkdir(parents=True, exist_ok=True)
     ASSETS.mkdir(parents=True, exist_ok=True)
     config = json.loads((ROOT / "config/ground_plane_calibration/stage5a2.json").read_text())
+    config["seed"] = args.seed
     homography_payload = json.loads(H_PATH.read_text())
     initial = np.asarray(homography_payload["H_court_to_pixel"], dtype=float)
     corners = json.loads(CORNERS_PATH.read_text())["court_corners_pixel"]
