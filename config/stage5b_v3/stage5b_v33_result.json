@@ -1,7 +1,7 @@
 {
   "ambiguous_physically_valid_segments": 0,
   "analytics_consumes_xyz": false,
-  "blocker": "CONTACT_VOLUME_ENDPOINT_FEASIBILITY_FAILED",
+  "blocker": "PHASE_A_REUSED_REJECTED_V32_ENDPOINTS",
   "bounces_mapped": 5,
   "canonical_events": 10,
   "checksum": "46593492b7c99f33a34505579527a8deec10014fbef982f8c7a3b0c0265d399c",
@@ -25,7 +25,11 @@
   "pr_draft": true,
   "resolved_physically_valid_segments": 0,
   "spend": 0,
-  "status": "STAGE5B_V33_ENDPOINT_FEASIBILITY_FAILED",
+  "status": "STAGE5B_V33_PHASE_A_METHOD_REJECTED",
+  "stage5b_v33_topology_gate": "STAGE5B_V33_TOPOLOGY_GATE_PASSED",
+  "stage5b_v33_phase_a_human_gate": "STAGE5B_V33_PHASE_A_METHOD_REJECTED",
+  "contact_endpoint_feasibility": "CONTACT_ENDPOINT_FEASIBILITY_NOT_YET_DETERMINED",
+  "reviewer": "ChatGPT artifact and implementation audit",
   "topology_passed": 9,
   "topology_segments": 9,
   "worst_frames_published": 20

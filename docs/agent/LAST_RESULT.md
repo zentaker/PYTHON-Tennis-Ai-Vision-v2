@@ -1,5 +1,9 @@
 # Last result
 
+- V3.3 topology gate: `STAGE5B_V33_TOPOLOGY_GATE_PASSED`.
+- V3.3 Phase A method: `STAGE5B_V33_PHASE_A_METHOD_REJECTED`.
+- Contact feasibility remains undetermined because v3.3 reused rejected v3.2 endpoints.
+
 - V3.3 topology: 10 canonical events, 9/9 flights, 314 observations without overlap.
 - Contact volumes: 5 constructed, 0 viable; maximum excess 3.86798 m.
 - Bounce endpoints: 5/5 feasible; maximum residual 0.01045 m.

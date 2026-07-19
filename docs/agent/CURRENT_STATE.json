@@ -3,7 +3,7 @@
   "branch": "agent/stage5b-v3-player-aware",
   "base_sha": "ecff19f4d131fd251ac2ee32b5fc0b84ae558811",
   "task": "Build Stage 5B v3 player-aware XYZ reconstruction candidate",
-  "status": "STAGE5B_V33_ENDPOINT_FEASIBILITY_FAILED",
+  "status": "STAGE5B_V33_PHASE_A_METHOD_REJECTED",
   "stages": {
     "stage_1_to_5a1": "VALIDATED",
     "stage_5b_v1": "REJECTED_BY_HUMAN_GATE",
@@ -11,7 +11,7 @@
     "stage_5b_v3": "REJECTED_BY_HUMAN_GATE",
     "stage_5b_v31": "REJECTED_BY_HUMAN_GATE",
     "stage_5b_v32": "REJECTED_BY_HUMAN_GATE",
-    "stage_5b_v33": "ENDPOINT_FEASIBILITY_FAILED",
+    "stage_5b_v33": "TOPOLOGY_PASSED_PHASE_A_METHOD_REJECTED",
     "stage_5a2": "REJECTED_BY_HUMAN_GATE_EVIDENCE_INSUFFICIENT",
     "stage_5a2b": "REJECTED_BY_HUMAN_GATE_TRACKER_INVALID",
     "stage_5a2c": "STATIC_ANCHORS_APPROVED_TEMPORAL_PARTIAL",
@@ -32,6 +32,6 @@
     "real_3d_speed_available": false
   },
   "tests": {"cloud_calls": 0, "gpu_calls": 0, "spend_generated": 0},
-  "blocker": "CONTACT_VOLUME_ENDPOINT_FEASIBILITY_FAILED",
-  "next_action": "ChatGPT Stage 5B v3.3 visual audit."
+  "blocker": "CONTACT_ENDPOINT_FEASIBILITY_NOT_YET_DETERMINED",
+  "next_action": "Run v3.4 contact-ray and shared-node Phase A from primary evidence."
 }

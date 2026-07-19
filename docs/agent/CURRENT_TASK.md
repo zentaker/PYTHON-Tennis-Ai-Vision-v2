@@ -1,5 +1,5 @@
 # Current task
 
-Audit Stage 5B v3.3 Phase A evidence. Topology passed, but all five v3.2 contact
-endpoints fall outside feasible player/racket volumes, so Phase B was not executed.
-Temporal player motion remains excluded and Analytics remains blocked.
+Solve Stage 5B v3.4 contact-ray feasibility from primary pixels, camera, pose, anchors,
+and shared event nodes without reading any prior XYZ. V3.3 topology remains approved;
+its Phase A method was rejected. Analytics remains blocked.

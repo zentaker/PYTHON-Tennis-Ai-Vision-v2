@@ -2,6 +2,9 @@
 
 `human_stage5b_v33_approval: pending`
 
+Human method gate: `STAGE5B_V33_PHASE_A_METHOD_REJECTED`.
+Topology gate: `STAGE5B_V33_TOPOLOGY_GATE_PASSED`.
+
 Phase A reconstructed the canonical timeline and exact nine-flight topology, then
 tested endpoints before full optimization. All five static anchors remain approved,
 all five bounces are feasible, and all five contact frames are included. None of the
@@ -12,3 +15,8 @@ The artifact includes the 20 worst real reprojection frames from v3.2, explicit
 segment endpoints, ground-anchor/contact-volume separation, physical hypothesis
 status, and the normalized objective-family audit. This evidence is pending human
 review and does not approve Stage 5B.
+
+The 0/5 result does not determine contact feasibility: Phase A loaded rejected v3.2
+XYZ endpoints, used an axis-aligned box whose ray and pose inputs were metadata, and
+audited only outgoing flights. Phase B correctly remained unexecuted. Canonical
+topology, five static anchors, and five bounce constraints remain approved.

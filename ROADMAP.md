@@ -144,6 +144,11 @@ V3.3 confirmó 10 eventos y 9/9 vuelos topológicamente correctos, pero Phase A 
 3.86798 m. Los cinco botes pasan. Phase B no se ejecutó; XYZ y Analytics siguen
 bloqueados hasta corregir la factibilidad física de endpoints.
 
+La auditoría humana aprobó la topología v3.3 pero rechazó su método Phase A: reutilizó
+endpoints XYZ v3.2 y un box axis-aligned sin imponer rayos. La factibilidad de contacto
+queda indeterminada. V3.4 debe resolver nodos nuevos desde píxeles, cámara, pose y
+anchors, compartiendo cada nodo entre vuelos adyacentes.
+
 ### Stage 5C - Vista superior derivada
 
 Renderizar X,Y de la trayectoria 3D aprobada.
