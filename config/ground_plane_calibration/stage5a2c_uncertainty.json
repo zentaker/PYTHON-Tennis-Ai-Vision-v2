@@ -1,0 +1,5 @@
+{
+  "executed_sources": ["real accepted line segments", "real line-family subsets", "leave-one-family-out", "court corners", "support-foot selection", "adjacent sequential tracking", "contact-local spread", "canonical orientation"],
+  "maximum_calibration_spread_m": 0.1583280539255172,
+  "radial_distortion": "RADIAL_DISTORTION_NOT_IDENTIFIABLE_FROM_CURRENT_INPUTS"
+}

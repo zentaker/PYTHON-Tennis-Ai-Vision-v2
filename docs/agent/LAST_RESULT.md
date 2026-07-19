@@ -3,6 +3,9 @@
 - Status: `STAGE5A2B_REJECTED_BY_HUMAN_GATE_TRACKER_INVALID`.
 - Contact-frame visual gate passed 5/5; near/far identity correct, zero visible switches.
 - Temporal validation rejected: 143.144 m/s is optical-flow drift, not real movement.
+- Stage 5A.2C: 61 real segments, 15 fitted families, line median/p95 2.484/6.414 px.
+- Adjacent sequential tracking attempted 208 frames: 203 valid, five rejected.
+- Five anchors: ev_001/005/007 accepted; ev_003/009 unresolved. Status `PARTIAL`.
 - 137 real LSD segments; 61 supported / 76 rejected; nine painted model families supported.
 - Eight correlated calibration families; 305 frames-evento across five ±30 windows.
 - ev_003/ev_007 feet are visually on ground at 7.514/6.431 m behind baseline, but both

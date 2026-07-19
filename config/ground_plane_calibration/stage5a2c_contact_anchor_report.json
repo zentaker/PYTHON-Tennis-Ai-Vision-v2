@@ -1,0 +1,12 @@
+{
+  "anchors_produced": 5,
+  "accepted": 3,
+  "unresolved": 2,
+  "events": {
+    "ev_001": {"baseline_distance_median": -0.702178354666831, "baseline_distance_ci95": [-0.7268086675322609, -0.6941211065143043], "evidence_decision": "accepted_observation"},
+    "ev_003": {"baseline_distance_median": 7.720632213014595, "baseline_distance_ci95": [7.641330091663032, 7.84593243950091], "evidence_decision": "unresolved"},
+    "ev_005": {"baseline_distance_median": 1.6346951145665685, "baseline_distance_ci95": [1.6067432501425403, 1.645671739751701], "evidence_decision": "accepted_observation"},
+    "ev_007": {"baseline_distance_median": 6.631783236432879, "baseline_distance_ci95": [6.546900115919352, 6.770914205158569], "evidence_decision": "accepted_observation"},
+    "ev_009": {"baseline_distance_median": -1.2591276804224822, "baseline_distance_ci95": [-1.2890124289525364, -1.2454707117995447], "evidence_decision": "unresolved"}
+  }
+}

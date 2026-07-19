@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "config/ground_plane_calibration"
-STATUS = "STAGE5A2B_TEMPORAL_GROUND_VALIDATION_PARTIAL"
+STATUS = "STAGE5A2B_REJECTED_BY_HUMAN_GATE_TRACKER_INVALID"
 
 
 def require(value: bool, message: str) -> None:
@@ -25,7 +25,7 @@ def main() -> int:
     players = load("stage5a2b_player_validation_report.json")
     uncertainty = load("stage5a2b_uncertainty.json")
     require(result["status"] == STATUS, "status mismatch")
-    require(result["human_visual_approval"] == "pending", "human approval is not pending")
+    require(result["human_visual_approval"] == "rejected", "human tracker rejection missing")
     require(result["pr_draft"] is True, "PR draft contract lost")
     require(result["xyz_executed"] is False, "Stage 5B XYZ must not execute")
     require(lines["image_line_segments_detected"] > 0, "no actual image segments")

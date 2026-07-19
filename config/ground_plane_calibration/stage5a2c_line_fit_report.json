@@ -1,0 +1,9 @@
+{
+  "accepted_segments_used_in_optimization": 61,
+  "valid_calibration_families": 15,
+  "ensemble_line_median_px": 2.484421015907176,
+  "ensemble_line_p95_px": 6.414381445493297,
+  "radial_distortion": "RADIAL_DISTORTION_NOT_IDENTIFIABLE_FROM_CURRENT_INPUTS",
+  "actual_line_constrained_fitting": true,
+  "accepted_segments_influence_output": true
+}

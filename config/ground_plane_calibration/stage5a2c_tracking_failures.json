@@ -1,0 +1,15 @@
+{
+  "temporal_frames_attempted": 208,
+  "valid_temporal_frames": 203,
+  "invalid_frames_rejected": 5,
+  "invalid_spikes_excluded_from_speed": true,
+  "adjacent_only": true,
+  "bbox_and_features_updated": true,
+  "events": {
+    "ev_001": {"longest_valid_chain": 30, "p95_speed_mps": 4.053814182801099, "maximum_valid_speed_mps": 4.997642679285653},
+    "ev_003": {"longest_valid_chain": 30, "p95_speed_mps": 13.021195301807538, "maximum_valid_speed_mps": 13.20618013461364},
+    "ev_005": {"longest_valid_chain": 30, "p95_speed_mps": 3.3588011850464468, "maximum_valid_speed_mps": 3.377161617835138},
+    "ev_007": {"longest_valid_chain": 4, "p95_speed_mps": 3.96712560645713, "maximum_valid_speed_mps": 3.9800610753197723},
+    "ev_009": {"longest_valid_chain": 23, "p95_speed_mps": 12.364031267409986, "maximum_valid_speed_mps": 12.788659609278922}
+  }
+}

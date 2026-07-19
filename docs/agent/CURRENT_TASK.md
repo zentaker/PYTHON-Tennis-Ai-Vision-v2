@@ -1,5 +1,5 @@
 # Current task
 
-Build Stage 5A.2C after the five contact-frame feet passed visual review and the Stage
-5A.2B temporal tracker was rejected. Use line-constrained fitting and adjacent-frame
-sequential tracking. Do not rerun XYZ; downstream stages remain blocked.
+Audit Stage 5A.2C contact-ground evidence. Five anchors exist; ev_001/005/007 are
+accepted and ev_003/009 remain unresolved on contact-local speed p95. Do not rerun XYZ;
+downstream stages remain blocked.

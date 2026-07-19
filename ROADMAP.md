@@ -121,6 +121,10 @@ Stage 5A.2B procesó frames reales y quedó
 de contacto pasó, incluidas posiciones far de 6–8 m; el tracker temporal fue rechazado
 por drift imposible. Stage 5A.2C debe usar flujo secuencial entre frames adyacentes.
 
+Stage 5A.2C ajustó 15 familias con 61 segmentos reales y rastreó secuencialmente frames
+adyacentes. Produjo cinco anchors; ev_001/005/007 están accepted y ev_003/009 unresolved
+por p95 local. Estado `STAGE5A2C_CONTACT_GROUND_ANCHORS_PARTIAL`; XYZ sigue bloqueado.
+
 ### Stage 5C - Vista superior derivada
 
 Renderizar X,Y de la trayectoria 3D aprobada.

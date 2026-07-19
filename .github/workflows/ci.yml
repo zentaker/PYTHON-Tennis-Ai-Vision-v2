@@ -70,6 +70,12 @@ jobs:
       - name: Validate Stage 5A.2B temporal evidence
         run: uv run python scripts/check_stage5a2b_temporal_ground.py
 
+      - name: Stage 5A.2C contact ground tests
+        run: uv run pytest tests/test_stage5a2c_*.py
+
+      - name: Validate Stage 5A.2C contact anchors
+        run: uv run python scripts/check_stage5a2c_contact_ground.py
+
       - name: Ruff
         run: uv run ruff check .
 
@@ -167,6 +173,28 @@ jobs:
             config/ground_plane_calibration/stage5a2b_calibration_cross_validation.json
             config/ground_plane_calibration/stage5a2b_player_validation_report.json
             config/ground_plane_calibration/stage5a2b_uncertainty.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+
+      - name: Publish Stage 5A.2C contact ground evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage5a2c-contact-ground-evidence
+          path: |
+            docs/validation/assets/stage5a2c_line_fit_families.jpg
+            docs/validation/assets/stage5a2c_contact_frames.jpg
+            docs/validation/assets/stage5a2c_local_tracking_sequences.jpg
+            docs/validation/assets/stage5a2c_tracking_failures.jpg
+            docs/validation/assets/stage5a2c_contact_ground_top_view.jpg
+            docs/validation/assets/stage5a2c_far_contact_evidence.jpg
+            docs/validation/assets/stage5a2c_uncertainty_decomposition.jpg
+            docs/validation/STAGE5A2C_CONTACT_GROUND_VISUAL_AUDIT.md
+            config/ground_plane_calibration/stage5a2c_result.json
+            config/ground_plane_calibration/stage5a2c_line_fit_report.json
+            config/ground_plane_calibration/stage5a2c_tracking_failures.json
+            config/ground_plane_calibration/stage5a2c_contact_anchor_report.json
+            config/ground_plane_calibration/stage5a2c_uncertainty.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 6

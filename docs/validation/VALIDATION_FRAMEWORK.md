@@ -18,6 +18,15 @@ paths/fixed far-distance gate, determinism, and stable physical continuity. Diag
 speed is used only to reject drift. Current status is `PARTIAL`: impossible temporal
 jumps leave far observations unresolved. Human approval is pending and XYZ is blocked.
 
+## Stage 5A.2C contact ground anchors
+
+READY requires real accepted segments to affect at least three identifiable fitted
+families; adjacent-only forward/backward tracking with updated bbox/features/foot and
+RANSAC; five visually approved contact anchors; zero identity/ground failures; PTS-based
+local p95/max speed <=12/18 m/s; rejected invalid spikes; real uncertainty; no distance
+cap or clipping; and no XYZ execution. Current status is `PARTIAL` because ev_003 and
+ev_009 fail the local p95 speed gate. Human approval is pending.
+
 Regla fuerte: los criterios de exito se escriben antes de iniciar cada etapa. Si un criterio resulta inadecuado, no se mueve la meta silenciosamente; se cierra la etapa y se reabre con criterios nuevos.
 
 ## Stage 0 - Validacion
