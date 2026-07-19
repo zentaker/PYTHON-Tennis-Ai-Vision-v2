@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "player_aware_xyz.schema.json",
+  "title": "Stage 5B v3 player-aware XYZ sample",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "frame_id", "timestamp_seconds", "x_m", "y_m", "z_m", "confidence",
+    "observed_or_interpolated", "segment_id", "event_context",
+    "reprojection_error_px", "observed_pixel_x", "observed_pixel_y",
+    "reprojected_pixel_x", "reprojected_pixel_y", "uncertainty_x_m", "uncertainty_y_m",
+    "uncertainty_z_m", "constraint_sources", "player_identity",
+    "contact_event_id", "hypothesis_id", "ambiguity_status", "warnings",
+    "coordinate_unit"
+  ],
+  "properties": {
+    "frame_id": {"type": "integer", "minimum": 0},
+    "timestamp_seconds": {"type": "number"},
+    "x_m": {"type": "number"},
+    "y_m": {"type": "number"},
+    "z_m": {"type": "number", "minimum": -0.000001},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "observed_or_interpolated": {"enum": ["observed", "interpolated"]},
+    "segment_id": {"type": "string", "minLength": 1},
+    "event_context": {"type": "string", "minLength": 1},
+    "reprojection_error_px": {"type": "number", "minimum": 0},
+    "observed_pixel_x": {"type": "number"},
+    "observed_pixel_y": {"type": "number"},
+    "reprojected_pixel_x": {"type": "number"},
+    "reprojected_pixel_y": {"type": "number"},
+    "uncertainty_x_m": {"type": "number", "minimum": 0},
+    "uncertainty_y_m": {"type": "number", "minimum": 0},
+    "uncertainty_z_m": {"type": "number", "minimum": 0},
+    "constraint_sources": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "player_identity": {"enum": ["near", "far", "unknown"]},
+    "contact_event_id": {"type": ["string", "null"]},
+    "hypothesis_id": {"type": "string", "minLength": 1},
+    "ambiguity_status": {"enum": ["RESOLVED", "AMBIGUOUS"]},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "coordinate_unit": {"const": "metres"}
+  }
+}

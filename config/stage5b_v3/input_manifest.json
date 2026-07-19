@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "status": "CANONICAL_INPUTS_VERIFIED",
+  "inputs": [
+    {"path": "tests/fixtures/stage5b_v3/camera_model_refined.json", "type": "Stage 5A.1 refined pinhole camera", "sha256": "b091dac99a0320fd1bc451234258c2c1b2d36676867e5f030480e7ad4092fd2a", "acceptance": "READY_FOR_STAGE_5B", "unit": "metres/pixels", "coordinates": "court_center_right_handed", "timestamps": "not_applicable", "dependency": "Stage 5A.1", "use": "projection and pixel rays"},
+    {"path": "data/clips/nivel_a2_01/homography.json", "type": "Stage 1 homography", "sha256": "5ad0c3a78e4c90c8ea11045a400aa207df8afc3692a0a0b783220f453bcbfb54", "acceptance": "accepted", "unit": "metres/pixels", "coordinates": "court plane Z=0", "timestamps": "not_applicable", "dependency": "Stage 1", "use": "ground-plane audit"},
+    {"path": "tests/fixtures/stage5b_v3/smoothed_trajectory_real.csv", "type": "reduced real Stage 3 trajectory", "sha256": "4763f151af71b1418ae15391cf728850012272290a3160a66cdf0e9e72e70663", "acceptance": "Stage 3 accepted", "unit": "pixels", "coordinates": "canonical image 2746x1536", "timestamps": "VFR seconds", "dependency": "Stage 3", "use": "2D ball observations"},
+    {"path": "data/clips/nivel_a2_01/manual_annotation.json", "type": "Stage 4 events", "sha256": "9d7668eef478a85f9d8d1146058c19dafe975466119a271e03f9925ae58a7e8b", "acceptance": "Stage 4 human gate A", "unit": "frames/seconds", "coordinates": "event near/far", "timestamps": "VFR seconds", "dependency": "Stage 4", "use": "five contacts, five bounces, nine flights"},
+    {"path": "tests/fixtures/integration/p1_analytics_accepted", "type": "accepted reduced P1 serialization", "sha256": "manifest-controlled", "acceptance": "P1_TEN_FRAME_ACCEPTANCE_PASSED", "unit": "metres/pixels", "coordinates": "court/image", "timestamps": "VFR seconds", "dependency": "P1", "use": "player, pose, feet, wrists, contact"},
+    {"path": ".artifacts/p1-gpu-retest/p1-gpu-retest-results.tar.gz", "type": "accepted P1 source artifact", "sha256": "a2e2c138cff1076b9531c24d690a48a44b993a8168e3b52a5d274a50ed11feba", "acceptance": "P1_TEN_FRAME_ACCEPTANCE_PASSED", "unit": "mixed", "coordinates": "court/image", "timestamps": "VFR seconds", "dependency": "P1 GPU retest", "use": "provenance only"},
+    {"path": "scripts/stage5b_a2.py", "type": "historical v1 implementation", "sha256": "3c3b79404b77abb5e7136aba8007ef30104914f03baa15afe4bd578e733d1c00", "acceptance": "REJECTED_BY_HUMAN_GATE", "unit": "mixed", "coordinates": "court/image", "timestamps": "VFR", "dependency": "historical", "use": "failure evidence only"},
+    {"path": "scripts/stage5b_v2_a2.py", "type": "historical v2 implementation", "sha256": "653624c3309eb350ea035673f633fddd488aadd26d27dd79cf43ef0b71950af4", "acceptance": "REJECTED_BY_HUMAN_GATE", "unit": "mixed", "coordinates": "court/image", "timestamps": "VFR", "dependency": "historical", "use": "failure evidence only"}
+  ]
+}
