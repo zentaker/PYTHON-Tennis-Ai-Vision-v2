@@ -1,7 +1,11 @@
 {
   "schema_version": "1.0",
-  "status": "STAGE5B_V32_PARTIAL",
-  "human_stage5b_v32_approval": "pending",
+  "status": "STAGE5B_V32_REJECTED_BY_HUMAN_GATE",
+  "human_stage5b_v32_approval": "rejected",
+  "contact_ground_anchor_gate": "CONTACT_GROUND_ANCHORS_VISUAL_AND_GEOMETRIC_GATE_PASSED",
+  "bounce_constraint_gate": "BOUNCE_CONSTRAINTS_PASSED",
+  "stage5b_v32_human_gate": "STAGE5B_V32_REJECTED_BY_HUMAN_GATE",
+  "failure_class": "EVENT_TO_SEGMENT_CONTACT_CONSTRAINT_FAILED",
   "contact_anchor_human_gate": "CONTACT_GROUND_ANCHORS_VISUAL_AND_GEOMETRIC_GATE_PASSED",
   "temporal_motion_gate": "TEMPORAL_PLAYER_MOTION_VALIDATION_PARTIAL",
   "static_anchors_accepted": 5,
@@ -26,5 +30,5 @@
   "cloud_calls": 0,
   "gpu_calls": 0,
   "spend": 0,
-  "blocker": "P95_REPROJECTION_AND_MAXIMUM_CONTACT_RESIDUAL"
+  "blocker": "EVENT_TO_SEGMENT_CONTACT_CONSTRAINT_FAILED"
 }

@@ -1,5 +1,9 @@
 # Last result
 
+- Human v3.2 gate: `STAGE5B_V32_REJECTED_BY_HUMAN_GATE`.
+- Failure class: `EVENT_TO_SEGMENT_CONTACT_CONSTRAINT_FAILED`.
+- Static anchors remain approved and bounce constraints passed.
+
 - Stage 5B v3.2: `STAGE5B_V32_PARTIAL`; human approval pending.
 - Consumed 5/5 accepted anchors and 314 observations; 15 downweighted, zero rejected.
 - Nine resolved segments; median/p95 reprojection 7.0635/27.4726 px.

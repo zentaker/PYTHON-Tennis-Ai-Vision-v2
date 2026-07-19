@@ -1,5 +1,5 @@
 # Current task
 
-Audit the published Stage 5B v3.2 visual evidence. The executed candidate is partial:
-p95 reprojection and maximum contact residual fail their gates. Temporal player motion
-remains excluded, Analytics remains blocked, and human approval is pending.
+Forensically validate canonical event topology and endpoint feasibility before any
+Stage 5B v3.3 full optimization. V3.2 was rejected for failed contact constraints.
+Temporal player motion remains excluded and Analytics remains blocked.

@@ -134,6 +134,11 @@ es `STAGE5B_V32_PARTIAL`: mediana 7.0635 px, p95 27.4726 px, residual máximo de
 contacto 8.3071 m y de bote 0.01782 m. El gate humano está pendiente y Analytics
 continúa bloqueado.
 
+El gate humano rechazó v3.2 como `EVENT_TO_SEGMENT_CONTACT_CONSTRAINT_FAILED`:
+el residual de contacto máximo fue 8.3071 m y la evidencia omitió los peores frames.
+V3.3 debe pasar primero topología y factibilidad de endpoints; no puede compensar un
+fallo topológico mediante el ajuste físico.
+
 ### Stage 5C - Vista superior derivada
 
 Renderizar X,Y de la trayectoria 3D aprobada.

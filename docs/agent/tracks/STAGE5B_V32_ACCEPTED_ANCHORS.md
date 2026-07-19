@@ -1,6 +1,6 @@
 # Stage 5B v3.2 accepted anchors
 
-- Status: `STAGE5B_V32_PARTIAL`.
+- Status: `STAGE5B_V32_REJECTED_BY_HUMAN_GATE`.
 - Static contact anchors accepted/consumed: 5/5.
 - Temporal motion: partial; excluded from player motion metrics and anchor position.
 - Ball observations: 314 used, 15 downweighted, 0 rejected.
