@@ -1,7 +1,11 @@
 {
   "schema_version": "1.0",
-  "status": "STAGE5A2C_CONTACT_GROUND_ANCHORS_PARTIAL",
-  "human_stage5a2c_approval": "pending",
+  "status": "CONTACT_GROUND_ANCHORS_VISUAL_AND_GEOMETRIC_GATE_PASSED",
+  "human_stage5a2c_approval": "approved_static_anchors",
+  "contact_ground_anchor_human_gate": "CONTACT_GROUND_ANCHORS_VISUAL_AND_GEOMETRIC_GATE_PASSED",
+  "temporal_player_motion_gate": "TEMPORAL_PLAYER_MOTION_VALIDATION_PARTIAL",
+  "reviewer": "ChatGPT artifact visual and implementation audit",
+  "anchors_visually_approved": ["ev_001", "ev_003", "ev_005", "ev_007", "ev_009"],
   "contact_frame_foot_visual_gate": "CONTACT_FRAME_FOOT_VISUAL_GATE_PASSED",
   "stage5a2b_temporal_gate": "STAGE5A2B_TEMPORAL_VALIDATION_REJECTED",
   "real_accepted_line_segments_used": 61,

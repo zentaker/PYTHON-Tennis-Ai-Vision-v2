@@ -1,6 +1,7 @@
 # Stage 5A.2C — Contact Ground Anchors
 
-Status: `STAGE5A2C_CONTACT_GROUND_ANCHORS_PARTIAL`.
+Static anchor gate: `CONTACT_GROUND_ANCHORS_VISUAL_AND_GEOMETRIC_GATE_PASSED` (5/5).
+Temporal motion gate: `TEMPORAL_PLAYER_MOTION_VALIDATION_PARTIAL`.
 
 Sixty-one accepted real LSD segments now participate directly in robust homography
 fitting. Fifteen identifiable calibration families use genuine longitudinal/transverse,
@@ -14,6 +15,7 @@ are rejected and excluded from PTS-based speed. The contact-local ±5 gate accep
 ev_001, ev_005 and ev_007. ev_003 and ev_009 remain unresolved because local p95 speed
 exceeds 12 m/s; distant failures do not invalidate otherwise stable contacts.
 
-Five contact anchors were produced. ev_003 remains 7.721 m and ev_007 6.632 m behind
-the far baseline without a distance cap. XYZ was not executed; downstream stages remain
-blocked pending human audit.
+Five static contact anchors were approved. ev_003 remains 7.721 m and ev_007 6.632 m
+behind the far baseline without a distance cap. Temporal warnings are retained but do
+not invalidate static anchors. Stage 5B v3.2 may consume only static coordinates and
+total uncertainty, never temporal player trajectories.

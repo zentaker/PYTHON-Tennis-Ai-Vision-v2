@@ -125,6 +125,10 @@ Stage 5A.2C ajustó 15 familias con 61 segmentos reales y rastreó secuencialmen
 adyacentes. Produjo cinco anchors; ev_001/005/007 están accepted y ev_003/009 unresolved
 por p95 local. Estado `STAGE5A2C_CONTACT_GROUND_ANCHORS_PARTIAL`; XYZ sigue bloqueado.
 
+El gate humano posterior aprobó los cinco anchors estáticos y mantuvo la validación de
+movimiento temporal como parcial. Stage 5B v3.2 puede consumir coordenadas estáticas e
+incertidumbre total, nunca trayectorias temporales del jugador.
+
 ### Stage 5C - Vista superior derivada
 
 Renderizar X,Y de la trayectoria 3D aprobada.

@@ -1,5 +1,5 @@
 # Current task
 
-Audit Stage 5A.2C contact-ground evidence. Five anchors exist; ev_001/005/007 are
-accepted and ev_003/009 remain unresolved on contact-local speed p95. Do not rerun XYZ;
-downstream stages remain blocked.
+Generate five accepted static anchor v4 records with conservative total uncertainty,
+then execute Stage 5B v3.2 using static anchors only. Temporal player motion remains
+partial and cannot feed motion metrics. Analytics remains blocked.
