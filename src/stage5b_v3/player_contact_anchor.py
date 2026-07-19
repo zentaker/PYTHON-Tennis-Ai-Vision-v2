@@ -30,7 +30,9 @@ class ContactAnchor:
     wrist_pixels: dict[str, list[float]]
     ball_pixel: tuple[float, float]
     wrist_reprojection_error_px: float
-    ball_reprojection_error_px: float
+    ball_ray_constraint_residual_px: float
+    wrist_xyz_m: tuple[float, float, float]
+    racket_distance_m: float
     player_contact_distance_m: float
     contact_confidence: float
     uncertainty_m: tuple[float, float, float]
@@ -56,16 +58,37 @@ def contact_hypotheses(
     for index, height in enumerate(config["contact_height_hypotheses_m"]):
         point = point_on_pixel_ray_at_height(camera, ball, float(height))
         horizontal = float(np.linalg.norm(point[:2] - player_xy))
-        wrist_name = min(
-            ("left_wrist", "right_wrist"),
-            key=lambda name: np.linalg.norm(np.asarray(wrists[name], dtype=float) - ball),
+        wrist_candidates = []
+        for wrist_name in ("left_wrist", "right_wrist"):
+            for wrist_height in config.get("wrist_height_hypotheses_m", [0.8, 1.2, 1.6, 2.0, 2.4]):
+                wrist_xyz = point_on_pixel_ray_at_height(
+                    camera, tuple(float(value) for value in wrists[wrist_name]), float(wrist_height)
+                )
+                body_distance = float(np.linalg.norm(wrist_xyz[:2] - player_xy))
+                racket_distance = float(np.linalg.norm(point - wrist_xyz))
+                wrist_candidates.append(
+                    (
+                        body_distance / float(config["max_horizontal_reach_m"])
+                        + abs(racket_distance - float(config["racket_extension_m"]))
+                        / float(config["racket_extension_m"]),
+                        wrist_name,
+                        wrist_xyz,
+                        racket_distance,
+                    )
+                )
+        _, wrist_name, wrist_xyz, racket_distance = min(wrist_candidates, key=lambda item: item[0])
+        wrist_error = float(
+            np.linalg.norm(camera.project_world_to_pixel([wrist_xyz])[0] - wrists[wrist_name])
         )
-        wrist_error = float(np.linalg.norm(np.asarray(wrists[wrist_name], dtype=float) - ball))
-        reach_excess = max(0.0, horizontal - float(config["max_horizontal_reach_m"]))
+        effective_reach = float(config["max_horizontal_reach_m"]) + float(
+            config["racket_extension_m"]
+        )
+        reach_excess = max(0.0, horizontal - effective_reach)
         score = (
-            horizontal / float(config["max_horizontal_reach_m"])
+            horizontal / effective_reach
             + reach_excess * float(config["reach_excess_weight"])
-            + wrist_error / float(config["wrist_pixel_scale"])
+            + abs(racket_distance - float(config["racket_extension_m"]))
+            / float(config["racket_extension_m"])
         )
         confidence = float(contact.audit["confidence"]) * exp(-0.35 * score)
         warning = () if reach_excess == 0 else ("CONTACT_REACH_EXCEEDS_PLAUSIBLE_LIMIT",)
@@ -85,6 +108,8 @@ def contact_hypotheses(
             ball,
             wrist_error,
             float(np.linalg.norm(camera.project_world_to_pixel([point])[0] - ball)),
+            tuple(float(value) for value in wrist_xyz),
+            racket_distance,
             horizontal,
             max(0.0, min(1.0, confidence)),
             (

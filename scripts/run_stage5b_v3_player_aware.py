@@ -111,7 +111,7 @@ def render_visuals(result: dict, output_dir: Path, video: Path | None) -> None:
         pixel_axis.set_xlabel("canonical image x (px)")
         pixel_axis.set_ylabel("y (px)")
         pixel_axis.set_title(
-            f"ball reproj={candidate['ball_reprojection_error_px']:.2e}px\n"
+            f"ball-ray residual={candidate['ball_ray_constraint_residual_px']:.2e}px\n"
             f"ambiguity={candidate['ambiguity_status']}"
         )
         pixel_axis.grid(alpha=0.2)
@@ -201,7 +201,7 @@ def main() -> int:
     metrics = {
         "median_reprojection_error_px": median(errors),
         "p95_reprojection_error_px": float(np.percentile(errors, 95)),
-        "contact_anchor_residuals_px": [item["ball_reprojection_error_px"] for item in result["contacts"]],
+        "contact_anchor_residuals_px": [item["ball_ray_constraint_residual_px"] for item in result["contacts"]],
     }
     write_json(args.output_dir / "stage5b_v3_reprojection_metrics.json", metrics)
     validation = {
