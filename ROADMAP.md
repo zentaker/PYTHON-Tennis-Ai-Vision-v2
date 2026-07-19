@@ -3,7 +3,7 @@
 **Version:** 0.3
 **Fecha de creacion:** 2026-05-18
 **Fecha de reconciliacion:** 2026-07-13
-**Estado:** Activo - Stage 5B v1/v2 rechazados; preparación Player-Aware P1 completada
+**Estado:** Activo - P1 aceptado y wiring funcional P1 → Analytics validado
 
 La pasada de datos activa es Nivel A2. Stage 1–4 están cerradas con gates aprobados y la
 la auditoría de cámara Stage 5A terminó con `READY_FOR_STAGE_5B` tras evaluar Stage 5A.1.
@@ -30,6 +30,7 @@ Construir un sistema que, dado un video de broadcast de tenis con camara fija, g
 - [ ] Stage 5C - Vista superior derivada de X,Y. No iniciada.
 - [ ] Stage 6 - Vista lateral derivada de distancia,Z. No iniciada.
 - [ ] Stage 7 - Metricas y validacion final. No iniciada.
+- [x] P1 → Analytics - Cinco contactos aceptados producen cinco registros schema-valid.
 
 Stage 0 se considera funcionalmente cerrada. Su cierre documental fue reconciliado
 retrospectivamente despues de confirmar en Git el avance y los gates posteriores.
@@ -122,6 +123,15 @@ Estado: no iniciada.
 Consolidar metricas, ejemplos, limitaciones y decision sobre el siguiente nivel.
 
 Estado: no iniciada. Gate: aprobacion humana del reporte final.
+
+### P1 → Analytics
+
+El adaptador read-only consume los resultados P1 aceptados mediante archivos
+serializados. La ejecución real asoció cinco contactos con timestamps, tracks, poses,
+posiciones y evidencia de muñeca, y produjo cinco registros válidos. Solo una etiqueta
+manual Stage 4 es informativa; las dimensiones restantes conservan `unknown`.
+Kinematics permanece bloqueado por `APPROVED_STAGE5B_XYZ_REQUIRED`; no se validó el
+rally completo ni velocidad real de pelota. GPU, cloud y gasto: cero.
 
 ## 5. Modelo operativo
 

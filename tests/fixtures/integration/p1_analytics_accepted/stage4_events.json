@@ -1,0 +1,104 @@
+{
+  "clip_id": "nivel_a2_01",
+  "clip_path": "REDACTED_CANONICAL_SOURCE",
+  "level": "A2",
+  "fps": 60.0,
+  "timing_mode": "variable_frame_rate",
+  "duration_seconds": 10.488334,
+  "frames_total": 527,
+  "video_sha256": "e2a05a8eda9be4d821ae1acc60355c7c0403e450ac0febd6bb3c6a62e0aa5774",
+  "narrative_events": [
+    {
+      "id": "ev_001",
+      "type": "serve",
+      "frame_start": 139,
+      "frame_end": 139,
+      "frame_range": [
+        139,
+        139
+      ],
+      "time_start_seconds": 2.771667,
+      "time_end_seconds": 2.771667,
+      "player": "near",
+      "side": "near",
+      "shot_type": "saque",
+      "court_zone": "unknown",
+      "source": "manual_annotation",
+      "notes": ""
+    },
+    {
+      "id": "ev_003",
+      "type": "hit",
+      "frame_start": 200,
+      "frame_end": 200,
+      "frame_range": [
+        200,
+        200
+      ],
+      "time_start_seconds": 3.955,
+      "time_end_seconds": 3.955,
+      "player": "far",
+      "side": "far",
+      "shot_type": "unknown",
+      "court_zone": "unknown",
+      "source": "manual_annotation",
+      "notes": ""
+    },
+    {
+      "id": "ev_005",
+      "type": "hit",
+      "frame_start": 287,
+      "frame_end": 288,
+      "frame_range": [
+        287,
+        288
+      ],
+      "time_start_seconds": 5.688333,
+      "time_end_seconds": 5.721667,
+      "player": "near",
+      "side": "near",
+      "shot_type": "unknown",
+      "court_zone": "unknown",
+      "source": "manual_annotation",
+      "notes": ""
+    },
+    {
+      "id": "ev_007",
+      "type": "hit",
+      "frame_start": 351,
+      "frame_end": 351,
+      "frame_range": [
+        351,
+        351
+      ],
+      "time_start_seconds": 6.971667,
+      "time_end_seconds": 6.971667,
+      "player": "far",
+      "side": "far",
+      "shot_type": "unknown",
+      "court_zone": "unknown",
+      "source": "manual_annotation",
+      "notes": ""
+    },
+    {
+      "id": "ev_009",
+      "type": "hit",
+      "frame_start": 434,
+      "frame_end": 435,
+      "frame_range": [
+        434,
+        435
+      ],
+      "time_start_seconds": 8.638333,
+      "time_end_seconds": 8.655,
+      "player": "near",
+      "side": "near",
+      "shot_type": "unknown",
+      "court_zone": "unknown",
+      "source": "manual_annotation",
+      "notes": ""
+    }
+  ],
+  "ball_manual_positions": [],
+  "notes": "Eventos creados y revisados manualmente con event_annotator_app."
+}
