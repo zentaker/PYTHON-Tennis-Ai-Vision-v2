@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Mapping
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any
@@ -14,12 +15,61 @@ from .contracts import AnalyticsEventInput, ClassifiedStroke, EvidenceItem, Stro
 from .schema_validation import validators
 
 
+class Stage4InputError(ValueError):
+    """Raised when serialized Stage 4 input is malformed or ambiguous."""
+
+
 def load_stage4(path: Path | None) -> dict[str, dict[str, Any]]:
     if path is None:
         return {}
-    payload = json.loads(path.read_text())
-    events = payload.get("narrative_events", payload.get("events", payload)) if isinstance(payload, dict) else payload
-    return {str(item.get("id") or item.get("event_id")): item for item in events}
+    try:
+        payload = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        raise Stage4InputError(f"{path}: invalid JSON root: {exc}") from exc
+
+    if isinstance(payload, list):
+        events = payload
+    elif isinstance(payload, Mapping):
+        keys = [key for key in ("events", "narrative_events") if key in payload]
+        if not keys:
+            raise Stage4InputError(
+                f"{path}: root object requires 'events' or 'narrative_events'"
+            )
+        if len(keys) > 1:
+            raise Stage4InputError(
+                f"{path}: root object has ambiguous event collections: {keys}"
+            )
+        events = payload[keys[0]]
+        if not isinstance(events, list):
+            raise Stage4InputError(f"{path}: '{keys[0]}' must be a list")
+    else:
+        raise Stage4InputError(f"{path}: JSON root must be a list or object")
+
+    result: dict[str, dict[str, Any]] = {}
+    for index, item in enumerate(events):
+        if not isinstance(item, Mapping):
+            raise Stage4InputError(f"{path}: event index {index} must be an object")
+        raw_id = item.get("id")
+        raw_event_id = item.get("event_id")
+        if raw_id is not None and raw_event_id is not None and raw_id != raw_event_id:
+            raise Stage4InputError(
+                f"{path}: event index {index} has conflicting id {raw_id!r} "
+                f"and event_id {raw_event_id!r}"
+            )
+        identifier = raw_id if raw_id is not None else raw_event_id
+        if not isinstance(identifier, str):
+            raise Stage4InputError(
+                f"{path}: event index {index} requires string id or event_id"
+            )
+        identifier = identifier.strip()
+        if not identifier:
+            raise Stage4InputError(f"{path}: event index {index} has empty ID")
+        if identifier in result:
+            raise Stage4InputError(
+                f"{path}: event index {index} has duplicate ID {identifier!r}"
+            )
+        result[identifier] = dict(item)
+    return result
 
 
 def wire_contacts(contacts: tuple[AcceptedP1Contact, ...], stage4: dict[str, dict[str, Any]], *, p1_source_sha: str, p1_results_sha256: str) -> tuple[StrokeAnalyticsRecord, ...]:
