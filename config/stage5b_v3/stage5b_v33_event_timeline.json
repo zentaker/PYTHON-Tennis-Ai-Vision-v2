@@ -1,0 +1,112 @@
+[
+  {
+    "confidence": 1.0,
+    "event_id": "ev_001",
+    "event_type": "contact",
+    "frame_id": 139,
+    "next_event_id": "ev_002",
+    "player_identity": "near",
+    "previous_event_id": null,
+    "source": "manual_annotation",
+    "timestamp_seconds": 2.771667
+  },
+  {
+    "confidence": 1.0,
+    "event_id": "ev_002",
+    "event_type": "bounce",
+    "frame_id": 158,
+    "next_event_id": "ev_003",
+    "player_identity": null,
+    "previous_event_id": "ev_001",
+    "source": "manual_annotation",
+    "timestamp_seconds": 3.138333
+  },
+  {
+    "confidence": 1.0,
+    "event_id": "ev_003",
+    "event_type": "contact",
+    "frame_id": 200,
+    "next_event_id": "ev_004",
+    "player_identity": "far",
+    "previous_event_id": "ev_002",
+    "source": "manual_annotation",
+    "timestamp_seconds": 3.955
+  },
+  {
+    "confidence": 1.0,
+    "event_id": "ev_004",
+    "event_type": "bounce",
+    "frame_id": 262,
+    "next_event_id": "ev_005",
+    "player_identity": null,
+    "previous_event_id": "ev_003",
+    "source": "manual_annotation",
+    "timestamp_seconds": 5.188333
+  },
+  {
+    "confidence": 1.0,
+    "event_id": "ev_005",
+    "event_type": "contact",
+    "frame_id": 287,
+    "next_event_id": "ev_006",
+    "player_identity": "near",
+    "previous_event_id": "ev_004",
+    "source": "manual_annotation",
+    "timestamp_seconds": 5.688333
+  },
+  {
+    "confidence": 1.0,
+    "event_id": "ev_006",
+    "event_type": "bounce",
+    "frame_id": 327,
+    "next_event_id": "ev_007",
+    "player_identity": null,
+    "previous_event_id": "ev_005",
+    "source": "manual_annotation",
+    "timestamp_seconds": 6.488333
+  },
+  {
+    "confidence": 1.0,
+    "event_id": "ev_007",
+    "event_type": "contact",
+    "frame_id": 351,
+    "next_event_id": "ev_008",
+    "player_identity": "far",
+    "previous_event_id": "ev_006",
+    "source": "manual_annotation",
+    "timestamp_seconds": 6.971667
+  },
+  {
+    "confidence": 1.0,
+    "event_id": "ev_008",
+    "event_type": "bounce",
+    "frame_id": 399,
+    "next_event_id": "ev_009",
+    "player_identity": null,
+    "previous_event_id": "ev_007",
+    "source": "manual_annotation",
+    "timestamp_seconds": 7.938333
+  },
+  {
+    "confidence": 1.0,
+    "event_id": "ev_009",
+    "event_type": "contact",
+    "frame_id": 434,
+    "next_event_id": "ev_010",
+    "player_identity": "near",
+    "previous_event_id": "ev_008",
+    "source": "manual_annotation",
+    "timestamp_seconds": 8.638333
+  },
+  {
+    "confidence": 1.0,
+    "event_id": "ev_010",
+    "event_type": "bounce",
+    "frame_id": 463,
+    "next_event_id": null,
+    "player_identity": null,
+    "previous_event_id": "ev_009",
+    "source": "manual_annotation",
+    "timestamp_seconds": 9.221667
+  }
+]

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import json
 from pathlib import Path
 
 import numpy as np
@@ -30,12 +29,30 @@ def timeline() -> list[dict]:
 
 
 def sample_anchor() -> dict:
-    return {"event_id": "contact", "identity": "near", "fused_x_m": 0.0, "fused_y_m": -12.0, "total_ci95": [[-0.5, -12.5], [0.5, -11.5]]}
+    return {
+        "event_id": "contact",
+        "identity": "near",
+        "fused_x_m": 0.0,
+        "fused_y_m": -12.0,
+        "total_ci95": [[-0.5, -12.5], [0.5, -11.5]],
+    }
 
 
 def sample_pose() -> dict:
-    names = ("left_wrist", "right_wrist", "left_shoulder", "right_shoulder", "left_hip", "right_hip")
-    return {"keypoints": [{"name": name, "x": 100 + i, "y": 200 + i, "confidence": 0.8, "visible": True} for i, name in enumerate(names)]}
+    names = (
+        "left_wrist",
+        "right_wrist",
+        "left_shoulder",
+        "right_shoulder",
+        "left_hip",
+        "right_hip",
+    )
+    return {
+        "keypoints": [
+            {"name": name, "x": 100 + i, "y": 200 + i, "confidence": 0.8, "visible": True}
+            for i, name in enumerate(names)
+        ]
+    }
 
 
 def test_canonical_order_and_exact_topology() -> None:
@@ -85,7 +102,10 @@ def test_contact_volume_excess_and_constraint_influence() -> None:
     assert contact_volume_metrics(outside, volume)["contact_volume_excess_m"] > 0
     moved = sample_anchor() | {"fused_x_m": 1.0, "total_ci95": [[0.5, -12.5], [1.5, -11.5]]}
     moved_volume = build_contact_volume(moved, sample_pose(), (120.0, 190.0))
-    assert not np.array_equal(normalized_contact_residual(outside, volume), normalized_contact_residual(outside, moved_volume))
+    assert not np.array_equal(
+        normalized_contact_residual(outside, volume),
+        normalized_contact_residual(outside, moved_volume),
+    )
 
 
 def test_anchor_changes_reduced_optimized_endpoint() -> None:
@@ -93,7 +113,13 @@ def test_anchor_changes_reduced_optimized_endpoint() -> None:
     one = build_contact_volume(sample_anchor(), sample_pose(), (120.0, 190.0))
     moved = sample_anchor() | {"fused_x_m": 1.0, "total_ci95": [[0.5, -12.5], [1.5, -11.5]]}
     two = build_contact_volume(moved, sample_pose(), (120.0, 190.0))
-    solve = lambda volume: least_squares(lambda p: np.r_[p - target, 10 * normalized_contact_residual(p, volume)], target).x
+
+    def solve(volume: dict) -> np.ndarray:
+        return least_squares(
+            lambda point: np.r_[point - target, 10 * normalized_contact_residual(point, volume)],
+            target,
+        ).x
+
     assert np.linalg.norm(solve(one) - solve(two)) > 0.1
 
 
@@ -104,8 +130,15 @@ def test_uncertainty_racket_height_and_wrong_mapping_affect_feasibility() -> Non
     racket = build_contact_volume(anchor, sample_pose(), (1, 1), racket_extension_m=1.0)
     higher = build_contact_volume(anchor, sample_pose(), (1, 1), height_range_m=(0.3, 4.2))
     assert contact_volume_metrics(point, base) != contact_volume_metrics(point, racket)
-    assert contact_volume_metrics(point, higher)["contact_volume_excess_m"] < contact_volume_metrics(point, base)["contact_volume_excess_m"]
-    wrong = build_contact_volume(anchor | {"fused_y_m": 12.0, "total_ci95": [[-0.5, 11.5], [0.5, 12.5]]}, sample_pose(), (1, 1))
+    assert (
+        contact_volume_metrics(point, higher)["contact_volume_excess_m"]
+        < contact_volume_metrics(point, base)["contact_volume_excess_m"]
+    )
+    wrong = build_contact_volume(
+        anchor | {"fused_y_m": 12.0, "total_ci95": [[-0.5, 11.5], [0.5, 12.5]]},
+        sample_pose(),
+        (1, 1),
+    )
     assert contact_volume_metrics([0, -12, 1], wrong)["contact_volume_excess_m"] > 10
 
 
@@ -119,4 +152,6 @@ def test_normalization_prevents_term_count_from_changing_contact_scale() -> None
 def test_no_event_specific_hardcoding_and_determinism() -> None:
     source = (ROOT / "src/stage5b_v3/contact_volume.py").read_text()
     assert "ev_" not in source
-    assert build_segment_topology(timeline(), load_observations(BALL)) == build_segment_topology(timeline(), load_observations(BALL))
+    assert build_segment_topology(timeline(), load_observations(BALL)) == build_segment_topology(
+        timeline(), load_observations(BALL)
+    )

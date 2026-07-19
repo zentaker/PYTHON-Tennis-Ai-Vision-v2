@@ -155,6 +155,11 @@ cero Z negativa, incertidumbre propagada y determinismo. El resultado actual es
 parcial porque p95 y residual máximo de contacto fallan; la revisión humana sigue
 pendiente.
 
+Stage 5B v3.3 separates canonical topology and endpoint feasibility from full XYZ
+optimization. Phase B is forbidden unless all nine flights, five contact volumes,
+and five bounce endpoints pass Phase A. The current topology passes 9/9, but contact
+feasibility is 0/5, so Phase B remains unexecuted and human approval is pending.
+
 ### Criterios de exito
 
 - Botes del lado correcto.

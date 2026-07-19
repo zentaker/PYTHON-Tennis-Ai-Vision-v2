@@ -1,0 +1,28 @@
+{
+  "contact_terms_drowned_by_observation_count": false,
+  "families": [
+    {
+      "final_cost": null,
+      "initial_cost": null,
+      "name": "reprojection",
+      "sigma": "per-observation ball pixel uncertainty",
+      "terms": 314
+    },
+    {
+      "final_cost": null,
+      "initial_cost": 6.297383612274584,
+      "name": "contact_volume",
+      "sigma": "axis-specific expanded-volume half-width",
+      "terms": 15
+    },
+    {
+      "final_cost": null,
+      "initial_cost": 0.0761621597107483,
+      "name": "bounce_z0",
+      "sigma_m": 0.05,
+      "terms": 5
+    }
+  ],
+  "normalization": "each family divided by physical sigma before robust loss",
+  "phase_b_executed": false
+}

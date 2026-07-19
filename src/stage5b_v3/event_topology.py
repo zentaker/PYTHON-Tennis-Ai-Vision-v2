@@ -99,7 +99,9 @@ def build_segment_topology(
                 "direction": f"{start.get('player_identity') or 'court'}_to_{end.get('player_identity') or 'court'}",
                 "expected_endpoint_constraints": expected,
                 "gaps": max(0, end["frame_id"] - start["frame_id"] + 1 - len(selected)),
-                "topology_status": "PASS" if selected and end["timestamp_seconds"] > start["timestamp_seconds"] else "FAIL",
+                "topology_status": "PASS"
+                if selected and end["timestamp_seconds"] > start["timestamp_seconds"]
+                else "FAIL",
             }
         )
     if len(segments) != 9:

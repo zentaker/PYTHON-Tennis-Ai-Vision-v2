@@ -1,5 +1,11 @@
 # Last result
 
+- V3.3 topology: 10 canonical events, 9/9 flights, 314 observations without overlap.
+- Contact volumes: 5 constructed, 0 viable; maximum excess 3.86798 m.
+- Bounce endpoints: 5/5 feasible; maximum residual 0.01045 m.
+- Phase A failed endpoint feasibility; Phase B was not executed.
+- Global: `STAGE5B_V33_ENDPOINT_FEASIBILITY_FAILED`.
+
 - Human v3.2 gate: `STAGE5B_V32_REJECTED_BY_HUMAN_GATE`.
 - Failure class: `EVENT_TO_SEGMENT_CONTACT_CONSTRAINT_FAILED`.
 - Static anchors remain approved and bounce constraints passed.

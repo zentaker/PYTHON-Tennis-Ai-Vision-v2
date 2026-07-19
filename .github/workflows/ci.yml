@@ -82,6 +82,12 @@ jobs:
       - name: Validate Stage 5B v3.2 accepted-anchor evidence
         run: uv run python scripts/check_stage5b_v32_accepted_anchors.py
 
+      - name: Stage 5B v3.3 event-constrained tests
+        run: uv run --with "jsonschema>=4.23,<5" pytest tests/test_stage5b_v33_*.py
+
+      - name: Validate Stage 5B v3.3 forensic evidence
+        run: uv run python scripts/check_stage5b_v33_event_constrained.py
+
       - name: Ruff
         run: uv run ruff check .
 
@@ -224,6 +230,34 @@ jobs:
             config/stage5b_v3/stage5b_v32_contact_residuals.json
             config/stage5b_v3/stage5b_v32_bounce_residuals.json
             config/stage5b_v3/stage5b_v32_uncertainty.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+
+      - name: Publish Stage 5B v3.3 event-constrained evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage5b-v33-event-constrained-evidence
+          path: |
+            docs/validation/assets/stage5b_v33_event_timeline.jpg
+            docs/validation/assets/stage5b_v33_segment_endpoint_audit.jpg
+            docs/validation/assets/stage5b_v33_contact_volume_audit.jpg
+            docs/validation/assets/stage5b_v33_worst_reprojection_frames.jpg
+            docs/validation/assets/stage5b_v33_top_view.jpg
+            docs/validation/assets/stage5b_v33_side_view.jpg
+            docs/validation/assets/stage5b_v33_hypothesis_geometry.jpg
+            docs/validation/assets/stage5b_v33_objective_breakdown.jpg
+            docs/validation/STAGE5B_V33_VISUAL_AUDIT.md
+            config/stage5b_v3/stage5b_v33_result.json
+            config/stage5b_v3/stage5b_v33_event_timeline.json
+            config/stage5b_v3/stage5b_v33_segment_topology.json
+            config/stage5b_v3/stage5b_v32_contact_residual_forensics.json
+            config/stage5b_v3/stage5b_v33_endpoint_feasibility.json
+            config/stage5b_v3/stage5b_v33_objective_breakdown.json
+            config/stage5b_v3/stage5b_v33_contact_residuals.json
+            config/stage5b_v3/stage5b_v33_bounce_residuals.json
+            config/stage5b_v3/stage5b_v33_reprojection_metrics.json
+            config/stage5b_v3/stage5b_v33_worst_residuals.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 6

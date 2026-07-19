@@ -1,0 +1,107 @@
+[
+  {
+    "anchor_xy": [
+      1.1546674879485401,
+      -11.182821645333169
+    ],
+    "assigned_segment": "flight_01",
+    "current_residual_formula": "euclidean(ball_endpoint_xyz, player_foot_xyz)",
+    "current_residual_value": 5.04523957395959,
+    "endpoint_side": "start",
+    "endpoint_timestamp": 2.771667,
+    "endpoint_xyz": [
+      0.975,
+      -6.588,
+      2.076
+    ],
+    "event_id": "ev_001",
+    "event_timestamp": 2.771667,
+    "expected_physical_volume_residual": 2.0346379418787093,
+    "frame_difference": 0,
+    "suspected_cause": "OPTIMIZER_ESCAPED_CONSTRAINT"
+  },
+  {
+    "anchor_xy": [
+      -4.125036096318471,
+      19.605632213014594
+    ],
+    "assigned_segment": "flight_03",
+    "current_residual_formula": "euclidean(ball_endpoint_xyz, player_foot_xyz)",
+    "current_residual_value": 6.3721508775524525,
+    "endpoint_side": "start",
+    "endpoint_timestamp": 3.955,
+    "endpoint_xyz": [
+      -2.647,
+      13.82,
+      2.224
+    ],
+    "event_id": "ev_003",
+    "event_timestamp": 3.955,
+    "expected_physical_volume_residual": 2.9560297015135646,
+    "frame_difference": 0,
+    "suspected_cause": "OPTIMIZER_ESCAPED_CONSTRAINT"
+  },
+  {
+    "anchor_xy": [
+      0.9676785710851187,
+      -13.519695114566568
+    ],
+    "assigned_segment": "flight_05",
+    "current_residual_formula": "euclidean(ball_endpoint_xyz, player_foot_xyz)",
+    "current_residual_value": 7.115165742710313,
+    "endpoint_side": "start",
+    "endpoint_timestamp": 5.688333,
+    "endpoint_xyz": [
+      1.309,
+      -19.388,
+      4.009
+    ],
+    "event_id": "ev_005",
+    "event_timestamp": 5.688333,
+    "expected_physical_volume_residual": 3.6576526427309313,
+    "frame_difference": 0,
+    "suspected_cause": "OPTIMIZER_ESCAPED_CONSTRAINT"
+  },
+  {
+    "anchor_xy": [
+      -4.733452569849874,
+      18.51678323643288
+    ],
+    "assigned_segment": "flight_07",
+    "current_residual_formula": "euclidean(ball_endpoint_xyz, player_foot_xyz)",
+    "current_residual_value": 7.240406558864393,
+    "endpoint_side": "start",
+    "endpoint_timestamp": 6.971667,
+    "endpoint_xyz": [
+      -4.564,
+      11.726,
+      2.506
+    ],
+    "event_id": "ev_007",
+    "event_timestamp": 6.971667,
+    "expected_physical_volume_residual": 3.8679821934897607,
+    "frame_difference": 0,
+    "suspected_cause": "OPTIMIZER_ESCAPED_CONSTRAINT"
+  },
+  {
+    "anchor_xy": [
+      5.03374679916979,
+      -10.625872319577518
+    ],
+    "assigned_segment": "flight_09",
+    "current_residual_formula": "euclidean(ball_endpoint_xyz, player_foot_xyz)",
+    "current_residual_value": 4.578926919414577,
+    "endpoint_side": "start",
+    "endpoint_timestamp": 8.638333,
+    "endpoint_xyz": [
+      4.698,
+      -14.087,
+      2.979
+    ],
+    "event_id": "ev_009",
+    "event_timestamp": 8.638333,
+    "expected_physical_volume_residual": 1.2925770279765523,
+    "frame_difference": 0,
+    "suspected_cause": "OPTIMIZER_ESCAPED_CONSTRAINT"
+  }
+]

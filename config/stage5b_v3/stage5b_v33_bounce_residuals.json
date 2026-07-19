@@ -1,0 +1,32 @@
+[
+  {
+    "assigned_segment": "flight_01",
+    "bounce_residual_m": 0.0008638812414520913,
+    "endpoint_side": "end",
+    "event_id": "ev_002"
+  },
+  {
+    "assigned_segment": "flight_03",
+    "bounce_residual_m": 0.01045434570313919,
+    "endpoint_side": "end",
+    "event_id": "ev_004"
+  },
+  {
+    "assigned_segment": "flight_05",
+    "bounce_residual_m": 0.0016936620030820748,
+    "endpoint_side": "end",
+    "event_id": "ev_006"
+  },
+  {
+    "assigned_segment": "flight_07",
+    "bounce_residual_m": 0.008419593427793082,
+    "endpoint_side": "end",
+    "event_id": "ev_008"
+  },
+  {
+    "assigned_segment": "flight_09",
+    "bounce_residual_m": 0.002570548565340225,
+    "endpoint_side": "end",
+    "event_id": "ev_010"
+  }
+]

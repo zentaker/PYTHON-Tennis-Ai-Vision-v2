@@ -139,6 +139,11 @@ el residual de contacto máximo fue 8.3071 m y la evidencia omitió los peores f
 V3.3 debe pasar primero topología y factibilidad de endpoints; no puede compensar un
 fallo topológico mediante el ajuste físico.
 
+V3.3 confirmó 10 eventos y 9/9 vuelos topológicamente correctos, pero Phase A falló:
+0/5 endpoints v3.2 intersectan sus volúmenes de contacto y el exceso máximo es
+3.86798 m. Los cinco botes pasan. Phase B no se ejecutó; XYZ y Analytics siguen
+bloqueados hasta corregir la factibilidad física de endpoints.
+
 ### Stage 5C - Vista superior derivada
 
 Renderizar X,Y de la trayectoria 3D aprobada.

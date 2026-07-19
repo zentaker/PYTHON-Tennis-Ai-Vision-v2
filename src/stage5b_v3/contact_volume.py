@@ -30,7 +30,11 @@ def build_contact_volume(
     lower = [float(ci95[0, 0] - reach), float(ci95[0, 1] - reach), height_range_m[0]]
     upper = [float(ci95[1, 0] + reach), float(ci95[1, 1] + reach), height_range_m[1]]
     wrist_candidates = [
-        {"pixel": [row["x"], row["y"]], "confidence": row["confidence"], "ray_status": "camera_ray_candidate"}
+        {
+            "pixel": [row["x"], row["y"]],
+            "confidence": row["confidence"],
+            "ray_status": "camera_ray_candidate",
+        }
         for row in wrists
     ]
     return {

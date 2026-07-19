@@ -1,0 +1,257 @@
+[
+  {
+    "assigned_segment": "flight_01",
+    "contact_volume_bounds": {
+      "lower_xyz": [
+        -1.4509003490961083,
+        -13.708369892239716,
+        0.35
+      ],
+      "upper_xyz": [
+        3.623615910730468,
+        -8.62263794187871,
+        3.4
+      ]
+    },
+    "contact_volume_excess_m": 2.0346379418787093,
+    "endpoint_side": "start",
+    "event_id": "ev_001",
+    "normalized_residual": 0.8001357372892144,
+    "player_ground_distance_m": 5.04523957395959,
+    "player_ground_xy": [
+      1.1546674879485401,
+      -11.182821645333169
+    ],
+    "racket_extension_m": 0.75,
+    "trajectory_endpoint_xyz": [
+      0.975,
+      -6.588,
+      2.076
+    ],
+    "warnings": [
+      "CONTACT_VOLUME_GATE_FAILED"
+    ],
+    "wrist_candidate": [
+      {
+        "confidence": 0.22292722761631012,
+        "pixel": [
+          1561.68994140625,
+          928.4089965820312
+        ],
+        "ray_status": "camera_ray_candidate"
+      },
+      {
+        "confidence": 0.7898608446121216,
+        "pixel": [
+          1569.046875,
+          742.3831176757812
+        ],
+        "ray_status": "camera_ray_candidate"
+      }
+    ]
+  },
+  {
+    "assigned_segment": "flight_03",
+    "contact_volume_bounds": {
+      "lower_xyz": [
+        -7.179070874828477,
+        16.776029701513565,
+        0.35
+      ],
+      "upper_xyz": [
+        -1.09186436701388,
+        22.509241896149426,
+        3.4
+      ]
+    },
+    "contact_volume_excess_m": 2.9560297015135646,
+    "endpoint_side": "start",
+    "event_id": "ev_003",
+    "normalized_residual": 1.0311949396463298,
+    "player_ground_distance_m": 6.3721508775524525,
+    "player_ground_xy": [
+      -4.125036096318471,
+      19.605632213014594
+    ],
+    "racket_extension_m": 0.75,
+    "trajectory_endpoint_xyz": [
+      -2.647,
+      13.82,
+      2.224
+    ],
+    "warnings": [
+      "CONTACT_VOLUME_GATE_FAILED"
+    ],
+    "wrist_candidate": [
+      {
+        "confidence": 0.5407751202583313,
+        "pixel": [
+          1058.6702880859375,
+          164.05050659179688
+        ],
+        "ray_status": "camera_ray_candidate"
+      },
+      {
+        "confidence": 0.5779271125793457,
+        "pixel": [
+          1050.13720703125,
+          169.86849975585938
+        ],
+        "ray_status": "camera_ray_candidate"
+      }
+    ]
+  },
+  {
+    "assigned_segment": "flight_05",
+    "contact_volume_bounds": {
+      "lower_xyz": [
+        -1.3196125208542837,
+        -15.78140300908508,
+        0.35
+      ],
+      "upper_xyz": [
+        3.260231468658337,
+        -11.138989909114716,
+        3.4
+      ]
+    },
+    "contact_volume_excess_m": 3.6576526427309313,
+    "endpoint_side": "start",
+    "event_id": "ev_005",
+    "normalized_residual": 1.604258325511944,
+    "player_ground_distance_m": 7.115165742710313,
+    "player_ground_xy": [
+      0.9676785710851187,
+      -13.519695114566568
+    ],
+    "racket_extension_m": 0.75,
+    "trajectory_endpoint_xyz": [
+      1.309,
+      -19.388,
+      4.009
+    ],
+    "warnings": [
+      "CONTACT_VOLUME_GATE_FAILED"
+    ],
+    "wrist_candidate": [
+      {
+        "confidence": 0.5800402164459229,
+        "pixel": [
+          1456.8341064453125,
+          993.8585205078125
+        ],
+        "ray_status": "camera_ray_candidate"
+      },
+      {
+        "confidence": 0.31390783190727234,
+        "pixel": [
+          1476.12548828125,
+          973.690185546875
+        ],
+        "ray_status": "camera_ray_candidate"
+      }
+    ]
+  },
+  {
+    "assigned_segment": "flight_07",
+    "contact_volume_bounds": {
+      "lower_xyz": [
+        -7.871672757557556,
+        15.593982193489762,
+        0.35
+      ],
+      "upper_xyz": [
+        -1.6402039383026215,
+        21.542719010168472,
+        3.4
+      ]
+    },
+    "contact_volume_excess_m": 3.8679821934897607,
+    "endpoint_side": "start",
+    "event_id": "ev_007",
+    "normalized_residual": 1.3004381645007204,
+    "player_ground_distance_m": 7.240406558864393,
+    "player_ground_xy": [
+      -4.733452569849874,
+      18.51678323643288
+    ],
+    "racket_extension_m": 0.75,
+    "trajectory_endpoint_xyz": [
+      -4.564,
+      11.726,
+      2.506
+    ],
+    "warnings": [
+      "CONTACT_VOLUME_GATE_FAILED"
+    ],
+    "wrist_candidate": [
+      {
+        "confidence": 0.1962967962026596,
+        "pixel": [
+          1005.406982421875,
+          181.93519592285156
+        ],
+        "ray_status": "camera_ray_candidate"
+      },
+      {
+        "confidence": 0.36074012517929077,
+        "pixel": [
+          924.9436645507812,
+          185.7128143310547
+        ],
+        "ray_status": "camera_ray_candidate"
+      }
+    ]
+  },
+  {
+    "assigned_segment": "flight_09",
+    "contact_volume_bounds": {
+      "lower_xyz": [
+        2.755529868162415,
+        -12.794422972023447,
+        0.35
+      ],
+      "upper_xyz": [
+        7.335085868161138,
+        -8.287545020165771,
+        3.4
+      ]
+    },
+    "contact_volume_excess_m": 1.2925770279765523,
+    "endpoint_side": "start",
+    "event_id": "ev_009",
+    "normalized_residual": 0.5736019664982358,
+    "player_ground_distance_m": 4.578926919414577,
+    "player_ground_xy": [
+      5.03374679916979,
+      -10.625872319577518
+    ],
+    "racket_extension_m": 0.75,
+    "trajectory_endpoint_xyz": [
+      4.698,
+      -14.087,
+      2.979
+    ],
+    "warnings": [
+      "CONTACT_VOLUME_GATE_FAILED"
+    ],
+    "wrist_candidate": [
+      {
+        "confidence": 0.4782877564430237,
+        "pixel": [
+          2078.154541015625,
+          887.4639282226562
+        ],
+        "ray_status": "camera_ray_candidate"
+      },
+      {
+        "confidence": 0.3178339898586273,
+        "pixel": [
+          2143.929443359375,
+          843.06591796875
+        ],
+        "ray_status": "camera_ray_candidate"
+      }
+    ]
+  }
+]

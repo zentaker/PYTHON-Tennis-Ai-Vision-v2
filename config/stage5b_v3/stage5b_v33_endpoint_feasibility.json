@@ -1,0 +1,191 @@
+{
+  "bounces_viable": 5,
+  "contacts_viable": 0,
+  "mixed_units": 0,
+  "reversed_times": 0,
+  "segments": [
+    {
+      "duration_seconds": 0.36666599999999994,
+      "endpoint_checks": [
+        {
+          "event_id": "ev_001",
+          "excess_m": 2.0346379418787093,
+          "pass": false,
+          "type": "contact"
+        },
+        {
+          "event_id": "ev_002",
+          "pass": true,
+          "residual_m": 0.0008638812414520913,
+          "type": "bounce"
+        }
+      ],
+      "feasible": false,
+      "segment_id": "flight_01",
+      "topology_pass": true
+    },
+    {
+      "duration_seconds": 0.8166670000000003,
+      "endpoint_checks": [
+        {
+          "event_id": "ev_002",
+          "pass": true,
+          "residual_m": 0.017819837332344646,
+          "type": "bounce"
+        },
+        {
+          "event_id": "ev_003",
+          "excess_m": 2.9560297015135646,
+          "pass": false,
+          "type": "contact"
+        }
+      ],
+      "feasible": false,
+      "segment_id": "flight_02",
+      "topology_pass": true
+    },
+    {
+      "duration_seconds": 1.233333,
+      "endpoint_checks": [
+        {
+          "event_id": "ev_003",
+          "excess_m": 2.9560297015135646,
+          "pass": false,
+          "type": "contact"
+        },
+        {
+          "event_id": "ev_004",
+          "pass": true,
+          "residual_m": 0.01045434570313919,
+          "type": "bounce"
+        }
+      ],
+      "feasible": false,
+      "segment_id": "flight_03",
+      "topology_pass": true
+    },
+    {
+      "duration_seconds": 0.5,
+      "endpoint_checks": [
+        {
+          "event_id": "ev_004",
+          "pass": true,
+          "residual_m": 0.0018878500100145794,
+          "type": "bounce"
+        },
+        {
+          "event_id": "ev_005",
+          "excess_m": 3.6576526427309313,
+          "pass": false,
+          "type": "contact"
+        }
+      ],
+      "feasible": false,
+      "segment_id": "flight_04",
+      "topology_pass": true
+    },
+    {
+      "duration_seconds": 0.7999999999999998,
+      "endpoint_checks": [
+        {
+          "event_id": "ev_005",
+          "excess_m": 3.6576526427309313,
+          "pass": false,
+          "type": "contact"
+        },
+        {
+          "event_id": "ev_006",
+          "pass": true,
+          "residual_m": 0.0016936620030820748,
+          "type": "bounce"
+        }
+      ],
+      "feasible": false,
+      "segment_id": "flight_05",
+      "topology_pass": true
+    },
+    {
+      "duration_seconds": 0.48333400000000015,
+      "endpoint_checks": [
+        {
+          "event_id": "ev_006",
+          "pass": true,
+          "residual_m": 0.0005820402646787534,
+          "type": "bounce"
+        },
+        {
+          "event_id": "ev_007",
+          "excess_m": 3.8679821934897607,
+          "pass": false,
+          "type": "contact"
+        }
+      ],
+      "feasible": false,
+      "segment_id": "flight_06",
+      "topology_pass": true
+    },
+    {
+      "duration_seconds": 0.966666,
+      "endpoint_checks": [
+        {
+          "event_id": "ev_007",
+          "excess_m": 3.8679821934897607,
+          "pass": false,
+          "type": "contact"
+        },
+        {
+          "event_id": "ev_008",
+          "pass": true,
+          "residual_m": 0.008419593427793082,
+          "type": "bounce"
+        }
+      ],
+      "feasible": false,
+      "segment_id": "flight_07",
+      "topology_pass": true
+    },
+    {
+      "duration_seconds": 0.6999999999999993,
+      "endpoint_checks": [
+        {
+          "event_id": "ev_008",
+          "pass": true,
+          "residual_m": 0.005812484291916626,
+          "type": "bounce"
+        },
+        {
+          "event_id": "ev_009",
+          "excess_m": 1.2925770279765523,
+          "pass": false,
+          "type": "contact"
+        }
+      ],
+      "feasible": false,
+      "segment_id": "flight_08",
+      "topology_pass": true
+    },
+    {
+      "duration_seconds": 0.5833340000000007,
+      "endpoint_checks": [
+        {
+          "event_id": "ev_009",
+          "excess_m": 1.2925770279765523,
+          "pass": false,
+          "type": "contact"
+        },
+        {
+          "event_id": "ev_010",
+          "pass": true,
+          "residual_m": 0.002570548565340225,
+          "type": "bounce"
+        }
+      ],
+      "feasible": false,
+      "segment_id": "flight_09",
+      "topology_pass": true
+    }
+  ],
+  "status": "PHASE_A_ENDPOINT_FEASIBILITY_FAILED",
+  "topology_passed": 9,
+  "wrong_endpoint_assignments": 0
+}

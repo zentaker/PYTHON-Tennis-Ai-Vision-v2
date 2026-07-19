@@ -1,0 +1,10 @@
+{
+  "maximum_reprojection_error_px": 54.522,
+  "median_reprojection_error_px": 7.0634999999999994,
+  "observations_consumed": 314,
+  "observations_downweighted": 15,
+  "observations_rejected": 0,
+  "p95_reprojection_error_px": 27.472599999999964,
+  "phase_b_executed": false,
+  "source": "v32_forensic_baseline"
+}
