@@ -1,0 +1,15 @@
+{
+  "frames_processed": 5,
+  "players_resolved": 5,
+  "players_unresolved": 0,
+  "maximum_method_disagreement_m": 0.09966235430149772,
+  "zero_identity_changes": true,
+  "zero_nonfinite_positions": true,
+  "events": {
+    "ev_001": {"baseline_distance_m": -1.0604917040882658, "uncertainty_m": 0.2698050155208002, "resolved": true},
+    "ev_003": {"baseline_distance_m": 7.937503584397517, "uncertainty_m": 0.1098545390449141, "resolved": true},
+    "ev_005": {"baseline_distance_m": 1.6170756808095916, "uncertainty_m": 0.21813166870274076, "resolved": true},
+    "ev_007": {"baseline_distance_m": 6.35762671835854, "uncertainty_m": 0.2597855180995834, "resolved": true},
+    "ev_009": {"baseline_distance_m": -1.2344249378763656, "uncertainty_m": 0.2722320103506895, "resolved": true}
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "runs": 64,
+  "seed": 20260719,
+  "perturbations": ["line pixels", "corners", "vertical reference", "resolution", "initial camera"],
+  "implemented_perturbations": ["line/corner pixels"],
+  "unavailable_perturbations": ["vertical reference samples not serialized per frame", "resolution fixed canonical", "camera prior preserved"],
+  "points": [
+    {"ground_xy": [0.0, 0.0], "uncertainty_x_m": 0.005708500295962334, "uncertainty_y_m": 0.011749710301367447, "sensitivity_m_per_pixel": 0.0289024834056109, "extrapolation_condition": "inside"},
+    {"ground_xy": [0.0, 11.885], "uncertainty_x_m": 0.0061965136802661774, "uncertainty_y_m": 0.02273293761282353, "sensitivity_m_per_pixel": 0.02375509284015274, "extrapolation_condition": "inside"},
+    {"ground_xy": [0.0, 14.385], "uncertainty_x_m": 0.0066098838245782264, "uncertainty_y_m": 0.026882497666415504, "sensitivity_m_per_pixel": 0.03730489707568919, "extrapolation_condition": "outside"},
+    {"ground_xy": [0.0, 16.885], "uncertainty_x_m": 0.007100264841002365, "uncertainty_y_m": 0.031785283633198526, "sensitivity_m_per_pixel": 0.0568224435269819, "extrapolation_condition": "outside"},
+    {"ground_xy": [0.0, -16.885], "uncertainty_x_m": 0.008850424397841762, "uncertainty_y_m": 0.0158682880623784, "sensitivity_m_per_pixel": 0.055865634830603375, "extrapolation_condition": "outside"}
+  ]
+}
