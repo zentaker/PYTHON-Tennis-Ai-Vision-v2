@@ -1,5 +1,5 @@
 # Current task
 
-Audit Stage 5B v3.4 contact-ray and shared-node evidence. Phase A passed from primary
-evidence without prior XYZ; Phase B is partial because reprojection gates fail.
-Analytics remains blocked.
+Run v3.5 measurement-integrity and observation-conditioned node selection. V3.4
+structural gates passed but Phase B was human-rejected for speed-only selection and
+frozen contacts. Analytics remains blocked.

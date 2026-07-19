@@ -1,5 +1,9 @@
 # Last result
 
+- V3.4 structural gate passed; Phase B human gate rejected.
+- Reasons: speed-only node selection, frozen contact nodes, missing body-linked wrist depth.
+- Median/p95/max reprojection: 17.6898/53.9555/86.1965 px; flights 05/07/09 worst.
+
 - V3.4 Phase A passed: contacts 5/5, bounces 5/5, flights 9/9, shared nodes 10/10.
 - Phase B consumed 314 observations; shared-node mismatch and negative Z are zero.
 - Median/p95/max reprojection: 17.6898/53.9555/86.1965 px.

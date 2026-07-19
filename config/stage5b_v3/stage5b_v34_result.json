@@ -2,7 +2,7 @@
   "ambiguous_physically_valid_segments": 0,
   "analytics_consumes_xyz": false,
   "ball_rays_constructed": 5,
-  "blocker": "REPROJECTION_GATES_FAILED",
+  "blocker": "SPEED_ONLY_SELECTION_AND_FROZEN_CONTACT_NODES",
   "bounce_nodes_feasible": 5,
   "canonical_contact_pixels_reconciled": 5,
   "cloud_calls": 0,
@@ -33,6 +33,10 @@
   "segments_with_feasible_candidate_pairs": 9,
   "shared_event_nodes": 10,
   "spend": 0,
-  "status": "STAGE5B_V34_OPTIMIZATION_PARTIAL",
+  "status": "STAGE5B_V34_PHASE_B_REJECTED_BY_HUMAN_GATE",
+  "stage5b_v34_structural_gate": "STAGE5B_V34_TOPOLOGY_AND_SHARED_NODE_GATE_PASSED",
+  "stage5b_v34_old_xyz_independence": "PASSED",
+  "stage5b_v34_contact_model_gate": "STAGE5B_V34_PHASE_A_PHYSICAL_MODEL_PARTIAL",
+  "stage5b_v34_phase_b_human_gate": "STAGE5B_V34_PHASE_B_REJECTED_BY_HUMAN_GATE",
   "wrist_rays_constructed": 10
 }

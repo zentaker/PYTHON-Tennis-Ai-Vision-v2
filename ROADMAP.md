@@ -154,6 +154,10 @@ vuelos con 10/10 nodos compartidos. Phase A pasó sin dependencia de XYZ anterio
 Phase B consumió 314 observaciones pero quedó `STAGE5B_V34_OPTIMIZATION_PARTIAL` por
 reproyección 17.6898/53.9555 px (mediana/p95). Analytics continúa bloqueado.
 
+La auditoría humana rechazó Phase B v3.4: la selección minimizaba velocidad y congelaba
+contact nodes sin ligar profundidad de muñeca al cuerpo. V3.5 debe auditar mediciones,
+rangos temporales y costes de edges condicionados por observaciones.
+
 ### Stage 5C - Vista superior derivada
 
 Renderizar X,Y de la trayectoria 3D aprobada.
