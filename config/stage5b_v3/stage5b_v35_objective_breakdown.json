@@ -1,0 +1,6 @@
+{
+  "contact_nodes_optimized": false,
+  "gate_b_precondition": "STAGE5B_V35_OBSERVATION_CONDITIONED_NODES_PARTIAL",
+  "observation_conditioned": true,
+  "speed_only_selection": false
+}

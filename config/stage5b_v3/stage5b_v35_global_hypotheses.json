@@ -1,0 +1,8 @@
+[
+  {
+    "cost": 260.7791720399591,
+    "hypothesis_id": "observation_conditioned_model_g",
+    "selection_basis": "interior_observations_and_holdout",
+    "status": "STAGE5B_V35_OBSERVATION_CONDITIONED_NODES_PARTIAL"
+  }
+]

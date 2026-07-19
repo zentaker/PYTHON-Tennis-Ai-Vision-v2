@@ -1,0 +1,282 @@
+[
+  {
+    "ball_wrist_distance_px": 111.09372799799006,
+    "confidence": 0.844635,
+    "event_id": "ev_001",
+    "event_type": "contact",
+    "frame_end": 139,
+    "frame_id": 139,
+    "frame_start": 139,
+    "raw_pixel": [
+      1512.445,
+      655.371
+    ],
+    "selection_reason": "declared_frame_range",
+    "smoothed_pixel": [
+      1512.445,
+      646.79
+    ],
+    "timestamp_seconds": 2.771667,
+    "timing_prior": 0.0
+  },
+  {
+    "ball_wrist_distance_px": null,
+    "confidence": 0.846805,
+    "event_id": "ev_002",
+    "event_type": "bounce",
+    "frame_end": 158,
+    "frame_id": 158,
+    "frame_start": 158,
+    "raw_pixel": [
+      1260.371,
+      585.648
+    ],
+    "selection_reason": "declared_frame_range",
+    "smoothed_pixel": [
+      1264.662,
+      570.631
+    ],
+    "timestamp_seconds": 3.138333,
+    "timing_prior": 0.0
+  },
+  {
+    "ball_wrist_distance_px": 54.78703126978783,
+    "confidence": 0.128495,
+    "event_id": "ev_003",
+    "event_type": "contact",
+    "frame_end": 200,
+    "frame_id": 200,
+    "frame_start": 200,
+    "raw_pixel": [
+      1110.199,
+      161.949
+    ],
+    "selection_reason": "declared_frame_range",
+    "smoothed_pixel": [
+      1113.417,
+      161.949
+    ],
+    "timestamp_seconds": 3.955,
+    "timing_prior": 0.0
+  },
+  {
+    "ball_wrist_distance_px": null,
+    "confidence": 0.089462,
+    "event_id": "ev_004",
+    "event_type": "bounce",
+    "frame_end": 264,
+    "frame_id": 262,
+    "frame_start": 262,
+    "raw_pixel": [
+      1566.078,
+      987.895
+    ],
+    "selection_reason": "declared_frame_range",
+    "smoothed_pixel": [
+      1544.625,
+      953.927
+    ],
+    "timestamp_seconds": 5.188333,
+    "timing_prior": 0.0
+  },
+  {
+    "ball_wrist_distance_px": null,
+    "confidence": 0.07107,
+    "event_id": "ev_004",
+    "event_type": "bounce",
+    "frame_end": 264,
+    "frame_id": 264,
+    "frame_start": 262,
+    "raw_pixel": [
+      171.625,
+      1427.684
+    ],
+    "selection_reason": "declared_frame_range",
+    "smoothed_pixel": [
+      1564.29,
+      972.698
+    ],
+    "timestamp_seconds": 5.238333,
+    "timing_prior": -0.25
+  },
+  {
+    "ball_wrist_distance_px": 192.22070031275496,
+    "confidence": 0.562955,
+    "event_id": "ev_005",
+    "event_type": "contact",
+    "frame_end": 288,
+    "frame_id": 287,
+    "frame_start": 287,
+    "raw_pixel": [
+      1673.344,
+      939.625
+    ],
+    "selection_reason": "declared_frame_range",
+    "smoothed_pixel": [
+      1662.617,
+      927.11
+    ],
+    "timestamp_seconds": 5.688333,
+    "timing_prior": 0.0
+  },
+  {
+    "ball_wrist_distance_px": 192.22070031275496,
+    "confidence": 0.793708,
+    "event_id": "ev_005",
+    "event_type": "contact",
+    "frame_end": 288,
+    "frame_id": 288,
+    "frame_start": 287,
+    "raw_pixel": [
+      1635.801,
+      891.355
+    ],
+    "selection_reason": "declared_frame_range",
+    "smoothed_pixel": [
+      1615.242,
+      871.69
+    ],
+    "timestamp_seconds": 5.721667,
+    "timing_prior": -0.25
+  },
+  {
+    "ball_wrist_distance_px": null,
+    "confidence": 0.904021,
+    "event_id": "ev_006",
+    "event_type": "bounce",
+    "frame_end": 327,
+    "frame_id": 327,
+    "frame_start": 327,
+    "raw_pixel": [
+      992.207,
+      440.84
+    ],
+    "selection_reason": "declared_frame_range",
+    "smoothed_pixel": [
+      995.782,
+      434.583
+    ],
+    "timestamp_seconds": 6.488333,
+    "timing_prior": 0.0
+  },
+  {
+    "ball_wrist_distance_px": 54.752922751960064,
+    "confidence": 0.583741,
+    "event_id": "ev_007",
+    "event_type": "contact",
+    "frame_end": 351,
+    "frame_id": 351,
+    "frame_start": 351,
+    "raw_pixel": [
+      863.488,
+      172.676
+    ],
+    "selection_reason": "declared_frame_range",
+    "smoothed_pixel": [
+      870.192,
+      186.084
+    ],
+    "timestamp_seconds": 6.971667,
+    "timing_prior": 0.0
+  },
+  {
+    "ball_wrist_distance_px": null,
+    "confidence": 0.812978,
+    "event_id": "ev_008",
+    "event_type": "bounce",
+    "frame_end": 400,
+    "frame_id": 399,
+    "frame_start": 399,
+    "raw_pixel": [
+      1743.066,
+      794.816
+    ],
+    "selection_reason": "declared_frame_range",
+    "smoothed_pixel": [
+      1751.111,
+      784.984
+    ],
+    "timestamp_seconds": 7.938333,
+    "timing_prior": 0.0
+  },
+  {
+    "ball_wrist_distance_px": null,
+    "confidence": 0.916098,
+    "event_id": "ev_008",
+    "event_type": "bounce",
+    "frame_end": 400,
+    "frame_id": 400,
+    "frame_start": 399,
+    "raw_pixel": [
+      1759.156,
+      805.543
+    ],
+    "selection_reason": "declared_frame_range",
+    "smoothed_pixel": [
+      1759.156,
+      791.598
+    ],
+    "timestamp_seconds": 7.955,
+    "timing_prior": -0.25
+  },
+  {
+    "ball_wrist_distance_px": 102.88901614617315,
+    "confidence": 0.741945,
+    "event_id": "ev_009",
+    "event_type": "contact",
+    "frame_end": 435,
+    "frame_id": 434,
+    "frame_start": 434,
+    "raw_pixel": [
+      2257.941,
+      843.086
+    ],
+    "selection_reason": "declared_frame_range",
+    "smoothed_pixel": [
+      2246.142,
+      831.287
+    ],
+    "timestamp_seconds": 8.638333,
+    "timing_prior": 0.0
+  },
+  {
+    "ball_wrist_distance_px": 102.88901614617315,
+    "confidence": 0.771034,
+    "event_id": "ev_009",
+    "event_type": "contact",
+    "frame_end": 435,
+    "frame_id": 435,
+    "frame_start": 434,
+    "raw_pixel": [
+      2247.215,
+      826.996
+    ],
+    "selection_reason": "declared_frame_range",
+    "smoothed_pixel": [
+      2226.834,
+      807.688
+    ],
+    "timestamp_seconds": 8.655,
+    "timing_prior": -0.25
+  },
+  {
+    "ball_wrist_distance_px": null,
+    "confidence": 0.902433,
+    "event_id": "ev_010",
+    "event_type": "bounce",
+    "frame_end": 463,
+    "frame_id": 463,
+    "frame_start": 463,
+    "raw_pixel": [
+      1743.066,
+      451.566
+    ],
+    "selection_reason": "declared_frame_range",
+    "smoothed_pixel": [
+      1740.385,
+      442.18
+    ],
+    "timestamp_seconds": 9.221667,
+    "timing_prior": 0.0
+  }
+]

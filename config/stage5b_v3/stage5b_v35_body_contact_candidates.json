@@ -1,0 +1,1622 @@
+[
+  {
+    "anatomical_residual": 0.7579430278317615,
+    "anchor_likelihood": 0.9639230978886179,
+    "candidates": [
+      {
+        "anatomical_cost": 0.7579430278317615,
+        "anchor_mahalanobis_cost": 0.036743761528166975,
+        "ball_pixel": [
+          1512.445,
+          646.79
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 32.05153679137594,
+        "confidence": 0.5416406526937521,
+        "contact_height_m": 2.636842105263158,
+        "event_frame": 139,
+        "player_ground_xy": [
+          1.1546674879485401,
+          -11.182821645333169
+        ],
+        "prior_log_probability": -2.4198517895512968,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 1.6251650001913682,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          1.1546674879485401,
+          -11.182821645333169,
+          0.0
+        ],
+        "timestamp": 2.771667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 2.2737367544323206e-13,
+        "wrist_xyz": [
+          1.159031058552821,
+          -11.163769830639634,
+          2.636842105263158
+        ],
+        "xyz": [
+          0.8850425220664448,
+          -8.804460808911426,
+          2.636842105263158
+        ]
+      },
+      {
+        "anatomical_cost": 0.9057288891625422,
+        "anchor_mahalanobis_cost": 1.082203503138951,
+        "ball_pixel": [
+          1512.445,
+          646.79
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 30.573565012665473,
+        "confidence": 0.5416406526937521,
+        "contact_height_m": 3.0,
+        "event_frame": 139,
+        "player_ground_xy": [
+          1.1546674879485401,
+          -11.182821645333169
+        ],
+        "prior_log_probability": -2.800325261282598,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.8123928689811046,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          1.1546674879485401,
+          -11.182821645333169,
+          0.0
+        ],
+        "timestamp": 2.771667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 2.5421149729252077e-13,
+        "wrist_xyz": [
+          1.1340571156981394,
+          -11.758261529491602,
+          2.8
+        ],
+        "xyz": [
+          0.842089615050645,
+          -10.236477558092027,
+          3.0
+        ]
+      },
+      {
+        "anatomical_cost": 0.7050822021232289,
+        "anchor_mahalanobis_cost": 0.8658592413580688,
+        "ball_pixel": [
+          1512.445,
+          646.79
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 32.544194050946096,
+        "confidence": 0.5416406526937521,
+        "contact_height_m": 2.5157894736842104,
+        "event_frame": 139,
+        "player_ground_xy": [
+          1.1546674879485401,
+          -11.182821645333169
+        ],
+        "prior_log_probability": -3.2326145926465473,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 1.6616731491652494,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          1.1546674879485401,
+          -11.182821645333169,
+          0.0
+        ],
+        "timestamp": 2.771667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 2.2737367544323206e-13,
+        "wrist_xyz": [
+          1.1775601129288749,
+          -10.722695344394626,
+          2.51578947368421
+        ],
+        "xyz": [
+          0.8993601577383782,
+          -8.327121892517887,
+          2.515789473684209
+        ]
+      },
+      {
+        "anatomical_cost": 0.8600223625579598,
+        "anchor_mahalanobis_cost": 0.7936161872457432,
+        "ball_pixel": [
+          1512.445,
+          646.79
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 31.558879531805783,
+        "confidence": 0.5416406526937521,
+        "contact_height_m": 2.757894736842105,
+        "event_frame": 139,
+        "player_ground_xy": [
+          1.1546674879485401,
+          -11.182821645333169
+        ],
+        "prior_log_probability": -3.2422954010211966,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 1.5886568512174937,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          1.1546674879485401,
+          -11.182821645333169,
+          0.0
+        ],
+        "timestamp": 2.771667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 1.1368683772161603e-13,
+        "wrist_xyz": [
+          1.1405020041767666,
+          -11.604844316884641,
+          2.757894736842105
+        ],
+        "xyz": [
+          0.8707248863945115,
+          -9.281799725304957,
+          2.757894736842105
+        ]
+      },
+      {
+        "anatomical_cost": 0.9057288891625422,
+        "anchor_mahalanobis_cost": 1.082203503138951,
+        "ball_pixel": [
+          1512.445,
+          646.79
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 31.06622227223563,
+        "confidence": 0.5416406526937521,
+        "contact_height_m": 2.878947368421052,
+        "event_frame": 139,
+        "player_ground_xy": [
+          1.1546674879485401,
+          -11.182821645333169
+        ],
+        "prior_log_probability": -3.257787450220213,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 1.2698550579187198,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          1.1546674879485401,
+          -11.182821645333169,
+          0.0
+        ],
+        "timestamp": 2.771667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 2.5421149729252077e-13,
+        "wrist_xyz": [
+          1.1340571156981394,
+          -11.758261529491602,
+          2.8
+        ],
+        "xyz": [
+          0.8564072507225784,
+          -9.759138641698488,
+          2.878947368421052
+        ]
+      },
+      {
+        "anatomical_cost": 0.7060211223490152,
+        "anchor_mahalanobis_cost": 1.6955568460421093,
+        "ball_pixel": [
+          1512.445,
+          646.79
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 33.03685131051625,
+        "confidence": 0.5416406526937521,
+        "contact_height_m": 2.394736842105263,
+        "event_frame": 139,
+        "player_ground_xy": [
+          1.1546674879485401,
+          -11.182821645333169
+        ],
+        "prior_log_probability": -4.099759266530244,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 1.69818129813912,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          1.1546674879485401,
+          -11.182821645333169,
+          0.0
+        ],
+        "timestamp": 2.771667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 0.0,
+        "wrist_xyz": [
+          1.1960891673049292,
+          -10.28162085814962,
+          2.394736842105262
+        ],
+        "xyz": [
+          0.9136777934103114,
+          -7.849782976124359,
+          2.394736842105262
+        ]
+      },
+      {
+        "anatomical_cost": 0.760673720714057,
+        "anchor_mahalanobis_cost": 2.5252628538345245,
+        "ball_pixel": [
+          1512.445,
+          646.79
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 33.5295085700864,
+        "confidence": 0.5416406526937521,
+        "contact_height_m": 2.2736842105263158,
+        "event_frame": 139,
+        "player_ground_xy": [
+          1.1546674879485401,
+          -11.182821645333169
+        ],
+        "prior_log_probability": -5.020626021661576,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 1.734689447112994,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          1.1546674879485401,
+          -11.182821645333169,
+          0.0
+        ],
+        "timestamp": 2.771667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 2.2737367544323206e-13,
+        "wrist_xyz": [
+          1.2146182216809827,
+          -9.840546371904615,
+          2.2736842105263158
+        ],
+        "xyz": [
+          0.9279954290822445,
+          -7.372444059730832,
+          2.2736842105263158
+        ]
+      },
+      {
+        "anatomical_cost": 0.8643221177504875,
+        "anchor_mahalanobis_cost": 3.35497103031217,
+        "ball_pixel": [
+          1512.445,
+          646.79
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 34.02216582965656,
+        "confidence": 0.5416406526937521,
+        "contact_height_m": 2.1526315789473682,
+        "event_frame": 139,
+        "player_ground_xy": [
+          1.1546674879485401,
+          -11.182821645333169
+        ],
+        "prior_log_probability": -5.990490744149537,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 1.7711975960868793,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          1.1546674879485401,
+          -11.182821645333169,
+          0.0
+        ],
+        "timestamp": 2.771667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 3.2155493553843715e-13,
+        "wrist_xyz": [
+          1.233147276057037,
+          -9.399471885659608,
+          2.152631578947368
+        ],
+        "xyz": [
+          0.942313064754178,
+          -6.89510514333729,
+          2.152631578947368
+        ]
+      }
+    ],
+    "event_id": "ev_001",
+    "feasible_sample_fraction": 0.0,
+    "racket_residual": 1.6251650001913682,
+    "support_probability": 0.0,
+    "total_likelihood": 0.08893479754889877,
+    "wrist_reprojection_residual": 2.2737367544323206e-13
+  },
+  {
+    "anatomical_residual": 0.0481149934701155,
+    "anchor_likelihood": 0.47729767471281126,
+    "candidates": [
+      {
+        "anatomical_cost": 0.0481149934701155,
+        "anchor_mahalanobis_cost": 0.7396149267340676,
+        "ball_pixel": [
+          1113.417,
+          161.949
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 60.28624816813022,
+        "confidence": 0.6750807555994593,
+        "contact_height_m": 1.3052631578947367,
+        "event_frame": 200,
+        "player_ground_xy": [
+          -4.125036096318471,
+          19.605632213014594
+        ],
+        "prior_log_probability": -0.7877299202041831,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.0,
+        "selected_hand": "left_wrist",
+        "shoulder_xyz": [
+          -4.125036096318471,
+          19.605632213014594,
+          0.0
+        ],
+        "timestamp": 3.955,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 2.5421149729252077e-13,
+        "wrist_xyz": [
+          -3.5599236216447294,
+          19.480622704025585,
+          1.3052631578947373
+        ],
+        "xyz": [
+          -2.9403508634277613,
+          19.649301607662117,
+          1.3052631578947373
+        ]
+      },
+      {
+        "anatomical_cost": 0.14421160814310316,
+        "anchor_mahalanobis_cost": 0.645968645386358,
+        "ball_pixel": [
+          1113.417,
+          161.949
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 61.078878276084914,
+        "confidence": 0.6750807555994593,
+        "contact_height_m": 1.1842105263157894,
+        "event_frame": 200,
+        "player_ground_xy": [
+          -4.125036096318471,
+          19.605632213014594
+        ],
+        "prior_log_probability": -0.9681949813501456,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.1780147278206844,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          -4.125036096318471,
+          19.605632213014594,
+          0.0
+        ],
+        "timestamp": 3.955,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 4.0990372275064023e-13,
+        "wrist_xyz": [
+          -3.680990668587827,
+          19.825427739942853,
+          1.1842105263157894
+        ],
+        "xyz": [
+          -2.9783993402314364,
+          20.431708830172873,
+          1.1842105263157894
+        ]
+      },
+      {
+        "anatomical_cost": 0.0006090312256820477,
+        "anchor_mahalanobis_cost": 1.0109575809792624,
+        "ball_pixel": [
+          1113.417,
+          161.949
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 60.28624816813022,
+        "confidence": 0.6750807555994593,
+        "contact_height_m": 1.3052631578947367,
+        "event_frame": 200,
+        "player_ground_xy": [
+          -4.125036096318471,
+          19.605632213014594
+        ],
+        "prior_log_probability": -1.1775383484930875,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.165971736288143,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          -4.125036096318471,
+          19.605632213014594,
+          0.0
+        ],
+        "timestamp": 3.955,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 4.856703836433968e-13,
+        "wrist_xyz": [
+          -3.6338245547848946,
+          19.050888321484223,
+          1.3052631578947373
+        ],
+        "xyz": [
+          -2.9403508634277613,
+          19.649301607662117,
+          1.3052631578947373
+        ]
+      },
+      {
+        "anatomical_cost": 0.03370323485009852,
+        "anchor_mahalanobis_cost": 1.1476584192869839,
+        "ball_pixel": [
+          1113.417,
+          161.949
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 61.078878276084914,
+        "confidence": 0.6750807555994593,
+        "contact_height_m": 1.1842105263157894,
+        "event_frame": 200,
+        "player_ground_xy": [
+          -4.125036096318471,
+          19.605632213014594
+        ],
+        "prior_log_probability": -1.1813616541370824,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.0,
+        "selected_hand": "left_wrist",
+        "shoulder_xyz": [
+          -4.125036096318471,
+          19.605632213014594,
+          0.0
+        ],
+        "timestamp": 3.955,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 4.3383856571136184e-13,
+        "wrist_xyz": [
+          -3.6061181025066054,
+          20.260812174036197,
+          1.1842105263157894
+        ],
+        "xyz": [
+          -2.9783993402314364,
+          20.431708830172873,
+          1.1842105263157894
+        ]
+      },
+      {
+        "anatomical_cost": 0.0058760432981492805,
+        "anchor_mahalanobis_cost": 1.5125058836015557,
+        "ball_pixel": [
+          1113.417,
+          161.949
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 61.8715083840396,
+        "confidence": 0.6750807555994593,
+        "contact_height_m": 1.063157894736842,
+        "event_frame": 200,
+        "player_ground_xy": [
+          -4.125036096318471,
+          19.605632213014594
+        ],
+        "prior_log_probability": -1.7084396462529265,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.19005771935322147,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          -4.125036096318471,
+          19.605632213014594,
+          0.0
+        ],
+        "timestamp": 3.955,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 3.0212691549237007e-13,
+        "wrist_xyz": [
+          -3.728156782390759,
+          20.59996715840149,
+          1.0631578947368414
+        ],
+        "xyz": [
+          -3.016447817035111,
+          21.21411605268363,
+          1.0631578947368414
+        ]
+      },
+      {
+        "anatomical_cost": 0.1976751770307351,
+        "anchor_mahalanobis_cost": 1.5125952163111884,
+        "ball_pixel": [
+          1113.417,
+          161.949
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 59.493618060175535,
+        "confidence": 0.6750807555994593,
+        "contact_height_m": 1.426315789473684,
+        "event_frame": 200,
+        "player_ground_xy": [
+          -4.125036096318471,
+          19.605632213014594
+        ],
+        "prior_log_probability": -1.7102703933419234,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.0,
+        "selected_hand": "left_wrist",
+        "shoulder_xyz": [
+          -4.125036096318471,
+          19.605632213014594,
+          0.0
+        ],
+        "timestamp": 3.955,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 4.582862941503293e-13,
+        "wrist_xyz": [
+          -3.5137291407828544,
+          18.70043323401498,
+          1.4263157894736835
+        ],
+        "xyz": [
+          -2.9023023866240867,
+          18.86689438515136,
+          1.4263157894736835
+        ]
+      },
+      {
+        "anatomical_cost": 0.23181124679226617,
+        "anchor_mahalanobis_cost": 2.144344447831303,
+        "ball_pixel": [
+          1113.417,
+          161.949
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 61.8715083840396,
+        "confidence": 0.6750807555994593,
+        "contact_height_m": 1.063157894736842,
+        "event_frame": 200,
+        "player_ground_xy": [
+          -4.125036096318471,
+          19.605632213014594
+        ],
+        "prior_log_probability": -2.376155694623569,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.0,
+        "selected_hand": "left_wrist",
+        "shoulder_xyz": [
+          -4.125036096318471,
+          19.605632213014594,
+          0.0
+        ],
+        "timestamp": 3.955,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 4.687428401686771e-13,
+        "wrist_xyz": [
+          -3.6523125833684813,
+          21.041001644046815,
+          1.0631578947368414
+        ],
+        "xyz": [
+          -3.016447817035111,
+          21.21411605268363,
+          1.0631578947368414
+        ]
+      },
+      {
+        "anatomical_cost": 0.3484511855018244,
+        "anchor_mahalanobis_cost": 2.0253279406260902,
+        "ball_pixel": [
+          1113.417,
+          161.949
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 59.493618060175535,
+        "confidence": 0.6750807555994593,
+        "contact_height_m": 1.426315789473684,
+        "event_frame": 200,
+        "player_ground_xy": [
+          -4.125036096318471,
+          19.605632213014594
+        ],
+        "prior_log_probability": -2.527707870883512,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.15392874475559726,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          -4.125036096318471,
+          19.605632213014594,
+          0.0
+        ],
+        "timestamp": 3.955,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 2.428351918216984e-13,
+        "wrist_xyz": [
+          -3.5866584409819633,
+          18.2763489030256,
+          1.4263157894736835
+        ],
+        "xyz": [
+          -2.9023023866240867,
+          18.86689438515136,
+          1.4263157894736835
+        ]
+      }
+    ],
+    "event_id": "ev_003",
+    "feasible_sample_fraction": 0.95,
+    "racket_residual": 0.0,
+    "support_probability": 0.95,
+    "total_likelihood": 0.4548762294585675,
+    "wrist_reprojection_residual": 2.5421149729252077e-13
+  },
+  {
+    "anatomical_residual": 0.30113642631205373,
+    "anchor_likelihood": 0.3718571242598482,
+    "candidates": [
+      {
+        "anatomical_cost": 0.30113642631205373,
+        "anchor_mahalanobis_cost": 0.9892455730548196,
+        "ball_pixel": [
+          1662.617,
+          927.11
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 28.589101587791333,
+        "confidence": 0.4879984416459736,
+        "contact_height_m": 1.9105263157894734,
+        "event_frame": 287,
+        "player_ground_xy": [
+          0.9676785710851187,
+          -13.519695114566568
+        ],
+        "prior_log_probability": -1.9565468841084839,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.6661648847416106,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          0.9676785710851187,
+          -13.519695114566568,
+          0.0
+        ],
+        "timestamp": 5.688333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 3.410605131648481e-13,
+        "wrist_xyz": [
+          0.5703715905238017,
+          -13.554153199167715,
+          1.9105263157894736
+        ],
+        "xyz": [
+          1.6590444599506697,
+          -12.648441123423392,
+          1.9105263157894736
+        ]
+      },
+      {
+        "anatomical_cost": 0.24113992758824251,
+        "anchor_mahalanobis_cost": 1.2537673435244268,
+        "ball_pixel": [
+          1662.617,
+          927.11
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 28.991433555173217,
+        "confidence": 0.4879984416459736,
+        "contact_height_m": 1.789473684210526,
+        "event_frame": 287,
+        "player_ground_xy": [
+          0.9676785710851187,
+          -13.519695114566568
+        ],
+        "prior_log_probability": -2.1810017224573297,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.6860944513446605,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          0.9676785710851187,
+          -13.519695114566568,
+          0.0
+        ],
+        "timestamp": 5.688333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 2.2737367544323206e-13,
+        "wrist_xyz": [
+          0.579051944113281,
+          -13.183961592264382,
+          1.7894736842105257
+        ],
+        "xyz": [
+          1.6830456131828644,
+          -12.265503508388367,
+          1.7894736842105257
+        ]
+      },
+      {
+        "anatomical_cost": 0.40726371337604866,
+        "anchor_mahalanobis_cost": 1.3955370302795536,
+        "ball_pixel": [
+          1662.617,
+          927.11
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 28.18676962040945,
+        "confidence": 0.4879984416459736,
+        "contact_height_m": 2.0315789473684207,
+        "event_frame": 287,
+        "player_ground_xy": [
+          0.9676785710851187,
+          -13.519695114566568
+        ],
+        "prior_log_probability": -2.449036061794165,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.6462353181385629,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          0.9676785710851187,
+          -13.519695114566568,
+          0.0
+        ],
+        "timestamp": 5.688333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 3.2155493553843715e-13,
+        "wrist_xyz": [
+          0.5616912369343225,
+          -13.924344806071051,
+          2.0315789473684216
+        ],
+        "xyz": [
+          1.635043306718475,
+          -13.031378738458418,
+          2.0315789473684216
+        ]
+      },
+      {
+        "anatomical_cost": 0.23973855740122238,
+        "anchor_mahalanobis_cost": 1.2548860928565473,
+        "ball_pixel": [
+          1662.617,
+          927.11
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 28.991433555173217,
+        "confidence": 0.4879984416459736,
+        "contact_height_m": 1.789473684210526,
+        "event_frame": 287,
+        "player_ground_xy": [
+          0.9676785710851187,
+          -13.519695114566568
+        ],
+        "prior_log_probability": -2.525817989255752,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 1.0311933389979826,
+        "selected_hand": "left_wrist",
+        "shoulder_xyz": [
+          0.9676785710851187,
+          -13.519695114566568,
+          0.0
+        ],
+        "timestamp": 5.688333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 5.684341886080801e-13,
+        "wrist_xyz": [
+          0.4637255831994095,
+          -13.563928852939192,
+          1.7894736842105257
+        ],
+        "xyz": [
+          1.6830456131828644,
+          -12.265503508388367,
+          1.7894736842105257
+        ]
+      },
+      {
+        "anatomical_cost": 0.18008482466635156,
+        "anchor_mahalanobis_cost": 1.451133620599907,
+        "ball_pixel": [
+          1662.617,
+          927.11
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 29.393765522555096,
+        "confidence": 0.4879984416459736,
+        "contact_height_m": 1.6684210526315788,
+        "event_frame": 287,
+        "player_ground_xy": [
+          0.9676785710851187,
+          -13.519695114566568
+        ],
+        "prior_log_probability": -2.6871305005361643,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 1.0559120552699055,
+        "selected_hand": "left_wrist",
+        "shoulder_xyz": [
+          0.9676785710851187,
+          -13.519695114566568,
+          0.0
+        ],
+        "timestamp": 5.688333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 6.821210263296962e-13,
+        "wrist_xyz": [
+          0.4708054818962677,
+          -13.19901028557829,
+          1.6684210526315795
+        ],
+        "xyz": [
+          1.7070467664150586,
+          -11.882565893353345,
+          1.6684210526315795
+        ]
+      },
+      {
+        "anatomical_cost": 0.23402111769526948,
+        "anchor_mahalanobis_cost": 1.93067367686014,
+        "ball_pixel": [
+          1662.617,
+          927.11
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 29.393765522555096,
+        "confidence": 0.4879984416459736,
+        "contact_height_m": 1.6684210526315788,
+        "event_frame": 287,
+        "player_ground_xy": [
+          0.9676785710851187,
+          -13.519695114566568
+        ],
+        "prior_log_probability": -2.87071881250312,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.7060240179477104,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          0.9676785710851187,
+          -13.519695114566568,
+          0.0
+        ],
+        "timestamp": 5.688333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 3.2155493553843715e-13,
+        "wrist_xyz": [
+          0.5877322977027599,
+          -12.813769985361052,
+          1.6684210526315795
+        ],
+        "xyz": [
+          1.7070467664150586,
+          -11.882565893353345,
+          1.6684210526315795
+        ]
+      },
+      {
+        "anatomical_cost": 0.3463813268296579,
+        "anchor_mahalanobis_cost": 1.600455928823109,
+        "ball_pixel": [
+          1662.617,
+          927.11
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 28.589101587791333,
+        "confidence": 0.4879984416459736,
+        "contact_height_m": 1.9105263157894734,
+        "event_frame": 287,
+        "player_ground_xy": [
+          0.9676785710851187,
+          -13.519695114566568
+        ],
+        "prior_log_probability": -2.953311878378829,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 1.0064746227260621,
+        "selected_hand": "left_wrist",
+        "shoulder_xyz": [
+          0.9676785710851187,
+          -13.519695114566568,
+          0.0
+        ],
+        "timestamp": 5.688333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 5.684341886080801e-13,
+        "wrist_xyz": [
+          0.4566456845025513,
+          -13.928847420300102,
+          1.9105263157894736
+        ],
+        "xyz": [
+          1.6590444599506697,
+          -12.648441123423392,
+          1.9105263157894736
+        ]
+      },
+      {
+        "anatomical_cost": 0.5500754166105178,
+        "anchor_mahalanobis_cost": 2.1162899019054553,
+        "ball_pixel": [
+          1662.617,
+          927.11
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 27.78443765302757,
+        "confidence": 0.4879984416459736,
+        "contact_height_m": 2.1526315789473682,
+        "event_frame": 287,
+        "player_ground_xy": [
+          0.9676785710851187,
+          -13.519695114566568
+        ],
+        "prior_log_probability": -3.292671070051486,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.6263057515355128,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          0.9676785710851187,
+          -13.519695114566568,
+          0.0
+        ],
+        "timestamp": 5.688333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 2.2737367544323206e-13,
+        "wrist_xyz": [
+          0.5530108833448435,
+          -14.29453641297438,
+          2.152631578947368
+        ],
+        "xyz": [
+          1.6110421534862804,
+          -13.41431635349344,
+          2.152631578947368
+        ]
+      }
+    ],
+    "event_id": "ev_005",
+    "feasible_sample_fraction": 0.025,
+    "racket_residual": 0.6661648847416106,
+    "support_probability": 0.025,
+    "total_likelihood": 0.14134566213882174,
+    "wrist_reprojection_residual": 3.410605131648481e-13
+  },
+  {
+    "anatomical_residual": 0.1812368321398575,
+    "anchor_likelihood": 0.6695718990230576,
+    "candidates": [
+      {
+        "anatomical_cost": 0.1812368321398575,
+        "anchor_mahalanobis_cost": 0.401116727498946,
+        "ball_pixel": [
+          870.192,
+          186.084
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 59.470708003625894,
+        "confidence": 0.49866183023703725,
+        "contact_height_m": 1.1842105263157894,
+        "event_frame": 351,
+        "player_ground_xy": [
+          -4.733452569849874,
+          18.51678323643288
+        ],
+        "prior_log_probability": -0.5823535596388035,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.0,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          -4.733452569849874,
+          18.51678323643288,
+          0.0
+        ],
+        "timestamp": 6.971667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 2.428351918216984e-13,
+        "wrist_xyz": [
+          -5.032286855318523,
+          18.645946042771115,
+          1.1842105263157894
+        ],
+        "xyz": [
+          -5.64829635826179,
+          18.607421142103703,
+          1.1842105263157894
+        ]
+      },
+      {
+        "anatomical_cost": 0.02122108494640133,
+        "anchor_mahalanobis_cost": 0.884447971718808,
+        "ball_pixel": [
+          870.192,
+          186.084
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 58.69894737154643,
+        "confidence": 0.49866183023703725,
+        "contact_height_m": 1.3052631578947367,
+        "event_frame": 351,
+        "player_ground_xy": [
+          -4.733452569849874,
+          18.51678323643288
+        ],
+        "prior_log_probability": -0.9056690566652092,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.0,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          -4.733452569849874,
+          18.51678323643288,
+          0.0
+        ],
+        "timestamp": 6.971667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 3.410605131648481e-13,
+        "wrist_xyz": [
+          -4.96758476062338,
+          17.886712941837402,
+          1.3052631578947373
+        ],
+        "xyz": [
+          -5.575600212388889,
+          17.84868798480087,
+          1.3052631578947373
+        ]
+      },
+      {
+        "anatomical_cost": 0.045080411319849446,
+        "anchor_mahalanobis_cost": 1.2606668647976793,
+        "ball_pixel": [
+          870.192,
+          186.084
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 60.242468635705364,
+        "confidence": 0.49866183023703725,
+        "contact_height_m": 1.063157894736842,
+        "event_frame": 351,
+        "player_ground_xy": [
+          -4.733452569849874,
+          18.51678323643288
+        ],
+        "prior_log_probability": -1.3057472761175288,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.0,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          -4.733452569849874,
+          18.51678323643288,
+          0.0
+        ],
+        "timestamp": 6.971667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 5.934627159212227e-13,
+        "wrist_xyz": [
+          -5.096988950013666,
+          19.40517914370482,
+          1.0631578947368414
+        ],
+        "xyz": [
+          -5.720992504134691,
+          19.366154299406546,
+          1.0631578947368414
+        ]
+      },
+      {
+        "anatomical_cost": 0.0020423754510273304,
+        "anchor_mahalanobis_cost": 0.9086369266652924,
+        "ball_pixel": [
+          870.192,
+          186.084
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 58.69894737154643,
+        "confidence": 0.49866183023703725,
+        "contact_height_m": 1.3052631578947367,
+        "event_frame": 351,
+        "player_ground_xy": [
+          -4.733452569849874,
+          18.51678323643288
+        ],
+        "prior_log_probability": -1.6839003867789244,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.7732210846626046,
+        "selected_hand": "left_wrist",
+        "shoulder_xyz": [
+          -4.733452569849874,
+          18.51678323643288,
+          0.0
+        ],
+        "timestamp": 6.971667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 4.62671908852022e-13,
+        "wrist_xyz": [
+          -4.086987916980871,
+          18.171543845396265,
+          1.3052631578947373
+        ],
+        "xyz": [
+          -5.575600212388889,
+          17.84868798480087,
+          1.3052631578947373
+        ]
+      },
+      {
+        "anatomical_cost": 0.07409791761677582,
+        "anchor_mahalanobis_cost": 0.9090965153364139,
+        "ball_pixel": [
+          870.192,
+          186.084
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 59.470708003625894,
+        "confidence": 0.49866183023703725,
+        "contact_height_m": 1.1842105263157894,
+        "event_frame": 351,
+        "player_ground_xy": [
+          -4.733452569849874,
+          18.51678323643288
+        ],
+        "prior_log_probability": -1.7764424877700478,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.7932480548168581,
+        "selected_hand": "left_wrist",
+        "shoulder_xyz": [
+          -4.733452569849874,
+          18.51678323643288,
+          0.0
+        ],
+        "timestamp": 6.971667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 3.595093471822542e-13,
+        "wrist_xyz": [
+          -4.140112121320417,
+          18.934521839347816,
+          1.1842105263157894
+        ],
+        "xyz": [
+          -5.64829635826179,
+          18.607421142103703,
+          1.1842105263157894
+        ]
+      },
+      {
+        "anatomical_cost": 0.3322073935286598,
+        "anchor_mahalanobis_cost": 1.8583168999912023,
+        "ball_pixel": [
+          870.192,
+          186.084
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 57.927186739466975,
+        "confidence": 0.49866183023703725,
+        "contact_height_m": 1.426315789473684,
+        "event_frame": 351,
+        "player_ground_xy": [
+          -4.733452569849874,
+          18.51678323643288
+        ],
+        "prior_log_probability": -2.190524293519862,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.0,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          -4.733452569849874,
+          18.51678323643288,
+          0.0
+        ],
+        "timestamp": 6.971667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 4.764346674119284e-13,
+        "wrist_xyz": [
+          -4.902882665928237,
+          17.127479840903703,
+          1.4263157894736835
+        ],
+        "xyz": [
+          -5.50290406651599,
+          17.089954827498033,
+          1.4263157894736835
+        ]
+      },
+      {
+        "anatomical_cost": 0.29711335354916574,
+        "anchor_mahalanobis_cost": 2.251090215747804,
+        "ball_pixel": [
+          870.192,
+          186.084
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 61.01422926778482,
+        "confidence": 0.49866183023703725,
+        "contact_height_m": 0.9421052631578947,
+        "event_frame": 351,
+        "player_ground_xy": [
+          -4.733452569849874,
+          18.51678323643288
+        ],
+        "prior_log_probability": -2.54820356929697,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.0,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          -4.733452569849874,
+          18.51678323643288,
+          0.0
+        ],
+        "timestamp": 6.971667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 4.43961293735052e-13,
+        "wrist_xyz": [
+          -5.1616910447088085,
+          20.16441224463852,
+          0.9421052631578952
+        ],
+        "xyz": [
+          -5.793688650007591,
+          20.124887456709374,
+          0.9421052631578952
+        ]
+      },
+      {
+        "anatomical_cost": 0.11877512023818222,
+        "anchor_mahalanobis_cost": 1.700930765968754,
+        "ball_pixel": [
+          870.192,
+          186.084
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 60.242468635705364,
+        "confidence": 0.49866183023703725,
+        "contact_height_m": 1.063157894736842,
+        "event_frame": 351,
+        "player_ground_xy": [
+          -4.733452569849874,
+          18.51678323643288
+        ],
+        "prior_log_probability": -2.632980911178046,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.8132750249711096,
+        "selected_hand": "left_wrist",
+        "shoulder_xyz": [
+          -4.733452569849874,
+          18.51678323643288,
+          0.0
+        ],
+        "timestamp": 6.971667,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 1.8198773652309366e-13,
+        "wrist_xyz": [
+          -4.193236325659964,
+          19.697499833299368,
+          1.0631578947368414
+        ],
+        "xyz": [
+          -5.720992504134691,
+          19.366154299406546,
+          1.0631578947368414
+        ]
+      }
+    ],
+    "event_id": "ev_007",
+    "feasible_sample_fraction": 0.475,
+    "racket_residual": 0.0,
+    "support_probability": 0.475,
+    "total_likelihood": 0.5585821618587234,
+    "wrist_reprojection_residual": 2.428351918216984e-13
+  },
+  {
+    "anatomical_residual": 0.2142677916963273,
+    "anchor_likelihood": 0.4263503569616781,
+    "candidates": [
+      {
+        "anatomical_cost": 0.2142677916963273,
+        "anchor_mahalanobis_cost": 0.8524938365440992,
+        "ball_pixel": [
+          2246.142,
+          831.287
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 31.40302679964089,
+        "confidence": 0.46212868291632575,
+        "contact_height_m": 1.789473684210526,
+        "event_frame": 434,
+        "player_ground_xy": [
+          5.03374679916979,
+          -10.625872319577518
+        ],
+        "prior_log_probability": -1.0667616282404264,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.0,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          5.03374679916979,
+          -10.625872319577518,
+          0.0
+        ],
+        "timestamp": 8.638333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 9.374856803373542e-13,
+        "wrist_xyz": [
+          4.737368499975024,
+          -10.460198107117204,
+          1.7894736842105257
+        ],
+        "xyz": [
+          5.4086300080845495,
+          -10.189494708366908,
+          1.7894736842105257
+        ]
+      },
+      {
+        "anatomical_cost": 0.30646724653266233,
+        "anchor_mahalanobis_cost": 1.099028508008714,
+        "ball_pixel": [
+          2246.142,
+          831.287
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 30.96722766849406,
+        "confidence": 0.46212868291632575,
+        "contact_height_m": 1.9105263157894734,
+        "event_frame": 434,
+        "player_ground_xy": [
+          5.03374679916979,
+          -10.625872319577518
+        ],
+        "prior_log_probability": -1.4054957545413764,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.0,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          5.03374679916979,
+          -10.625872319577518,
+          0.0
+        ],
+        "timestamp": 8.638333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 9.165725883006586e-13,
+        "wrist_xyz": [
+          4.670980628137694,
+          -10.868189056353053,
+          1.9105263157894736
+        ],
+        "xyz": [
+          5.332926627144454,
+          -10.601242375282439,
+          1.9105263157894736
+        ]
+      },
+      {
+        "anatomical_cost": 0.1861452268746094,
+        "anchor_mahalanobis_cost": 1.5977618953647463,
+        "ball_pixel": [
+          2246.142,
+          831.287
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 31.838825930787714,
+        "confidence": 0.46212868291632575,
+        "contact_height_m": 1.6684210526315788,
+        "event_frame": 434,
+        "player_ground_xy": [
+          5.03374679916979,
+          -10.625872319577518
+        ],
+        "prior_log_probability": -1.7839071222393557,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.0,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          5.03374679916979,
+          -10.625872319577518,
+          0.0
+        ],
+        "timestamp": 8.638333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 9.374856803373542e-13,
+        "wrist_xyz": [
+          4.803756371812353,
+          -10.05220715788137,
+          1.6684210526315795
+        ],
+        "xyz": [
+          5.484333389024644,
+          -9.777747041451384,
+          1.6684210526315795
+        ]
+      },
+      {
+        "anatomical_cost": 0.450576329660767,
+        "anchor_mahalanobis_cost": 1.9990489825139703,
+        "ball_pixel": [
+          2246.142,
+          831.287
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 30.531428537347228,
+        "confidence": 0.46212868291632575,
+        "contact_height_m": 2.0315789473684207,
+        "event_frame": 434,
+        "player_ground_xy": [
+          5.03374679916979,
+          -10.625872319577518
+        ],
+        "prior_log_probability": -2.4496253121747373,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.0,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          5.03374679916979,
+          -10.625872319577518,
+          0.0
+        ],
+        "timestamp": 8.638333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 1.016845989170083e-12,
+        "wrist_xyz": [
+          4.604592756300364,
+          -11.276180005588895,
+          2.0315789473684216
+        ],
+        "xyz": [
+          5.257223246204358,
+          -11.01299004219797,
+          2.0315789473684216
+        ]
+      },
+      {
+        "anatomical_cost": 0.22651512592453024,
+        "anchor_mahalanobis_cost": 2.5857601706688804,
+        "ball_pixel": [
+          2246.142,
+          831.287
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 32.27462506193454,
+        "confidence": 0.46212868291632575,
+        "contact_height_m": 1.5473684210526315,
+        "event_frame": 434,
+        "player_ground_xy": [
+          5.03374679916979,
+          -10.625872319577518
+        ],
+        "prior_log_probability": -2.812275296593411,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.0,
+        "selected_hand": "right_wrist",
+        "shoulder_xyz": [
+          5.03374679916979,
+          -10.625872319577518,
+          0.0
+        ],
+        "timestamp": 8.638333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 1.016845989170083e-12,
+        "wrist_xyz": [
+          4.870144243649683,
+          -9.644216208645524,
+          1.5473684210526315
+        ],
+        "xyz": [
+          5.560036769964739,
+          -9.365999374535857,
+          1.5473684210526315
+        ]
+      },
+      {
+        "anatomical_cost": 0.13367985423346904,
+        "anchor_mahalanobis_cost": 1.7503422915192142,
+        "ball_pixel": [
+          2246.142,
+          831.287
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 32.27462506193454,
+        "confidence": 0.46212868291632575,
+        "contact_height_m": 1.5473684210526315,
+        "event_frame": 434,
+        "player_ground_xy": [
+          5.03374679916979,
+          -10.625872319577518
+        ],
+        "prior_log_probability": -2.907172286538339,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 1.023150140785656,
+        "selected_hand": "left_wrist",
+        "shoulder_xyz": [
+          5.03374679916979,
+          -10.625872319577518,
+          0.0
+        ],
+        "timestamp": 8.638333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 9.374856803373542e-13,
+        "wrist_xyz": [
+          4.328648333141934,
+          -10.641830060570364,
+          1.5473684210526315
+        ],
+        "xyz": [
+          5.560036769964739,
+          -9.365999374535857,
+          1.5473684210526315
+        ]
+      },
+      {
+        "anatomical_cost": 0.07394003785778391,
+        "anchor_mahalanobis_cost": 1.8815417411024091,
+        "ball_pixel": [
+          2246.142,
+          831.287
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 32.71042419308137,
+        "confidence": 0.46212868291632575,
+        "contact_height_m": 1.426315789473684,
+        "event_frame": 434,
+        "player_ground_xy": [
+          5.03374679916979,
+          -10.625872319577518
+        ],
+        "prior_log_probability": -3.0025744841990196,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 1.0470927052388266,
+        "selected_hand": "left_wrist",
+        "shoulder_xyz": [
+          5.03374679916979,
+          -10.625872319577518,
+          0.0
+        ],
+        "timestamp": 8.638333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 9.165725883006586e-13,
+        "wrist_xyz": [
+          4.387724471787446,
+          -10.247309732575033,
+          1.4263157894736835
+        ],
+        "xyz": [
+          5.635740150904835,
+          -8.954251707620326,
+          1.4263157894736835
+        ]
+      },
+      {
+        "anatomical_cost": 0.2536318581380936,
+        "anchor_mahalanobis_cost": 2.1764187942002007,
+        "ball_pixel": [
+          2246.142,
+          831.287
+        ],
+        "ball_pixel_cost": 0.0,
+        "ball_ray_parameter": 31.838825930787714,
+        "confidence": 0.46212868291632575,
+        "contact_height_m": 1.6684210526315788,
+        "event_frame": 434,
+        "player_ground_xy": [
+          5.03374679916979,
+          -10.625872319577518
+        ],
+        "prior_log_probability": -3.4292582286707844,
+        "racket_length_m": 0.75,
+        "racket_residual_m": 0.9992075763324906,
+        "selected_hand": "left_wrist",
+        "shoulder_xyz": [
+          5.03374679916979,
+          -10.625872319577518,
+          0.0
+        ],
+        "timestamp": 8.638333,
+        "timing_cost": 0.0,
+        "wrist_pixel_cost": 9.165725883006586e-13,
+        "wrist_xyz": [
+          4.269572194496422,
+          -11.036350388565698,
+          1.6684210526315795
+        ],
+        "xyz": [
+          5.484333389024644,
+          -9.777747041451384,
+          1.6684210526315795
+        ]
+      }
+    ],
+    "event_id": "ev_009",
+    "feasible_sample_fraction": 0.5,
+    "racket_residual": 0.0,
+    "support_probability": 0.5,
+    "total_likelihood": 0.34412110703188503,
+    "wrist_reprojection_residual": 9.374856803373542e-13
+  }
+]

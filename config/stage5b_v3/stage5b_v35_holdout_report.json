@@ -1,0 +1,74 @@
+[
+  {
+    "generalization_gap": -5.354146469891864,
+    "holdout_median_px": 8.782298530552538,
+    "holdout_p95_px": 11.517878132554857,
+    "segment_id": "flight_01",
+    "train_median_px": 7.696470751815287,
+    "train_p95_px": 16.87202460244672
+  },
+  {
+    "generalization_gap": 7.686586700801072,
+    "holdout_median_px": 25.851874264311547,
+    "holdout_p95_px": 50.8666659812538,
+    "segment_id": "flight_02",
+    "train_median_px": 29.291676733779482,
+    "train_p95_px": 43.18007928045273
+  },
+  {
+    "generalization_gap": -9.180019161766928,
+    "holdout_median_px": 18.86910214608669,
+    "holdout_p95_px": 46.04796350126341,
+    "segment_id": "flight_03",
+    "train_median_px": 14.96301432887358,
+    "train_p95_px": 55.22798266303034
+  },
+  {
+    "generalization_gap": 0.8266683868399838,
+    "holdout_median_px": 41.89732481924415,
+    "holdout_p95_px": 46.999840798920175,
+    "segment_id": "flight_04",
+    "train_median_px": 42.02811804313042,
+    "train_p95_px": 46.17317241208019
+  },
+  {
+    "generalization_gap": -9.706947624953116,
+    "holdout_median_px": 34.71426203620437,
+    "holdout_p95_px": 80.1508650167427,
+    "segment_id": "flight_05",
+    "train_median_px": 53.59462837632158,
+    "train_p95_px": 89.85781264169582
+  },
+  {
+    "generalization_gap": -9.967855874001742,
+    "holdout_median_px": 3.525021604243225,
+    "holdout_p95_px": 5.421033809772477,
+    "segment_id": "flight_06",
+    "train_median_px": 6.243127567492582,
+    "train_p95_px": 15.38888968377422
+  },
+  {
+    "generalization_gap": -5.080623277357503,
+    "holdout_median_px": 38.12230610990267,
+    "holdout_p95_px": 55.89549851309264,
+    "segment_id": "flight_07",
+    "train_median_px": 49.50141986258334,
+    "train_p95_px": 60.976121790450144
+  },
+  {
+    "generalization_gap": -5.58627079956436,
+    "holdout_median_px": 24.36841092547612,
+    "holdout_p95_px": 35.8426381215327,
+    "segment_id": "flight_08",
+    "train_median_px": 20.13233880152668,
+    "train_p95_px": 41.42890892109706
+  },
+  {
+    "generalization_gap": 19.528897692056248,
+    "holdout_median_px": 44.203119806103615,
+    "holdout_p95_px": 80.14735772969891,
+    "segment_id": "flight_09",
+    "train_median_px": 37.86133766182249,
+    "train_p95_px": 60.61846003764266
+  }
+]

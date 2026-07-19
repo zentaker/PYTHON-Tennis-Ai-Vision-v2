@@ -158,6 +158,11 @@ La auditoría humana rechazó Phase B v3.4: la selección minimizaba velocidad y
 contact nodes sin ligar profundidad de muñeca al cuerpo. V3.5 debe auditar mediciones,
 rangos temporales y costes de edges condicionados por observaciones.
 
+V3.5 Gate D inventarió las 314 observaciones y pasó con anomalías explícitas. Gate A
+condicionó los costes de nueve edges a observaciones interiores y holdout, pero quedó
+parcial por mediana/p95 coarse 29.29/68.30 px. Gate B no se ejecutó; Analytics sigue
+bloqueado.
+
 ### Stage 5C - Vista superior derivada
 
 Renderizar X,Y de la trayectoria 3D aprobada.

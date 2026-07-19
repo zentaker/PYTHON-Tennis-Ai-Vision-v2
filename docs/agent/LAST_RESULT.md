@@ -1,5 +1,9 @@
 # Last result
 
+- V3.5 Gate D passed: 314 observations; 49 frozen/duplicate, 13 suspicious, 0 invalid.
+- Gate A partial: observation-conditioned coarse median/p95 29.2917/68.3043 px.
+- Gate B not executed; global `STAGE5B_V35_MEASUREMENT_LIMITED`.
+
 - V3.4 structural gate passed; Phase B human gate rejected.
 - Reasons: speed-only node selection, frozen contact nodes, missing body-linked wrist depth.
 - Median/p95/max reprojection: 17.6898/53.9555/86.1965 px; flights 05/07/09 worst.

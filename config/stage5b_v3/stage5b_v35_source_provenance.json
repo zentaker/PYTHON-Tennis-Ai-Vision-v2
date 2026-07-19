@@ -1,0 +1,27 @@
+{
+  "covariance_policy": "one independent detector source receives an uncertainty floor; correlated copies are not votes",
+  "interpolated": {
+    "correlation_group": "stage3_detector",
+    "derivation": "Stage 3 interpolation",
+    "independent": false,
+    "upstream_field": "source"
+  },
+  "p1_contact": {
+    "correlation_group": "stage3_detector",
+    "derivation": "P1 audit copied from Stage 3 observation",
+    "independent": false,
+    "upstream_field": "ball_pixel"
+  },
+  "raw": {
+    "correlation_group": "stage3_detector",
+    "derivation": "Stage 3 detector",
+    "independent": true,
+    "upstream_field": "x_raw,y_raw"
+  },
+  "smoothed": {
+    "correlation_group": "stage3_detector",
+    "derivation": "Stage 3 temporal smoother",
+    "independent": false,
+    "upstream_field": "x_smooth,y_smooth"
+  }
+}

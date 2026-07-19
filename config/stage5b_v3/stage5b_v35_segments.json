@@ -1,0 +1,65 @@
+[
+  {
+    "holdout_p95_px": 11.517878132554857,
+    "measurement_quality": "MEASUREMENT_RELIABLE",
+    "physical_status": "RESOLVED_PHYSICALLY_VALID",
+    "segment_id": "flight_01",
+    "train_p95_px": 16.87202460244672
+  },
+  {
+    "holdout_p95_px": 50.8666659812538,
+    "measurement_quality": "MEASUREMENT_LIMITED",
+    "physical_status": "MEASUREMENT_LIMITED",
+    "segment_id": "flight_02",
+    "train_p95_px": 43.18007928045273
+  },
+  {
+    "holdout_p95_px": 46.04796350126341,
+    "measurement_quality": "MEASUREMENT_LIMITED",
+    "physical_status": "MEASUREMENT_LIMITED",
+    "segment_id": "flight_03",
+    "train_p95_px": 55.22798266303034
+  },
+  {
+    "holdout_p95_px": 46.999840798920175,
+    "measurement_quality": "MEASUREMENT_LIMITED",
+    "physical_status": "MEASUREMENT_LIMITED",
+    "segment_id": "flight_04",
+    "train_p95_px": 46.17317241208019
+  },
+  {
+    "holdout_p95_px": 80.1508650167427,
+    "measurement_quality": "MEASUREMENT_LIMITED",
+    "physical_status": "MEASUREMENT_LIMITED",
+    "segment_id": "flight_05",
+    "train_p95_px": 89.85781264169582
+  },
+  {
+    "holdout_p95_px": 5.421033809772477,
+    "measurement_quality": "MEASUREMENT_RELIABLE",
+    "physical_status": "RESOLVED_PHYSICALLY_VALID",
+    "segment_id": "flight_06",
+    "train_p95_px": 15.38888968377422
+  },
+  {
+    "holdout_p95_px": 55.89549851309264,
+    "measurement_quality": "MEASUREMENT_LIMITED",
+    "physical_status": "MEASUREMENT_LIMITED",
+    "segment_id": "flight_07",
+    "train_p95_px": 60.976121790450144
+  },
+  {
+    "holdout_p95_px": 35.8426381215327,
+    "measurement_quality": "MEASUREMENT_LIMITED",
+    "physical_status": "MEASUREMENT_LIMITED",
+    "segment_id": "flight_08",
+    "train_p95_px": 41.42890892109706
+  },
+  {
+    "holdout_p95_px": 80.14735772969891,
+    "measurement_quality": "MEASUREMENT_LIMITED",
+    "physical_status": "MEASUREMENT_LIMITED",
+    "segment_id": "flight_09",
+    "train_p95_px": 60.61846003764266
+  }
+]

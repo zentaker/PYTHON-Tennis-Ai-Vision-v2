@@ -9,10 +9,30 @@ import numpy as np
 
 def provenance_graph() -> dict[str, Any]:
     return {
-        "raw": {"upstream_field": "x_raw,y_raw", "derivation": "Stage 3 detector", "independent": True, "correlation_group": "stage3_detector"},
-        "smoothed": {"upstream_field": "x_smooth,y_smooth", "derivation": "Stage 3 temporal smoother", "independent": False, "correlation_group": "stage3_detector"},
-        "p1_contact": {"upstream_field": "ball_pixel", "derivation": "P1 audit copied from Stage 3 observation", "independent": False, "correlation_group": "stage3_detector"},
-        "interpolated": {"upstream_field": "source", "derivation": "Stage 3 interpolation", "independent": False, "correlation_group": "stage3_detector"},
+        "raw": {
+            "upstream_field": "x_raw,y_raw",
+            "derivation": "Stage 3 detector",
+            "independent": True,
+            "correlation_group": "stage3_detector",
+        },
+        "smoothed": {
+            "upstream_field": "x_smooth,y_smooth",
+            "derivation": "Stage 3 temporal smoother",
+            "independent": False,
+            "correlation_group": "stage3_detector",
+        },
+        "p1_contact": {
+            "upstream_field": "ball_pixel",
+            "derivation": "P1 audit copied from Stage 3 observation",
+            "independent": False,
+            "correlation_group": "stage3_detector",
+        },
+        "interpolated": {
+            "upstream_field": "source",
+            "derivation": "Stage 3 interpolation",
+            "independent": False,
+            "correlation_group": "stage3_detector",
+        },
         "covariance_policy": "one independent detector source receives an uncertainty floor; correlated copies are not votes",
     }
 
@@ -41,10 +61,18 @@ def audit_rows(rows: list[dict[str, Any]], event_times: list[float]) -> list[dic
         raw = np.asarray(row["raw_pixel"], dtype=float)
         smooth = np.asarray(row["smoothed_pixel"], dtype=float)
         dt = None if previous is None else row["timestamp_seconds"] - previous["timestamp_seconds"]
-        distance_previous = None if previous is None else float(np.linalg.norm(smooth - previous["smoothed_pixel"]))
+        distance_previous = (
+            None if previous is None else float(np.linalg.norm(smooth - previous["smoothed_pixel"]))
+        )
         velocity = None if not dt or dt <= 0 else float(distance_previous / dt)
-        acceleration = None if previous_velocity is None or not dt or dt <= 0 else float((velocity - previous_velocity) / dt)
-        duplicate = bool(previous is not None and np.array_equal(smooth, previous["smoothed_pixel"]))
+        acceleration = (
+            None
+            if previous_velocity is None or not dt or dt <= 0
+            else float((velocity - previous_velocity) / dt)
+        )
+        duplicate = bool(
+            previous is not None and np.array_equal(smooth, previous["smoothed_pixel"])
+        )
         warnings: list[str] = []
         if duplicate:
             warnings.append("duplicate_or_frozen")
@@ -52,7 +80,9 @@ def audit_rows(rows: list[dict[str, Any]], event_times: list[float]) -> list[dic
             warnings.append("kinematically_suspicious")
         if dt is not None and dt <= 0:
             warnings.append("timestamp_invalid")
-        nearest = min((abs(row["timestamp_seconds"] - value) for value in event_times), default=None)
+        nearest = min(
+            (abs(row["timestamp_seconds"] - value) for value in event_times), default=None
+        )
         audited_row = {
             **row,
             "raw_pixel": raw.tolist(),

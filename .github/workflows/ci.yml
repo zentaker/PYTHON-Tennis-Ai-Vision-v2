@@ -94,6 +94,12 @@ jobs:
       - name: Validate Stage 5B v3.4 contact-ray evidence
         run: uv run python scripts/check_stage5b_v34_contact_ray.py
 
+      - name: Stage 5B v3.5 measurement and observation-conditioned tests
+        run: uv run pytest tests/test_stage5b_v35_*.py
+
+      - name: Validate Stage 5B v3.5 observation-conditioned evidence
+        run: uv run python scripts/check_stage5b_v35_observation_conditioned.py
+
       - name: Ruff
         run: uv run ruff check .
 
@@ -292,6 +298,37 @@ jobs:
             config/stage5b_v3/stage5b_v34_contact_residuals.json
             config/stage5b_v3/stage5b_v34_bounce_residuals.json
             config/stage5b_v3/stage5b_v34_worst_residuals.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+
+      - name: Publish Stage 5B v3.5 observation-conditioned evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage5b-v35-observation-conditioned-evidence
+          path: |
+            docs/validation/assets/stage5b_v35_contact_time_windows.jpg
+            docs/validation/assets/stage5b_v35_measurement_integrity.jpg
+            docs/validation/assets/stage5b_v35_body_contact_geometry.jpg
+            docs/validation/assets/stage5b_v35_edge_cost_comparison.jpg
+            docs/validation/assets/stage5b_v35_global_hypotheses.jpg
+            docs/validation/assets/stage5b_v35_reprojection_contact_sheet.jpg
+            docs/validation/assets/stage5b_v35_worst_reprojection_frames.jpg
+            docs/validation/assets/stage5b_v35_top_view.jpg
+            docs/validation/assets/stage5b_v35_side_view.jpg
+            docs/validation/assets/stage5b_v35_holdout.jpg
+            docs/validation/assets/stage5b_v35_per_segment_metrics.jpg
+            docs/validation/STAGE5B_V35_VISUAL_AUDIT.md
+            config/stage5b_v3/stage5b_v35_run_report.json
+            config/stage5b_v3/stage5b_v35_measurement_integrity.json
+            config/stage5b_v3/stage5b_v35_source_provenance.json
+            config/stage5b_v3/stage5b_v35_event_time_candidates.json
+            config/stage5b_v3/stage5b_v35_body_contact_candidates.json
+            config/stage5b_v3/stage5b_v35_edge_costs.json
+            config/stage5b_v3/stage5b_v35_model_comparison.json
+            config/stage5b_v3/stage5b_v35_holdout_report.json
+            config/stage5b_v3/stage5b_v35_segments.json
+            config/stage5b_v3/stage5b_v35_worst_residuals.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 6
