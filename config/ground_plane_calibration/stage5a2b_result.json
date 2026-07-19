@@ -1,7 +1,11 @@
 {
   "schema_version": "1.0",
-  "status": "STAGE5A2B_TEMPORAL_GROUND_VALIDATION_PARTIAL",
-  "human_visual_approval": "pending",
+  "status": "STAGE5A2B_REJECTED_BY_HUMAN_GATE_TRACKER_INVALID",
+  "human_visual_approval": "rejected",
+  "contact_frame_foot_visual_gate": "CONTACT_FRAME_FOOT_VISUAL_GATE_PASSED",
+  "temporal_validation_gate": "STAGE5A2B_TEMPORAL_VALIDATION_REJECTED",
+  "reviewer": "ChatGPT visual artifact audit",
+  "visually_approved_events": ["ev_001", "ev_003", "ev_005", "ev_007", "ev_009"],
   "pr_draft": true,
   "real_line_segments_detected": 137,
   "model_lines_evaluated": 9,

@@ -117,9 +117,9 @@ reales. Stage 5A.2B debe validar temporalmente sin imponer un límite de 5 m. XY
 reejecutó.
 
 Stage 5A.2B procesó frames reales y quedó
-`STAGE5A2B_TEMPORAL_GROUND_VALIDATION_PARTIAL`. Los pies far son compatibles con clay
-visible y no se fuerza un límite de 5 m, pero el flujo óptico presenta saltos físicamente
-imposibles; ev_003/ev_007 permanecen unresolved. El gate siguiente es auditoría visual.
+`STAGE5A2B_REJECTED_BY_HUMAN_GATE_TRACKER_INVALID`. El gate visual de los cinco frames
+de contacto pasó, incluidas posiciones far de 6–8 m; el tracker temporal fue rechazado
+por drift imposible. Stage 5A.2C debe usar flujo secuencial entre frames adyacentes.
 
 ### Stage 5C - Vista superior derivada
 

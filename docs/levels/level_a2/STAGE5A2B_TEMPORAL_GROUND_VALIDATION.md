@@ -16,5 +16,7 @@ from the projective singularity are stable. Physically impossible speed diagnost
 indicate optical-flow drift and force `unresolved`; they are not player-speed product
 metrics.
 
-Current status: `STAGE5A2B_TEMPORAL_GROUND_VALIDATION_PARTIAL`. Human approval remains
-pending and XYZ/Analytics/Stage 5C/Stage 6 remain blocked.
+Contact-frame visual gate: `CONTACT_FRAME_FOOT_VISUAL_GATE_PASSED` for all five events.
+Temporal gate: `STAGE5A2B_TEMPORAL_VALIDATION_REJECTED`; global status
+`STAGE5A2B_REJECTED_BY_HUMAN_GATE_TRACKER_INVALID`. The 143.144 m/s diagnostic is
+tracker drift, not movement. XYZ/Analytics/Stage 5C/Stage 6 remain blocked.
