@@ -16,6 +16,40 @@ from .optimization import optimize_segment
 from .reconstruction import _load_ball, reconstruct
 
 
+def trajectory_difference(reference: Any, alternative: Any) -> dict[str, float]:
+    """Compare complete optimized trajectories, not one initial parameter."""
+    reference_xyz = np.asarray([row["xyz"] for row in reference.samples], dtype=float)
+    alternative_xyz = np.asarray([row["xyz"] for row in alternative.samples], dtype=float)
+    count = min(len(reference_xyz), len(alternative_xyz))
+    if count == 0:
+        return {key: float("inf") for key in ("rms_xyz_m", "rms_xy_m", "rms_z_m")}
+    reference_xyz, alternative_xyz = reference_xyz[:count], alternative_xyz[:count]
+    delta = reference_xyz - alternative_xyz
+    rms_xyz = float(np.sqrt(np.mean(np.sum(delta**2, axis=1))))
+    return {
+        "rms_xyz_m": rms_xyz,
+        "rms_xy_m": float(np.sqrt(np.mean(np.sum(delta[:, :2] ** 2, axis=1)))),
+        "rms_z_m": float(np.sqrt(np.mean(delta[:, 2] ** 2))),
+        "initial_contact_m": float(np.linalg.norm(delta[0])),
+        "final_contact_m": float(np.linalg.norm(delta[-1])),
+        "apex_difference_m": float(abs(reference_xyz[:, 2].max() - alternative_xyz[:, 2].max())),
+        "depth_rms_m": float(np.sqrt(np.mean(delta[:, 1] ** 2))),
+        "relative_cost": float(alternative.cost / max(reference.cost, 1e-12)),
+    }
+
+
+def materially_ambiguous(reference: Any, alternative: Any, config: dict[str, Any]) -> bool:
+    """Similar-cost hypotheses are ambiguous when full flights materially differ."""
+    metrics = trajectory_difference(reference, alternative)
+    similar_cost = metrics["relative_cost"] <= float(config["ambiguity_cost_ratio"])
+    threshold = float(config["ambiguity_depth_threshold_m"])
+    material = max(
+        metrics["rms_xyz_m"], metrics["rms_xy_m"], metrics["rms_z_m"],
+        metrics["initial_contact_m"], metrics["final_contact_m"], metrics["apex_difference_m"],
+    ) > threshold
+    return bool(similar_cost and material)
+
+
 def reconstruct_v31(
     camera_path: Path,
     homography_path: Path,
@@ -67,10 +101,7 @@ def reconstruct_v31(
     for solution in selected:
         alternatives = [item for item in solutions if item.segment_id == solution.segment_id]
         ambiguous = any(
-            item.cost <= solution.cost * float(config["ambiguity_cost_ratio"])
-            and abs(item.parameters[2] - solution.parameters[2])
-            > float(config["ambiguity_depth_threshold_m"])
-            for item in alternatives[1:]
+            materially_ambiguous(solution, item, config) for item in alternatives[1:]
         )
         for sample in solution.samples:
             point = sample["xyz"]

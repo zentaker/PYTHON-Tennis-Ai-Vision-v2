@@ -20,8 +20,8 @@ def require(value: bool, message: str) -> None:
 
 def main() -> int:
     result = json.loads((ROOT / "config/stage5b_v3/stage5b_v31_result.json").read_text())
-    require(result["status"] == "STAGE5B_V31_PARTIAL", "v3.1 status mismatch")
-    require(result["human_approval"] == "pending", "human gate must remain pending")
+    require(result["status"] == "STAGE5B_V31_REJECTED_BY_HUMAN_GATE", "v3.1 status mismatch")
+    require(result["human_approval"] == "rejected", "human gate rejection not recorded")
     require(result["analytics_consumes_xyz"] is False, "Analytics must remain blocked")
     require(result["homography_used"] is True and result["racket_extension_used"] is True, "required geometry inactive")
     reconstructed = reconstruct_v31(
@@ -59,7 +59,7 @@ def main() -> int:
     for name in ("top_view", "side_view", "reprojection_contact_sheet", "contact_audit", "hypothesis_comparison", "coordinate_audit"):
         path = ROOT / f"docs/validation/assets/stage5b_v31_{name}.jpg"
         require(path.is_file() and 0 < path.stat().st_size < 2_000_000, f"invalid visual: {name}")
-    print("status: STAGE5B_V31_PARTIAL")
+    print("status: STAGE5B_V31_REJECTED_BY_HUMAN_GATE")
     return 0
 
 
