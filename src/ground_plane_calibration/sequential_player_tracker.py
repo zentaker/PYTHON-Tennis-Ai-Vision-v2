@@ -133,7 +133,10 @@ def sequential_chain(
     direction: int,
 ) -> list[dict[str, Any]]:
     """Propagate contact→adjacent frames, updating reference/features/bbox/foot."""
-    gray = {frame_id: cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) for frame_id, frame in frames.items()}
+    gray = {
+        frame_id: cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) if frame.ndim == 3 else frame
+        for frame_id, frame in frames.items()
+    }
     current_id = contact_frame
     current_bbox = dict(bbox)
     current_foot = tuple(foot_pixel)
