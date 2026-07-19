@@ -61,7 +61,8 @@ def body_contact_candidates(
                     "xyz": ball.tolist(),
                     "selected_hand": hand,
                     "wrist_xyz": wrist_point.tolist(),
-                    "shoulder_xyz": ground.tolist(),
+                    "ground_anchor_xyz": ground.tolist(),
+                    "shoulder_xyz": None,
                     "player_ground_xy": ground[:2].tolist(),
                     "contact_height_m": float(contact_height),
                     "racket_length_m": racket_length_m,
@@ -78,6 +79,9 @@ def body_contact_candidates(
     candidates.sort(key=lambda row: row["prior_log_probability"], reverse=True)
     best = candidates[:8]
     return {
+        "method_status": "BODY_CONTACT_APPROXIMATE",
+        "method_scope": "ground_anchor_ball_ray_wrist_ray_reach_only",
+        "body_3d_reconstructed": False,
         "candidates": best,
         "support_probability": float(
             sum(row["racket_residual_m"] <= 0.25 for row in candidates) / max(1, len(candidates))
