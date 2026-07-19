@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0",
-  "status": "STAGE5A2_EXTENDED_GROUND_PLANE_PARTIAL",
-  "human_visual_approval": "pending",
+  "status": "STAGE5A2_REJECTED_BY_HUMAN_GATE_EVIDENCE_INSUFFICIENT",
+  "human_visual_approval": "rejected",
   "video_background_source": "/Users/sandra/Desktop/PYTHON-Tennis-Ai-Vision-v2/data/clips/nivel_a2_01/source.mp4",
-  "court_lines_detected": 10,
+  "model_lines_evaluated": 10,
   "old_line_median_px": 0.0,
   "old_line_p95_px": 6.558599948883057,
   "refined_line_median_px": 0.0,
@@ -26,5 +26,17 @@
   "cloud_calls": 0,
   "gpu_calls": 0,
   "spend": 0,
-  "blocker": "FAR_PLAYER_PLAUSIBILITY_FAILED_EV003_AND_EV007_EXCEED_5M_BEHIND_BASELINE"
+  "blocker": "HUMAN_GATE_REJECTED_INSUFFICIENT_AND_MISCHARACTERIZED_EVIDENCE",
+  "human_gate_rejection_reasons": [
+    "top view clips ev_003 and ev_007 with fixed limits",
+    "visual audit incorrectly claims no clipping",
+    "ten model lines were evaluated, not ten classified detections",
+    "refinement improves no metric",
+    "camera and homography share correlated upstream geometry",
+    "uncertainty omits major model, camera, line, foot, and tracking sources",
+    "only five frames were processed",
+    "temporal support was not used",
+    "foot sheet used a median background rather than real event frames",
+    "five-metre baseline limit was an arbitrary heuristic"
+  ]
 }

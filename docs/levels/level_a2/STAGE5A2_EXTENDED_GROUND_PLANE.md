@@ -1,6 +1,11 @@
 # Stage 5A.2 — Extended Ground-Plane Calibration
 
-Status: `STAGE5A2_EXTENDED_GROUND_PLANE_PARTIAL`.
+Status: `STAGE5A2_REJECTED_BY_HUMAN_GATE_EVIDENCE_INSUFFICIENT`.
+
+Human visual approval is rejected. The previous evidence clipped far events, mislabeled
+model-line evaluation as detection, offered no metric improvement or independent camera
+validation, underestimated uncertainty, processed only five frames without temporal
+support, used a median background for feet, and imposed an unjustified 5 m heuristic.
 
 The CPU-only run sampled 31 distributed frames from the canonical A2 video, built a
 temporal-median background, detected a white-line mask and distance transform, and

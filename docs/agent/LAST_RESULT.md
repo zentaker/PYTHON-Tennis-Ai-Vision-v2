@@ -1,9 +1,10 @@
 # Last result
 
-- Status: `STAGE5A2_EXTENDED_GROUND_PLANE_PARTIAL`; v3.1 remains rejected.
+- Status: `STAGE5A2_REJECTED_BY_HUMAN_GATE_EVIDENCE_INSUFFICIENT`; v3.1 remains rejected.
 - Stage 5A.2: 31-frame temporal background, 10 court lines, 64 uncertainty runs,
   five P1 player frames, CPU only.
-- ev_003/ev_007 remain 7.938/6.358 m behind the far baseline; human approval pending.
+- Human visual approval rejected: clipped/mischaracterized visuals, correlated geometry,
+  incomplete uncertainty, no temporal support, and an unjustified 5 m heuristic.
 - V1 / v2: rejected by human gate / rejected by human gate.
 - Five P1 contacts, nine flights, five bounce constraints, three hypotheses.
 - 314 unique ball observations and 322 schema-valid segment samples.
