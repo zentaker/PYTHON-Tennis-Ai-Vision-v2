@@ -1,0 +1,307 @@
+[
+  {
+    "ball_wrist_distance_px": 111.09372799799006,
+    "canonical_pixel_covariance": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        24.544520333333434
+      ]
+    ],
+    "confidence_by_source": {
+      "p1_contact": 0.38011810183525085,
+      "raw": 0.844635,
+      "smoothed": 0.844635
+    },
+    "event_id": "ev_001",
+    "frame_id": 139,
+    "frame_timestamp": 2.771667,
+    "interpolation_status": "raw_available",
+    "outlier_flags": {
+      "raw": false
+    },
+    "p1_contact_pixel": [
+      1512.445,
+      646.79
+    ],
+    "pairwise_pixel_distances": {
+      "raw_to_p1_contact": 8.581000000000017,
+      "raw_to_smoothed": 8.581000000000017,
+      "smoothed_to_p1_contact": 0.0
+    },
+    "pose_confidence": 0.5416406526937521,
+    "raw_pixel": [
+      1512.445,
+      655.371
+    ],
+    "selected_canonical_ball_pixel": [
+      1512.445,
+      655.371
+    ],
+    "selection_reason": "general_priority_rule:raw",
+    "smoothed_pixel": [
+      1512.445,
+      646.79
+    ],
+    "status": "CONTACT_PIXEL_RECONCILED",
+    "timestamp": 2.771667,
+    "warnings": [],
+    "wrist_pixels": {
+      "left_wrist": [
+        1561.68994140625,
+        928.4089965820312
+      ],
+      "right_wrist": [
+        1569.046875,
+        742.3831176757812
+      ]
+    }
+  },
+  {
+    "ball_wrist_distance_px": 54.78703126978783,
+    "canonical_pixel_covariance": [
+      [
+        3.451841333333005,
+        0.0
+      ],
+      [
+        0.0,
+        0.0
+      ]
+    ],
+    "confidence_by_source": {
+      "p1_contact": 0.44094470143318176,
+      "raw": 0.128495,
+      "smoothed": 0.128495
+    },
+    "event_id": "ev_003",
+    "frame_id": 200,
+    "frame_timestamp": 3.955,
+    "interpolation_status": "raw_available",
+    "outlier_flags": {
+      "raw": false
+    },
+    "p1_contact_pixel": [
+      1113.417,
+      161.949
+    ],
+    "pairwise_pixel_distances": {
+      "raw_to_p1_contact": 3.217999999999847,
+      "raw_to_smoothed": 3.217999999999847,
+      "smoothed_to_p1_contact": 0.0
+    },
+    "pose_confidence": 0.6750807555994593,
+    "raw_pixel": [
+      1110.199,
+      161.949
+    ],
+    "selected_canonical_ball_pixel": [
+      1113.417,
+      161.949
+    ],
+    "selection_reason": "general_priority_rule:p1_contact",
+    "smoothed_pixel": [
+      1113.417,
+      161.949
+    ],
+    "status": "CONTACT_PIXEL_RECONCILED",
+    "timestamp": 3.955,
+    "warnings": [],
+    "wrist_pixels": {
+      "left_wrist": [
+        1058.6702880859375,
+        164.05050659179688
+      ],
+      "right_wrist": [
+        1050.13720703125,
+        169.86849975585938
+      ]
+    }
+  },
+  {
+    "ball_wrist_distance_px": 192.22070031275496,
+    "canonical_pixel_covariance": [
+      [
+        38.35617633333397,
+        44.74946833333366
+      ],
+      [
+        44.74946833333366,
+        52.208408333333225
+      ]
+    ],
+    "confidence_by_source": {
+      "p1_contact": 0.5725719332695007,
+      "raw": 0.562955,
+      "smoothed": 0.562955
+    },
+    "event_id": "ev_005",
+    "frame_id": 287,
+    "frame_timestamp": 5.688333,
+    "interpolation_status": "raw_available",
+    "outlier_flags": {
+      "raw": false
+    },
+    "p1_contact_pixel": [
+      1662.617,
+      927.11
+    ],
+    "pairwise_pixel_distances": {
+      "raw_to_p1_contact": 16.48313544202078,
+      "raw_to_smoothed": 16.48313544202078,
+      "smoothed_to_p1_contact": 0.0
+    },
+    "pose_confidence": 0.4879984416459736,
+    "raw_pixel": [
+      1673.344,
+      939.625
+    ],
+    "selected_canonical_ball_pixel": [
+      1673.344,
+      939.625
+    ],
+    "selection_reason": "general_priority_rule:raw",
+    "smoothed_pixel": [
+      1662.617,
+      927.11
+    ],
+    "status": "CONTACT_PIXEL_RECONCILED",
+    "timestamp": 5.688333,
+    "warnings": [],
+    "wrist_pixels": {
+      "left_wrist": [
+        1456.8341064453125,
+        993.8585205078125
+      ],
+      "right_wrist": [
+        1476.12548828125,
+        973.690185546875
+      ]
+    }
+  },
+  {
+    "ball_wrist_distance_px": 54.752922751960064,
+    "canonical_pixel_covariance": [
+      [
+        14.981205333333113,
+        29.962410666666486
+      ],
+      [
+        29.962410666666486,
+        59.92482133333347
+      ]
+    ],
+    "confidence_by_source": {
+      "p1_contact": 0.4751158058643341,
+      "raw": 0.583741,
+      "smoothed": 0.583741
+    },
+    "event_id": "ev_007",
+    "frame_id": 351,
+    "frame_timestamp": 6.971667,
+    "interpolation_status": "raw_available",
+    "outlier_flags": {
+      "raw": false
+    },
+    "p1_contact_pixel": [
+      870.192,
+      186.084
+    ],
+    "pairwise_pixel_distances": {
+      "raw_to_p1_contact": 14.990599721158581,
+      "raw_to_smoothed": 14.990599721158581,
+      "smoothed_to_p1_contact": 0.0
+    },
+    "pose_confidence": 0.49866183023703725,
+    "raw_pixel": [
+      863.488,
+      172.676
+    ],
+    "selected_canonical_ball_pixel": [
+      863.488,
+      172.676
+    ],
+    "selection_reason": "general_priority_rule:raw",
+    "smoothed_pixel": [
+      870.192,
+      186.084
+    ],
+    "status": "CONTACT_PIXEL_RECONCILED",
+    "timestamp": 6.971667,
+    "warnings": [],
+    "wrist_pixels": {
+      "left_wrist": [
+        1005.406982421875,
+        181.93519592285156
+      ],
+      "right_wrist": [
+        924.9436645507812,
+        185.7128143310547
+      ]
+    }
+  },
+  {
+    "ball_wrist_distance_px": 102.88901614617315,
+    "canonical_pixel_covariance": [
+      [
+        46.40546699999983,
+        46.40546699999983
+      ],
+      [
+        46.40546699999983,
+        46.40546699999983
+      ]
+    ],
+    "confidence_by_source": {
+      "p1_contact": 0.5708538293838501,
+      "raw": 0.741945,
+      "smoothed": 0.741945
+    },
+    "event_id": "ev_009",
+    "frame_id": 434,
+    "frame_timestamp": 8.638333,
+    "interpolation_status": "raw_available",
+    "outlier_flags": {
+      "raw": false
+    },
+    "p1_contact_pixel": [
+      2246.142,
+      831.287
+    ],
+    "pairwise_pixel_distances": {
+      "raw_to_p1_contact": 16.68630582244012,
+      "raw_to_smoothed": 16.68630582244012,
+      "smoothed_to_p1_contact": 0.0
+    },
+    "pose_confidence": 0.46212868291632575,
+    "raw_pixel": [
+      2257.941,
+      843.086
+    ],
+    "selected_canonical_ball_pixel": [
+      2257.941,
+      843.086
+    ],
+    "selection_reason": "general_priority_rule:raw",
+    "smoothed_pixel": [
+      2246.142,
+      831.287
+    ],
+    "status": "CONTACT_PIXEL_RECONCILED",
+    "timestamp": 8.638333,
+    "warnings": [],
+    "wrist_pixels": {
+      "left_wrist": [
+        2078.154541015625,
+        887.4639282226562
+      ],
+      "right_wrist": [
+        2143.929443359375,
+        843.06591796875
+      ]
+    }
+  }
+]

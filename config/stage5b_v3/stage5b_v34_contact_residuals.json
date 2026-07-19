@@ -1,0 +1,27 @@
+[
+  {
+    "event_id": "ev_001",
+    "geometric_excess_m": 0.0,
+    "status": "CONTACT_RAY_FEASIBLE"
+  },
+  {
+    "event_id": "ev_003",
+    "geometric_excess_m": 0.0,
+    "status": "CONTACT_RAY_AMBIGUOUS"
+  },
+  {
+    "event_id": "ev_005",
+    "geometric_excess_m": 0.07516048518315208,
+    "status": "CONTACT_RAY_AMBIGUOUS"
+  },
+  {
+    "event_id": "ev_007",
+    "geometric_excess_m": 0.0,
+    "status": "CONTACT_RAY_FEASIBLE"
+  },
+  {
+    "event_id": "ev_009",
+    "geometric_excess_m": 0.0,
+    "status": "CONTACT_RAY_AMBIGUOUS"
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "ball_rays_constructed": 5,
+  "bounce_nodes_feasible": 5,
+  "canonical_contact_pixels_reconciled": 5,
+  "contact_nodes_ambiguous": 3,
+  "contact_nodes_feasible": 2,
+  "contact_nodes_infeasible": 0,
+  "contact_pixel_inconsistencies": 0,
+  "deterministic_seed": 42,
+  "mixed_units": 0,
+  "negative_z_violations": 0,
+  "old_xyz_used": false,
+  "reversed_time": 0,
+  "segments_with_feasible_candidate_pairs": 9,
+  "shared_event_nodes": 10,
+  "status": "STAGE5B_V34_PHASE_A_PASSED",
+  "wrist_rays_constructed": 10
+}

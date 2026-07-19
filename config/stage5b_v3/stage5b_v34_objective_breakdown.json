@@ -1,0 +1,11 @@
+{
+  "contact_node_manifold": "fixed selected ray candidate",
+  "families": [
+    "reprojection_normalized_by_pixel_sigma",
+    "bounce_prior_normalized_by_0.5m",
+    "gravity_structural",
+    "nonnegative_z_gate"
+  ],
+  "phase_b_executed": true,
+  "shared_node_equality": "structural_single_variable"
+}

@@ -149,6 +149,11 @@ endpoints XYZ v3.2 y un box axis-aligned sin imponer rayos. La factibilidad de c
 queda indeterminada. V3.4 debe resolver nodos nuevos desde píxeles, cámara, pose y
 anchors, compartiendo cada nodo entre vuelos adyacentes.
 
+V3.4 resolvió desde evidencia primaria cinco contact nodes, cinco bounce nodes y nueve
+vuelos con 10/10 nodos compartidos. Phase A pasó sin dependencia de XYZ anterior.
+Phase B consumió 314 observaciones pero quedó `STAGE5B_V34_OPTIMIZATION_PARTIAL` por
+reproyección 17.6898/53.9555 px (mediana/p95). Analytics continúa bloqueado.
+
 ### Stage 5C - Vista superior derivada
 
 Renderizar X,Y de la trayectoria 3D aprobada.

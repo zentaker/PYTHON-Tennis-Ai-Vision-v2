@@ -1,0 +1,132 @@
+[
+  {
+    "ball_pixel": [
+      1264.662,
+      570.631
+    ],
+    "camera_homography_discrepancy_m": 0.020521707904504156,
+    "candidate_xyz": [
+      -0.9565510939041235,
+      4.411093824244945,
+      0.0
+    ],
+    "event_id": "ev_002",
+    "frame_id": 158,
+    "homography_xy": [
+      -0.9644156064292707,
+      4.40450333362806
+    ],
+    "ray_ground_xyz": [
+      -0.9486865813789762,
+      4.41768431486183,
+      0.0
+    ],
+    "status": "BOUNCE_NODE_FEASIBLE",
+    "timestamp_seconds": 3.138333,
+    "uncertainty_m": 0.25
+  },
+  {
+    "ball_pixel": [
+      1544.625,
+      953.927
+    ],
+    "camera_homography_discrepancy_m": 0.008871271756628234,
+    "candidate_xyz": [
+      1.1860425148355893,
+      -7.253130049375921,
+      0.0
+    ],
+    "event_id": "ev_004",
+    "frame_id": 262,
+    "homography_xy": [
+      1.182841475440113,
+      -7.256200588812827
+    ],
+    "ray_ground_xyz": [
+      1.1892435542310653,
+      -7.250059509939014,
+      0.0
+    ],
+    "status": "BOUNCE_NODE_FEASIBLE",
+    "timestamp_seconds": 5.188333,
+    "uncertainty_m": 0.25
+  },
+  {
+    "ball_pixel": [
+      995.782,
+      434.583
+    ],
+    "camera_homography_discrepancy_m": 0.04104026261417292,
+    "candidate_xyz": [
+      -3.7510552029514495,
+      10.382893743728246,
+      0.0
+    ],
+    "event_id": "ev_006",
+    "frame_id": 327,
+    "homography_xy": [
+      -3.7587588589543226,
+      10.363874556756942
+    ],
+    "ray_ground_xyz": [
+      -3.7433515469485763,
+      10.401912930699552,
+      0.0
+    ],
+    "status": "BOUNCE_NODE_FEASIBLE",
+    "timestamp_seconds": 6.488333,
+    "uncertainty_m": 0.25
+  },
+  {
+    "ball_pixel": [
+      1751.111,
+      784.984
+    ],
+    "camera_homography_discrepancy_m": 0.0064211237233136225,
+    "candidate_xyz": [
+      2.913847474022262,
+      -2.822468934899911,
+      0.0
+    ],
+    "event_id": "ev_008",
+    "frame_id": 399,
+    "homography_xy": [
+      2.9109252431309813,
+      -2.8237986995729156
+    ],
+    "ray_ground_xyz": [
+      2.9167697049135426,
+      -2.821139170226907,
+      0.0
+    ],
+    "status": "BOUNCE_NODE_FEASIBLE",
+    "timestamp_seconds": 7.938333,
+    "uncertainty_m": 0.25
+  },
+  {
+    "ball_pixel": [
+      1740.385,
+      442.18
+    ],
+    "camera_homography_discrepancy_m": 0.032739307144435154,
+    "candidate_xyz": [
+      3.68191955155846,
+      10.111237209040008,
+      0.0
+    ],
+    "event_id": "ev_010",
+    "frame_id": 463,
+    "homography_xy": [
+      3.672749000535599,
+      10.09767746892408
+    ],
+    "ray_ground_xyz": [
+      3.691090102581321,
+      10.124796949155936,
+      0.0
+    ],
+    "status": "BOUNCE_NODE_FEASIBLE",
+    "timestamp_seconds": 9.221667,
+    "uncertainty_m": 0.25
+  }
+]

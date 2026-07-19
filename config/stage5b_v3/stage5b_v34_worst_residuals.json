@@ -1,0 +1,382 @@
+[
+  {
+    "confidence": 0.742935,
+    "frame_id": 294,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1419.124,
+      654.298
+    ],
+    "reprojected_pixel": [
+      1474.4902594527093,
+      720.3616809594932
+    ],
+    "reprojection_error_px": 86.19647688683355,
+    "segment_id": "flight_05",
+    "timestamp_seconds": 5.838333,
+    "x_m": 0.681319347522312,
+    "y_m": -7.419701267571508,
+    "z_m": 1.7652181748417721
+  },
+  {
+    "confidence": 0.807022,
+    "frame_id": 299,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1321.155,
+      558.832
+    ],
+    "reprojected_pixel": [
+      1365.374844899082,
+      616.2184755249779
+    ],
+    "reprojection_error_px": 72.44723773945947,
+    "segment_id": "flight_05",
+    "timestamp_seconds": 5.938333,
+    "x_m": -0.04700668567983057,
+    "y_m": -4.451629829052936,
+    "z_m": 1.7633290229430376
+  },
+  {
+    "confidence": 0.089462,
+    "frame_id": 262,
+    "observed_or_interpolated": "interpolated",
+    "observed_pixel": [
+      1544.625,
+      953.927
+    ],
+    "reprojected_pixel": [
+      1569.7868978860115,
+      1018.0467160825847
+    ],
+    "reprojection_error_px": 68.88003408635434,
+    "segment_id": "flight_03",
+    "timestamp_seconds": 5.188333,
+    "x_m": 1.3106276633950196,
+    "y_m": -8.699814224370511,
+    "z_m": 0.0
+  },
+  {
+    "confidence": 0.79556,
+    "frame_id": 296,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1393.381,
+      628.555
+    ],
+    "reprojected_pixel": [
+      1436.2826506671702,
+      682.3871450102519
+    ],
+    "reprojection_error_px": 68.83641090565868,
+    "segment_id": "flight_05",
+    "timestamp_seconds": 5.871667,
+    "x_m": 0.43853914761470913,
+    "y_m": -6.430324334255725,
+    "z_m": 1.775484831686224
+  },
+  {
+    "confidence": 0.828789,
+    "frame_id": 298,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1340.821,
+      577.603
+    ],
+    "reprojected_pixel": [
+      1382.4495599389002,
+      631.6073111989792
+    ],
+    "reprojection_error_px": 68.18652821975034,
+    "segment_id": "flight_05",
+    "timestamp_seconds": 5.921667,
+    "x_m": 0.07437613101363794,
+    "y_m": -4.946288614996439,
+    "z_m": 1.7704538246818569
+  },
+  {
+    "confidence": 0.761217,
+    "frame_id": 439,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      2088.462,
+      660.734
+    ],
+    "reprojected_pixel": [
+      2130.1198127639163,
+      708.8052762572133
+    ],
+    "reprojection_error_px": 63.60991247652233,
+    "segment_id": "flight_09",
+    "timestamp_seconds": 8.738333,
+    "x_m": 5.49842535108236,
+    "y_m": -4.614569162857602,
+    "z_m": 1.109092223951304
+  },
+  {
+    "confidence": 0.826904,
+    "frame_id": 300,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1311.859,
+      550.251
+    ],
+    "reprojected_pixel": [
+      1348.7110390673568,
+      601.5543675670899
+    ],
+    "reprojection_error_px": 63.167304099082216,
+    "segment_id": "flight_05",
+    "timestamp_seconds": 5.955,
+    "x_m": -0.16839678563363192,
+    "y_m": -3.9569413623950442,
+    "z_m": 1.7534796970144195
+  },
+  {
+    "confidence": 0.874342,
+    "frame_id": 303,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1247.857,
+      501.624
+    ],
+    "reprojected_pixel": [
+      1285.929177229185,
+      549.6857632282208
+    ],
+    "reprojection_error_px": 61.31413999703515,
+    "segment_id": "flight_05",
+    "timestamp_seconds": 6.021667,
+    "x_m": -0.6539499021885047,
+    "y_m": -1.978217176477866,
+    "z_m": 1.6868419356731228
+  },
+  {
+    "confidence": 0.781219,
+    "frame_id": 444,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1981.196,
+      559.905
+    ],
+    "reprojected_pixel": [
+      2020.4709809505762,
+      606.4367606375769
+    ],
+    "reprojection_error_px": 60.89112313548568,
+    "segment_id": "flight_09",
+    "timestamp_seconds": 8.838333,
+    "x_m": 5.0934628313200285,
+    "y_m": -1.2575104059943216,
+    "z_m": 1.0675863023329857
+  },
+  {
+    "confidence": 0.772879,
+    "frame_id": 295,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1419.124,
+      654.298
+    ],
+    "reprojected_pixel": [
+      1455.1444016132314,
+      700.9428283905103
+    ],
+    "reprojection_error_px": 58.93394054327805,
+    "segment_id": "flight_05",
+    "timestamp_seconds": 5.855,
+    "x_m": 0.5599292475685105,
+    "y_m": -6.925012800913616,
+    "z_m": 1.771713592468154
+  },
+  {
+    "confidence": 0.810749,
+    "frame_id": 297,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1383.727,
+      618.722
+    ],
+    "reprojected_pixel": [
+      1417.89042114667,
+      664.6657703306998
+    ],
+    "reprojection_error_px": 57.253553397538795,
+    "segment_id": "flight_05",
+    "timestamp_seconds": 5.888333,
+    "x_m": 0.3171563309212406,
+    "y_m": -5.9356655483122225,
+    "z_m": 1.7765319113924047
+  },
+  {
+    "confidence": 0.842877,
+    "frame_id": 302,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1284.506,
+      528.44
+    ],
+    "reprojected_pixel": [
+      1316.5698269339719,
+      574.3081349140407
+    ],
+    "reprojection_error_px": 55.964049157868544,
+    "segment_id": "flight_05",
+    "timestamp_seconds": 5.988333,
+    "x_m": -0.411169702280902,
+    "y_m": -2.96759410979365,
+    "z_m": 1.7256095094936705
+  },
+  {
+    "confidence": 0.85452,
+    "frame_id": 307,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1193.866,
+      465.511
+    ],
+    "reprojected_pixel": [
+      1228.8066764936066,
+      507.6569728425293
+    ],
+    "reprojection_error_px": 54.74608571098107,
+    "segment_id": "flight_05",
+    "timestamp_seconds": 6.088333,
+    "x_m": -1.139495735483051,
+    "y_m": 0.00047732872494776757,
+    "z_m": 1.5766206075949354
+  },
+  {
+    "confidence": 0.833284,
+    "frame_id": 305,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1223.901,
+      483.746
+    ],
+    "reprojected_pixel": [
+      1256.7024017883605,
+      527.5207056810957
+    ],
+    "reprojection_error_px": 54.70061075297065,
+    "segment_id": "flight_05",
+    "timestamp_seconds": 6.055,
+    "x_m": -0.8967228188357748,
+    "y_m": -0.9888699238764715,
+    "z_m": 1.6371793015606857
+  },
+  {
+    "confidence": 0.887776,
+    "frame_id": 304,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1238.918,
+      494.473
+    ],
+    "reprojected_pixel": [
+      1271.14487710915,
+      538.3064862102187
+    ],
+    "reprojection_error_px": 54.40538687988257,
+    "segment_id": "flight_05",
+    "timestamp_seconds": 6.038333,
+    "x_m": -0.7753327188819732,
+    "y_m": -1.4835583905343643,
+    "z_m": 1.6633733710443037
+  },
+  {
+    "confidence": 0.817784,
+    "frame_id": 301,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1302.384,
+      542.742
+    ],
+    "reprojected_pixel": [
+      1332.4464581138375,
+      587.5917358087312
+    ],
+    "reprojection_error_px": 53.99305686807536,
+    "segment_id": "flight_05",
+    "timestamp_seconds": 5.971667,
+    "x_m": -0.2897868855874335,
+    "y_m": -3.4622528957371532,
+    "z_m": 1.7409061926774898
+  },
+  {
+    "confidence": 0.606275,
+    "frame_id": 261,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1537.474,
+      936.943
+    ],
+    "reprojected_pixel": [
+      1560.1328307602812,
+      985.8877003070082
+    ],
+    "reprojection_error_px": 53.935204640067155,
+    "segment_id": "flight_03",
+    "timestamp_seconds": 5.171667,
+    "x_m": 1.255422687924538,
+    "y_m": -8.362762427250605,
+    "z_m": 0.12418412110508736
+  },
+  {
+    "confidence": 0.866504,
+    "frame_id": 308,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1167.05,
+      450.494
+    ],
+    "reprojected_pixel": [
+      1202.1653708283534,
+      489.9504834061491
+    ],
+    "reprojection_error_px": 52.81953569648726,
+    "segment_id": "flight_05",
+    "timestamp_seconds": 6.121667,
+    "x_m": -1.3822759353906537,
+    "y_m": 0.9898542620407316,
+    "z_m": 1.5051635466643876
+  },
+  {
+    "confidence": 0.796022,
+    "frame_id": 369,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1193.867,
+      255.27
+    ],
+    "reprojected_pixel": [
+      1141.8132584733778,
+      252.0931616975332
+    ],
+    "reprojection_error_px": 52.150592599896775,
+    "segment_id": "flight_07",
+    "timestamp_seconds": 7.338333,
+    "x_m": -2.1283325566430125,
+    "y_m": 7.904004642403522,
+    "z_m": 2.282004048130377
+  },
+  {
+    "confidence": 0.506555,
+    "frame_id": 363,
+    "observed_or_interpolated": "detected",
+    "observed_pixel": [
+      1094.78,
+      214.912
+    ],
+    "reprojected_pixel": [
+      1045.0129030597775,
+      209.99764094214405
+    ],
+    "reprojection_error_px": 50.009147791249475,
+    "segment_id": "flight_07",
+    "timestamp_seconds": 7.221667,
+    "x_m": -3.151324118154798,
+    "y_m": 10.088287221510246,
+    "z_m": 2.315754794607385
+  }
+]

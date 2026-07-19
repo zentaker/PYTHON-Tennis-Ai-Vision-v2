@@ -160,6 +160,11 @@ optimization. Phase B is forbidden unless all nine flights, five contact volumes
 and five bounce endpoints pass Phase A. The current topology passes 9/9, but contact
 feasibility is 0/5, so Phase B remains unexecuted and human approval is pending.
 
+Stage 5B v3.4 derives contact and bounce nodes from primary rays and shares one
+position across adjacent flights; prior XYZ is forbidden. Phase A passes. The gated
+Phase B consumes 314 observations but remains partial because median and p95
+reprojection exceed 8/24 px. Human approval remains pending.
+
 ### Criterios de exito
 
 - Botes del lado correcto.

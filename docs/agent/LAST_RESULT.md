@@ -1,5 +1,10 @@
 # Last result
 
+- V3.4 Phase A passed: contacts 5/5, bounces 5/5, flights 9/9, shared nodes 10/10.
+- Phase B consumed 314 observations; shared-node mismatch and negative Z are zero.
+- Median/p95/max reprojection: 17.6898/53.9555/86.1965 px.
+- Global: `STAGE5B_V34_OPTIMIZATION_PARTIAL`; human approval pending.
+
 - V3.3 topology gate: `STAGE5B_V33_TOPOLOGY_GATE_PASSED`.
 - V3.3 Phase A method: `STAGE5B_V33_PHASE_A_METHOD_REJECTED`.
 - Contact feasibility remains undetermined because v3.3 reused rejected v3.2 endpoints.

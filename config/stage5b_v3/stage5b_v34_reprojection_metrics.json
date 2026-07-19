@@ -1,0 +1,8 @@
+{
+  "maximum_bounce_residual_m": 0.0,
+  "maximum_reprojection_px": 86.19647688683355,
+  "median_reprojection_px": 17.689806109435022,
+  "negative_z_violations": 0,
+  "observations_consumed": 314,
+  "p95_reprojection_px": 53.95545291987003
+}

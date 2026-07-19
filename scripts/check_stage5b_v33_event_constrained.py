@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
 CONFIG = ROOT / "config/stage5b_v3"
-STATUS = "STAGE5B_V33_ENDPOINT_FEASIBILITY_FAILED"
+STATUS = "STAGE5B_V33_PHASE_A_METHOD_REJECTED"
 
 
 def load(name: str):

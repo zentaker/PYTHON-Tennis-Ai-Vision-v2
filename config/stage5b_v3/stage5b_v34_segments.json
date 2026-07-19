@@ -1,0 +1,47 @@
+[
+  {
+    "feasible_pairs": 25,
+    "physical_status": "CONVERGED_INVALID",
+    "segment_id": "flight_01"
+  },
+  {
+    "feasible_pairs": 60,
+    "physical_status": "CONVERGED_INVALID",
+    "segment_id": "flight_02"
+  },
+  {
+    "feasible_pairs": 60,
+    "physical_status": "CONVERGED_INVALID",
+    "segment_id": "flight_03"
+  },
+  {
+    "feasible_pairs": 49,
+    "physical_status": "CONVERGED_INVALID",
+    "segment_id": "flight_04"
+  },
+  {
+    "feasible_pairs": 49,
+    "physical_status": "CONVERGED_INVALID",
+    "segment_id": "flight_05"
+  },
+  {
+    "feasible_pairs": 33,
+    "physical_status": "CONVERGED_INVALID",
+    "segment_id": "flight_06"
+  },
+  {
+    "feasible_pairs": 2,
+    "physical_status": "CONVERGED_INVALID",
+    "segment_id": "flight_07"
+  },
+  {
+    "feasible_pairs": 84,
+    "physical_status": "CONVERGED_INVALID",
+    "segment_id": "flight_08"
+  },
+  {
+    "feasible_pairs": 84,
+    "physical_status": "CONVERGED_INVALID",
+    "segment_id": "flight_09"
+  }
+]
