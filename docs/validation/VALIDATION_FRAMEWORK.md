@@ -9,6 +9,15 @@ the doubles court plus documented lateral margin and 5 m behind either baseline.
 Human observations are evaluation references only. Current automatic status is
 `PARTIAL`; human approval is pending and XYZ remains blocked.
 
+## Stage 5A.2B temporal ground validation
+
+READY requires real event frames, five ±30-frame temporal windows, zero identity
+switches, valid visible-ground contact pixels, classified image segments, a
+cross-validated calibration ensemble, decomposed uncertainty, no clipping/personal
+paths/fixed far-distance gate, determinism, and stable physical continuity. Diagnostic
+speed is used only to reject drift. Current status is `PARTIAL`: impossible temporal
+jumps leave far observations unresolved. Human approval is pending and XYZ is blocked.
+
 Regla fuerte: los criterios de exito se escriben antes de iniciar cada etapa. Si un criterio resulta inadecuado, no se mueve la meta silenciosamente; se cierra la etapa y se reabre con criterios nuevos.
 
 ## Stage 0 - Validacion

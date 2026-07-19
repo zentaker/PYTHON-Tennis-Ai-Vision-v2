@@ -64,6 +64,12 @@ jobs:
       - name: Validate Stage 5A.2 evidence
         run: uv run python scripts/check_stage5a2_extended_ground_plane.py
 
+      - name: Stage 5A.2B temporal ground tests
+        run: uv run pytest tests/test_stage5a2b_*.py
+
+      - name: Validate Stage 5A.2B temporal evidence
+        run: uv run python scripts/check_stage5a2b_temporal_ground.py
+
       - name: Ruff
         run: uv run ruff check .
 
@@ -139,6 +145,28 @@ jobs:
             config/ground_plane_calibration/stage5a2_result.json
             config/ground_plane_calibration/player_ground_position_report.json
             config/ground_plane_calibration/calibration_uncertainty.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+
+      - name: Publish Stage 5A.2B temporal ground evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage5a2b-temporal-ground-evidence
+          path: |
+            docs/validation/assets/stage5a2b_line_segment_classification.jpg
+            docs/validation/assets/stage5a2b_calibration_ensemble.jpg
+            docs/validation/assets/stage5a2b_real_frame_foot_audit.jpg
+            docs/validation/assets/stage5a2b_temporal_foot_tracks.jpg
+            docs/validation/assets/stage5a2b_player_ground_top_view.jpg
+            docs/validation/assets/stage5a2b_uncertainty_decomposition.jpg
+            docs/validation/assets/stage5a2b_far_player_evidence.jpg
+            docs/validation/STAGE5A2B_TEMPORAL_GROUND_VISUAL_AUDIT.md
+            config/ground_plane_calibration/stage5a2b_result.json
+            config/ground_plane_calibration/stage5a2b_line_support_report.json
+            config/ground_plane_calibration/stage5a2b_calibration_cross_validation.json
+            config/ground_plane_calibration/stage5a2b_player_validation_report.json
+            config/ground_plane_calibration/stage5a2b_uncertainty.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 6

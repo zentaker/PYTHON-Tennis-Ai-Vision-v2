@@ -1,6 +1,10 @@
 # Last result
 
-- Status: `STAGE5A2_REJECTED_BY_HUMAN_GATE_EVIDENCE_INSUFFICIENT`; v3.1 remains rejected.
+- Status: `STAGE5A2B_TEMPORAL_GROUND_VALIDATION_PARTIAL`; Stage 5A.2 and v3.1 remain rejected.
+- 137 real LSD segments; 61 supported / 76 rejected; nine painted model families supported.
+- Eight correlated calibration families; 305 frames-evento across five ±30 windows.
+- ev_003/ev_007 feet are visually on ground at 7.514/6.431 m behind baseline, but both
+  remain unresolved because optical-flow speed diagnostics reach impossible values.
 - Stage 5A.2: 31-frame temporal background, 10 court lines, 64 uncertainty runs,
   five P1 player frames, CPU only.
 - Human visual approval rejected: clipped/mischaracterized visuals, correlated geometry,

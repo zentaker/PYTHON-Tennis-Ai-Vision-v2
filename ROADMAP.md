@@ -116,6 +116,11 @@ correlacionada e incertidumbre incompleta, y carecía de soporte temporal sobre 
 reales. Stage 5A.2B debe validar temporalmente sin imponer un límite de 5 m. XYZ no se
 reejecutó.
 
+Stage 5A.2B procesó frames reales y quedó
+`STAGE5A2B_TEMPORAL_GROUND_VALIDATION_PARTIAL`. Los pies far son compatibles con clay
+visible y no se fuerza un límite de 5 m, pero el flujo óptico presenta saltos físicamente
+imposibles; ev_003/ev_007 permanecen unresolved. El gate siguiente es auditoría visual.
+
 ### Stage 5C - Vista superior derivada
 
 Renderizar X,Y de la trayectoria 3D aprobada.
