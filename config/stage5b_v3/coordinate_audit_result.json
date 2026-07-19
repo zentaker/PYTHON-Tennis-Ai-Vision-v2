@@ -1,0 +1,128 @@
+{
+  "cause": "P1 serialization matches Stage 1 homography exactly; far-player implausibility is unstable planar extrapolation beyond calibration court, not serialization drift",
+  "contacts": [
+    {
+      "correct_baseline_y_m": -11.885,
+      "distance_behind_baseline_m": 0.0,
+      "distance_to_correct_baseline_m": 1.1278333062650727,
+      "event_id": "ev_001",
+      "foot_pixel": [
+        1566.4193929036458,
+        1117.237569173177
+      ],
+      "identity": "near",
+      "inside_regulation_doubles_court": true,
+      "plausible_player_zone": true,
+      "recomputed_xy_m": [
+        1.211784479916102,
+        -10.757166693734927
+      ],
+      "stored_recomputed_difference_m": 0.0,
+      "stored_xy_m": [
+        1.211784479916102,
+        -10.757166693734927
+      ],
+      "warning": null
+    },
+    {
+      "correct_baseline_y_m": 11.885,
+      "distance_behind_baseline_m": 8.02521461748285,
+      "distance_to_correct_baseline_m": 8.02521461748285,
+      "event_id": "ev_003",
+      "foot_pixel": [
+        1009.1526692708334,
+        268.2572326660156
+      ],
+      "identity": "far",
+      "inside_regulation_doubles_court": false,
+      "plausible_player_zone": false,
+      "recomputed_xy_m": [
+        -4.224643103138451,
+        19.91021461748285
+      ],
+      "stored_recomputed_difference_m": 1.7763568394002505e-15,
+      "stored_xy_m": [
+        -4.224643103138453,
+        19.91021461748285
+      ],
+      "warning": "HOMOGRAPHY_EXTRAPOLATION_BEYOND_PLAUSIBLE_PLAYER_ZONE"
+    },
+    {
+      "correct_baseline_y_m": -11.885,
+      "distance_behind_baseline_m": 1.1341787444878655,
+      "distance_to_correct_baseline_m": 1.1341787444878655,
+      "event_id": "ev_005",
+      "foot_pixel": [
+        1493.3709309895833,
+        1240.7015380859375
+      ],
+      "identity": "near",
+      "inside_regulation_doubles_court": false,
+      "plausible_player_zone": true,
+      "recomputed_xy_m": [
+        0.7012187874073933,
+        -13.019178744487865
+      ],
+      "stored_recomputed_difference_m": 1.3322676295501878e-15,
+      "stored_xy_m": [
+        0.7012187874073946,
+        -13.019178744487865
+      ],
+      "warning": null
+    },
+    {
+      "correct_baseline_y_m": 11.885,
+      "distance_behind_baseline_m": 6.887505098450463,
+      "distance_to_correct_baseline_m": 6.887505098450463,
+      "event_id": "ev_007",
+      "foot_pixel": [
+        998.8591105143229,
+        285.5049743652344
+      ],
+      "identity": "far",
+      "inside_regulation_doubles_court": false,
+      "plausible_player_zone": false,
+      "recomputed_xy_m": [
+        -4.271139363120869,
+        18.772505098450463
+      ],
+      "stored_recomputed_difference_m": 1.7763568394002505e-15,
+      "stored_xy_m": [
+        -4.271139363120871,
+        18.772505098450463
+      ],
+      "warning": "HOMOGRAPHY_EXTRAPOLATION_BEYOND_PLAUSIBLE_PLAYER_ZONE"
+    },
+    {
+      "correct_baseline_y_m": -11.885,
+      "distance_behind_baseline_m": 0.0,
+      "distance_to_correct_baseline_m": 1.4438880994856227,
+      "event_id": "ev_009",
+      "foot_pixel": [
+        2127.0746256510415,
+        1101.917236328125
+      ],
+      "identity": "near",
+      "inside_regulation_doubles_court": true,
+      "plausible_player_zone": true,
+      "recomputed_xy_m": [
+        4.795864263111862,
+        -10.441111900514377
+      ],
+      "stored_recomputed_difference_m": 0.0,
+      "stored_xy_m": [
+        4.795864263111862,
+        -10.441111900514377
+      ],
+      "warning": null
+    }
+  ],
+  "coordinate_convention": "X right, Y far, Z up; net Y=0; near baseline -11.885m; far baseline +11.885m",
+  "court_dimensions_m": {
+    "doubles_width": 10.97,
+    "length": 23.77,
+    "singles_width": 8.23
+  },
+  "maximum_stored_recomputed_xy_difference_m": 1.7763568394002505e-15,
+  "status": "COORDINATE_CONVENTION_VERIFIED_WITH_EXTRAPOLATION_WARNING"
+}
