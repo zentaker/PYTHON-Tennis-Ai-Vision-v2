@@ -3,7 +3,7 @@
 **Version:** 0.3
 **Fecha de creacion:** 2026-05-18
 **Fecha de reconciliacion:** 2026-07-13
-**Estado:** CORE_PRODUCTIZATION_STAGE0A_READY_FOR_REVIEW
+**Estado:** CORE_PRODUCTIZATION_STAGE0B_READY_FOR_REVIEW
 
 The experimental Stage 5B branch is archived research. The official product path is
 the TennisAI Training Session Analyzer and its versioned Analysis Bundle.

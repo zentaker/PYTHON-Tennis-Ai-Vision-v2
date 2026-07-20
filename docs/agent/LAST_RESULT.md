@@ -5,6 +5,10 @@
 - Product pivot recorded as `CORE_PRODUCTIZATION_STAGE0A_READY_FOR_REVIEW`.
 - Analysis Bundle V1 schema, fixture, processing profiles, inventory and roadmap published.
 - Web repository not created; runtime pipeline unchanged; cloud/GPU/spend: 0/0/0.
+- Stage 0A merged as `d5a00c23f267c91371ce575343979b8bc2d06061` and tagged
+  `tennisai-core-stage0a`.
+- Stage 0B CLI packages existing outputs only, validates paths/checksums/fingerprint,
+  and produces a deterministic fixture without loading models.
 
 - Status: `P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED`.
 - Upstream: `P1_TEN_FRAME_ACCEPTANCE_PASSED`.
