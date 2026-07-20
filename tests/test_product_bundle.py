@@ -185,3 +185,19 @@ def test_profiles_and_no_heavy_imports() -> None:
     )
     source = (Path(__file__).parents[1] / "src/product").read_text() if False else ""
     assert "torch" not in source
+
+
+def test_profile_cycle_is_rejected(tmp_path: Path) -> None:
+    path = tmp_path / "profiles.json"
+    path.write_text(
+        json.dumps(
+            {
+                "profiles": {
+                    "A": {"extends": "B", "capabilities": {"a": {}}},
+                    "B": {"extends": "A", "capabilities": {"b": {}}},
+                }
+            }
+        )
+    )
+    with pytest.raises(BundleInputError):
+        resolve_profile("A", path)
