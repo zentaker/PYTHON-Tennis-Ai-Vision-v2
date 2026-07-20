@@ -38,10 +38,10 @@ def _schema_validate(value: Any, schema_path: Path) -> None:
         raise BundleSchemaError(f"{schema_path.name}: {exc.message}") from exc
 
 
-def _parse_file(path: Path, allow_empty_jsonl: bool = False) -> None:
+def _parse_file(path: Path, allow_empty_jsonl: bool = False) -> Any:
     if path.stat().st_size == 0:
         if path.suffix == ".jsonl" and allow_empty_jsonl:
-            return
+            return None
         raise BundleSchemaError(f"empty file is not valid: {path.name}")
     if path.suffix == ".json":
         try:
@@ -52,12 +52,14 @@ def _parse_file(path: Path, allow_empty_jsonl: bool = False) -> None:
             _schema_validate(value, ROOT / "config/product/session_v1.schema.json")
         elif path.name == "rallies.json":
             _schema_validate(value, ROOT / "config/product/rallies_v1.schema.json")
+        return value
     elif path.suffix == ".jsonl":
         for number, line in enumerate(path.read_text().splitlines(), 1):
             try:
                 json.loads(line)
             except json.JSONDecodeError as exc:
                 raise BundleSchemaError(f"malformed JSONL: {path.name}:{number}") from exc
+    return None
 
 
 def validate_bundle(bundle: Path, verify_source: Path | None = None) -> dict[str, Any]:
@@ -73,6 +75,8 @@ def validate_bundle(bundle: Path, verify_source: Path | None = None) -> dict[str
     if not manifest["capabilities"] or not manifest["limitations"]:
         raise BundleSchemaError("capabilities and limitations must be non-empty")
     checksums: dict[str, str] = {}
+    parsed_files: dict[str, Any] = {}
+    target_paths: dict[str, Path] = {}
     files_verified = 0
     for logical, entry in manifest["files"].items():
         relative = safe_relative(entry["path"])
@@ -83,7 +87,35 @@ def validate_bundle(bundle: Path, verify_source: Path | None = None) -> dict[str
             if entry["required"]:
                 raise BundleIntegrityError(f"required file missing: {entry['path']}")
             continue
-        _parse_file(target, bool(entry.get("allow_empty_jsonl", False)))
+        parsed = _parse_file(target, bool(entry.get("allow_empty_jsonl", False)))
+        parsed_files[logical] = parsed
+        target_paths[logical] = target
+    manifest_session = parsed_files.get("session")
+    if manifest_session is not None:
+        expected = manifest["session_id"]
+        if manifest_session["session_id"] != expected:
+            raise BundleIntegrityError("session.json session_id does not match manifest.json")
+        if manifest_session["processing_profile"] != manifest["processing_profile"]:
+            raise BundleIntegrityError(
+                "session.json processing_profile does not match manifest.json"
+            )
+        if manifest_session["surface"] != manifest["surface"]:
+            raise BundleIntegrityError("session.json surface does not match manifest.json")
+        source = manifest_session["source_video"]
+        manifest_source = manifest["source_video"]
+        if source["display_name"] != manifest_source["display_name"]:
+            raise BundleIntegrityError(
+                "session.json source_video.display_name does not match manifest.json"
+            )
+        if source["sha256"].lower() != manifest_source["sha256"].lower():
+            raise BundleIntegrityError(
+                "session.json source_video.sha256 does not match manifest.json"
+            )
+    manifest_rallies = parsed_files.get("rallies")
+    if manifest_rallies is not None and manifest_rallies["session_id"] != manifest["session_id"]:
+        raise BundleIntegrityError("rallies.json session_id does not match manifest.json")
+    for logical, target in target_paths.items():
+        entry = manifest["files"][logical]
         size = target.stat().st_size
         if entry.get("size_bytes") != size:
             raise BundleIntegrityError(f"size mismatch: {entry['path']}")

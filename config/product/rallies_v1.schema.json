@@ -3,5 +3,6 @@
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "session_id", "status", "rallies"],
-  "properties": {"schema_version": {"const": "rallies.v1"}, "session_id": {"type": "string"}, "status": {"enum": ["not_analyzed", "complete", "partial"]}, "rallies": {"type": "array"}}
+  "properties": {"schema_version": {"const": "rallies.v1"}, "session_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"}, "status": {"enum": ["not_analyzed", "partial", "complete", "failed"]}, "rallies": {"type": "array"}},
+  "allOf": [{"if": {"properties": {"status": {"const": "not_analyzed"}}}, "then": {"properties": {"rallies": {"maxItems": 0}}}}]
 }

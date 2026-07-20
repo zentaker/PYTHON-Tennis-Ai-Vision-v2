@@ -9,6 +9,9 @@
   `tennisai-core-stage0a`.
 - Stage 0B CLI packages existing outputs only, validates paths/checksums/fingerprint,
   and produces a deterministic fixture without loading models.
+- Consistency patch hardens session/rallies schemas, cross-file semantic checks,
+  descriptor-relative inputs and symlink rejection. Gate:
+  `ANALYSIS_BUNDLE_V1_FREEZE_PENDING_ONE_CONSISTENCY_PATCH` until CI and audit.
 
 - Status: `P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED`.
 - Upstream: `P1_TEN_FRAME_ACCEPTANCE_PASSED`.

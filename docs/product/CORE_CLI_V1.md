@@ -14,3 +14,7 @@ tennisai bundle validate --bundle analysis/session_001 --json
 Source video is external by default and only its sanitized name, size and SHA256
 are stored. `--verify-source` is optional during validation. Existing outputs are
 copied into canonical bundle paths; absent optional outputs are omitted.
+
+The manifest status reports packaging/integrity, not analysis. Thus a successful
+CLI build can report `manifest.status: complete` while the packaged session and
+rallies remain `not_analyzed`.

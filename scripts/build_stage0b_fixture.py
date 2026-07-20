@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import shutil
 import tempfile
 from pathlib import Path
@@ -19,10 +20,42 @@ def main() -> int:
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)
-    descriptor = ROOT / "tests/fixtures/product/analysis_bundle_v1/bundle-inputs.json"
     with tempfile.TemporaryDirectory(prefix="stage0b-source-") as temp:
         source = Path(temp) / "fixture.mp4"
         source.write_bytes(b"non-decodable packaging fixture; not a real video")
+        input_dir = Path(temp) / "inputs"
+        input_dir.mkdir()
+        session = json.loads((FIXTURE / "inputs/session.json").read_text())
+        session["source_video"]["display_name"] = source.name
+        session["source_video"]["sha256"] = hashlib.sha256(source.read_bytes()).hexdigest()
+        (input_dir / "session.json").write_text(json.dumps(session, indent=2) + "\n")
+        shutil.copy2(FIXTURE / "inputs/rallies.json", input_dir / "rallies.json")
+        descriptor = Path(temp) / "bundle-inputs.json"
+        descriptor.write_text(
+            json.dumps(
+                {
+                    "schema_version": "analysis_bundle_inputs.v1",
+                    "files": {
+                        "session": {
+                            "path": "inputs/session.json",
+                            "required": True,
+                            "media_type": "application/json",
+                            "schema_version": "session.v1",
+                        },
+                        "rallies": {
+                            "path": "inputs/rallies.json",
+                            "required": True,
+                            "media_type": "application/json",
+                            "schema_version": "rallies.v1",
+                        },
+                    },
+                    "capabilities": ["bundle_contract", "source_provenance"],
+                    "limitations": ["runtime_analysis_not_wired"],
+                },
+                indent=2,
+            )
+            + "\n"
+        )
         first = Path(temp) / "first"
         second = Path(temp) / "second"
         result_a = build_bundle(
@@ -39,6 +72,10 @@ def main() -> int:
         )
         if result_a["fingerprint"] != result_b["fingerprint"]:
             raise SystemExit("non-deterministic fixture fingerprint")
+        manifest = json.loads((first / "manifest.json").read_text())
+        packaged_session = json.loads((first / "session.json").read_text())
+        if packaged_session["source_video"]["sha256"] != manifest["source_video"]["sha256"]:
+            raise SystemExit("fixture source metadata is inconsistent")
         shutil.copytree(first, OUT / "bundle")
         for name in ("manifest.json", "session.json", "rallies.json"):
             shutil.copy2(first / name, OUT / name)

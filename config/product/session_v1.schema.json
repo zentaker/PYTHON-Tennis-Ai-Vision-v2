@@ -3,5 +3,5 @@
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "session_id", "source_video", "surface", "processing_profile", "status", "capabilities", "limitations"],
-  "properties": {"schema_version": {"const": "session.v1"}, "session_id": {"type": "string"}, "source_video": {"type": "object"}, "surface": {"type": "string"}, "processing_profile": {"enum": ["FAST", "STANDARD", "TACTICAL"]}, "status": {"type": "string"}, "capabilities": {"type": "array"}, "limitations": {"type": "array"}}
+  "properties": {"schema_version": {"const": "session.v1"}, "session_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"}, "source_video": {"type": "object", "additionalProperties": false, "required": ["display_name", "sha256"], "properties": {"display_name": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"}}}, "surface": {"type": "string", "minLength": 1}, "processing_profile": {"enum": ["FAST", "STANDARD", "TACTICAL"]}, "status": {"enum": ["not_analyzed", "partial", "complete", "failed"]}, "capabilities": {"type": "array", "items": {"type": "string"}, "minItems": 1}, "limitations": {"type": "array", "items": {"type": "string"}, "minItems": 1}}
 }

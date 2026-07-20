@@ -40,7 +40,9 @@ def _validate_source(source: Path, output: Path) -> None:
         raise BundlePathError("output cannot be the source video")
 
 
-def _copy_inputs(descriptor: dict[str, Any], temp: Path) -> tuple[dict[str, Any], dict[str, str]]:
+def _copy_inputs(
+    descriptor: dict[str, Any], temp: Path, descriptor_dir: Path
+) -> tuple[dict[str, Any], dict[str, str]]:
     files: dict[str, Any] = {}
     checksums: dict[str, str] = {}
     for logical, spec in descriptor["files"].items():
@@ -48,13 +50,14 @@ def _copy_inputs(descriptor: dict[str, Any], temp: Path) -> tuple[dict[str, Any]
         if not path.is_absolute() and ".." in path.parts:
             raise BundlePathError(f"input path traversal: {logical}")
         if not path.is_absolute():
-            path = (Path.cwd() / path).resolve()
+            path = descriptor_dir / path
+        if path.is_symlink():
+            raise BundlePathError(f"unsafe input symlink: {logical}")
+        path = path.resolve()
         if not path.exists() or not path.is_file():
             if spec["required"]:
                 raise BundleInputError(f"required input missing: {logical}")
             continue
-        if path.is_symlink():
-            raise BundlePathError(f"unsafe input symlink: {logical}")
         suffix = path.suffix.lower()
         if suffix not in MEDIA_EXTENSIONS:
             raise BundleInputError(f"unsupported input media type: {logical}")
@@ -117,7 +120,7 @@ def build_bundle(
     try:
         (temp / "clips").mkdir()
         (temp / "thumbnails").mkdir()
-        files, checksums = _copy_inputs(descriptor, temp)
+        files, checksums = _copy_inputs(descriptor, temp, inputs.resolve().parent)
         source_path = Path(source_video).resolve()
         manifest_files = {}
         for logical, entry in files.items():

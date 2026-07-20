@@ -4,6 +4,9 @@
   "base_sha": "d5a00c23f267c91371ce575343979b8bc2d06061",
   "task": "Build stable TennisAI Analysis Bundle V1 CLI",
   "status": "CORE_PRODUCTIZATION_STAGE0B_READY_FOR_REVIEW",
+  "stage0b_implementation_gate": "STAGE0B_IMPLEMENTATION_ACCEPTED",
+  "analysis_bundle_v1_gate": "ANALYSIS_BUNDLE_V1_FREEZE_PENDING_ONE_CONSISTENCY_PATCH",
+  "analysis_bundle_v1_gate_reason": "Individual files were intact, but semantic coherence across manifest.json, session.json and rallies.json was not yet validated.",
   "stages": {
     "stage_1_to_5a1": "VALIDATED",
     "stage_5b": "RESEARCH_ARCHIVED_PR5_CLOSED_UNMERGED",
@@ -26,6 +29,6 @@
     "gpu_calls": 0,
     "spend_generated": 0
   },
-  "blocker": "APPROVED_STAGE5B_XYZ_REQUIRED",
+  "blocker": "ANALYSIS_BUNDLE_V1_FREEZE_PENDING_ONE_CONSISTENCY_PATCH",
   "next_action": "Stage 0B human audit and Analysis Bundle V1 freeze."
 }

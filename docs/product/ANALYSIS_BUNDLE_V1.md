@@ -26,6 +26,13 @@ include frame identifiers, confidence and schema versions where applicable. Metr
 units are explicit SI or pixels; optional files are omitted rather than fabricated.
 Checksums bind every file to the original session and bundle version.
 
+Status semantics are deliberately split. `manifest.status` describes bundle
+construction and integrity (`complete` means packaging and validation succeeded),
+while `session.status` and `rallies.status` describe analysis availability. A
+valid Stage 0B bundle may therefore have `manifest.status: complete` together with
+`session.status: not_analyzed` and `rallies.status: not_analyzed`; packaging does
+not imply that inference ran.
+
 Stage 0B freezes `schema_version: analysis_bundle.v1`. Source video metadata is
 external by default (`display_name`, format, size and SHA256 only); personal
 absolute paths are never persisted. Every packaged file has a relative path,
