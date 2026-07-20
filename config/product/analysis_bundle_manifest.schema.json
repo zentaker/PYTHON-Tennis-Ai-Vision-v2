@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tennisai.local/schemas/analysis-bundle-manifest-v1.json",
+  "title": "TennisAI Analysis Bundle Manifest V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "core_version", "session_id", "created_at", "source_video", "processing_profile", "surface", "files", "capabilities", "limitations", "checksums", "status"],
+  "properties": {
+    "schema_version": {"const": "analysis_bundle.v1"},
+    "core_version": {"type": "string", "minLength": 1},
+    "session_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "source_video": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "format"], "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "format": {"enum": ["mp4", "mov"]}}},
+    "processing_profile": {"enum": ["FAST", "STANDARD", "TACTICAL"]},
+    "surface": {"type": "string", "minLength": 1},
+    "files": {"type": "object", "additionalProperties": {"type": "object", "required": ["path", "required"], "properties": {"path": {"type": "string"}, "required": {"type": "boolean"}, "producer": {"type": "string"}, "consumer": {"type": "string"}, "version": {"type": "string"}}}},
+    "capabilities": {"type": "array", "items": {"type": "string"}},
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "checksums": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^[a-f0-9]{64}$"}},
+    "status": {"enum": ["processing", "complete", "partial", "failed"]}
+  }
+}
