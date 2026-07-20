@@ -9,9 +9,14 @@
   `tennisai-core-stage0a`.
 - Stage 0B CLI packages existing outputs only, validates paths/checksums/fingerprint,
   and produces a deterministic fixture without loading models.
-- Consistency patch hardens session/rallies schemas, cross-file semantic checks,
-  descriptor-relative inputs and symlink rejection. Gate:
-  `ANALYSIS_BUNDLE_V1_FREEZE_PENDING_ONE_CONSISTENCY_PATCH` until CI and audit.
+- Consistency patch hardened session/rallies schemas, cross-file semantic checks,
+  descriptor-relative inputs and symlink rejection; CI passed.
+- Stage 0B final human gate passed: `STAGE0B_FINAL_HUMAN_GATE_PASSED`.
+- Analysis Bundle V1 transport contract frozen:
+  `ANALYSIS_BUNDLE_V1_TRANSPORT_CONTRACT_FROZEN`. The freeze covers layout,
+  manifest/session/rallies envelopes, packaging statuses, checksums, fingerprint,
+  profile names and Core CLI; detailed analytical record schemas remain independent
+  versioned contracts.
 
 - Status: `P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED`.
 - Upstream: `P1_TEN_FRAME_ACCEPTANCE_PASSED`.

@@ -1,9 +1,11 @@
 # Current task
 
-Core Productization Stage 0B: build the stable deterministic Analysis Bundle V1
-CLI and validator. No inference, runtime vision execution, rally segmentation or
-Web repository is in scope.
+Analysis Bundle V1 transport contract is frozen after the Stage 0B final human
+gate. The next Core task is Stage 1 — Single Rally Analyzer; no implementation is
+started on this branch.
 
-Consistency freeze correction: the validator now enforces manifest/session/rallies
-identity, profile, surface and source metadata coherence. The remaining gate is
-the final Analysis Bundle V1 human audit; no inference is required.
+The freeze covers the bundle directory layout, manifest, session and rallies
+envelopes, packaging statuses, checksums, bundle fingerprint, profile names and
+the stable Core CLI contract. Detailed contracts for rally records, events, ball
+tracks, player tracks, poses, court map, metrics and tactical patterns are
+independent versioned contracts and must not break Analysis Bundle V1.

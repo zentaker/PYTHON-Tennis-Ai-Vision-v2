@@ -40,5 +40,15 @@ producer, consumer, media type, schema version, size and checksum. The
 `bundle_fingerprint` is a SHA256 over the normalized manifest, internal checksums
 and source-video checksum, making builds reproducible for fixed inputs and time.
 
+## Frozen transport contract
+
+Analysis Bundle V1 is frozen as the transport contract for the Core and future Web:
+the bundle directory layout, manifest, session envelope, rallies envelope,
+packaging statuses, checksums, bundle fingerprint, profile names and stable Core
+CLI contract are fixed. Detailed schemas for rally records, events, ball tracks,
+player tracks, poses, court map, metrics and tactical patterns are independent
+versioned contracts; adding or evolving them must not break this transport
+contract.
+
 The web repository will be created only after this contract is frozen during Stage
 0B.
