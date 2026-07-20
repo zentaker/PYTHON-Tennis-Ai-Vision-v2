@@ -1,0 +1,10 @@
+{
+  "schema_version": "session.v1",
+  "session_id": "fixture-session-001",
+  "source_video": {"display_name": "fixture.mp4", "sha256": "0000000000000000000000000000000000000000000000000000000000000000"},
+  "surface": "hard",
+  "processing_profile": "FAST",
+  "status": "not_analyzed",
+  "capabilities": ["bundle_contract"],
+  "limitations": ["fixture_only"]
+}

@@ -1,15 +1,19 @@
 {
   "schema_version": 1,
-  "branch": "agent/core-productization-stage0a",
-  "base_sha": "ecff19f4d131fd251ac2ee32b5fc0b84ae558811",
-  "task": "Establish TennisAI Core product baseline and Analysis Bundle V1",
-  "status": "CORE_PRODUCTIZATION_STAGE0A_READY_FOR_REVIEW",
+  "branch": "agent/core-productization-stage0b",
+  "base_sha": "d5a00c23f267c91371ce575343979b8bc2d06061",
+  "task": "Build stable TennisAI Analysis Bundle V1 CLI",
+  "status": "ANALYSIS_BUNDLE_V1_TRANSPORT_CONTRACT_FROZEN",
+  "stage0b_implementation_gate": "STAGE0B_IMPLEMENTATION_ACCEPTED",
+  "stage0b_human_gate": "STAGE0B_FINAL_HUMAN_GATE_PASSED",
+  "analysis_bundle_v1_gate": "ANALYSIS_BUNDLE_V1_TRANSPORT_CONTRACT_FROZEN",
   "stages": {
     "stage_1_to_5a1": "VALIDATED",
     "stage_5b": "RESEARCH_ARCHIVED_PR5_CLOSED_UNMERGED",
     "stage_p1": "P1_TEN_FRAME_ACCEPTANCE_PASSED",
     "analytics_p1_wiring": "P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED",
-    "product_stage_0a": "READY_FOR_REVIEW"
+    "product_stage_0a": "MERGED_BASELINE",
+    "product_stage_0b": "TRANSPORT_CONTRACT_FROZEN"
   },
   "result": {
     "contacts": 5,
@@ -25,6 +29,6 @@
     "gpu_calls": 0,
     "spend_generated": 0
   },
-  "blocker": "APPROVED_STAGE5B_XYZ_REQUIRED",
-  "next_action": "Core Productization Stage 0B — stable CLI and bundle producer."
+  "blocker": "NONE",
+  "next_action": "Core Stage 1 — Single Rally Analyzer; prepare a separate TennisAI-Web agent."
 }

@@ -3,7 +3,7 @@
 **Version:** 0.3
 **Fecha de creacion:** 2026-05-18
 **Fecha de reconciliacion:** 2026-07-13
-**Estado:** CORE_PRODUCTIZATION_STAGE0A_READY_FOR_REVIEW
+**Estado:** ANALYSIS_BUNDLE_V1_TRANSPORT_CONTRACT_FROZEN
 
 The experimental Stage 5B branch is archived research. The official product path is
 the TennisAI Training Session Analyzer and its versioned Analysis Bundle.
@@ -37,6 +37,15 @@ Construir un sistema que, dado un video de broadcast de tenis con camara fija, g
 
 Stage 0 se considera funcionalmente cerrada. Su cierre documental fue reconciliado
 retrospectivamente despues de confirmar en Git el avance y los gates posteriores.
+
+### Productización Core — Stage 0B
+
+Estado: cerrada con `STAGE0B_FINAL_HUMAN_GATE_PASSED` y contrato de transporte
+congelado como `ANALYSIS_BUNDLE_V1_TRANSPORT_CONTRACT_FROZEN`. El freeze cubre el
+layout del bundle, manifest, envelopes de sesión y rallies, estados de packaging,
+checksums, fingerprint, perfiles y contrato CLI. Los schemas detallados de rally,
+events, ball tracks, player tracks, poses, court map, metrics y tactical patterns
+serán contratos versionados independientes y no deben romper Analysis Bundle V1.
 
 ## 3. Niveles de generalizacion
 

@@ -44,6 +44,13 @@ jobs:
       - name: Validate P1 Analytics functional wiring
         run: uv run python scripts/check_p1_analytics_functional_wiring.py
 
+      - name: Stage 0B deterministic Analysis Bundle fixture
+        run: |
+          uv run python scripts/build_stage0b_fixture.py
+          uv run tennisai bundle validate --bundle .artifacts/stage0b-analysis-bundle-fixture/bundle --json
+          test "$(jq -r '.fingerprints_identical' .artifacts/stage0b-analysis-bundle-fixture/build-report.json)" = "true"
+          uv run pytest tests/test_analysis_bundle_*.py tests/test_product_*.py
+
       - name: Ruff
         run: uv run ruff check .
 
@@ -55,6 +62,20 @@ jobs:
 
       - name: Validate serialized Analytics schemas
         run: uv run --with "jsonschema>=4.23,<5" python -m src.analytics.schema_validation
+
+      - name: Publish Stage 0B Analysis Bundle fixture
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage0b-analysis-bundle-fixture
+          path: |
+            .artifacts/stage0b-analysis-bundle-fixture/manifest.json
+            .artifacts/stage0b-analysis-bundle-fixture/session.json
+            .artifacts/stage0b-analysis-bundle-fixture/rallies.json
+            .artifacts/stage0b-analysis-bundle-fixture/build-report.json
+            .artifacts/stage0b-analysis-bundle-fixture/validation-report.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
 
       - name: Publish P1 GPU retest visual evidence
         uses: actions/upload-artifact@v4
