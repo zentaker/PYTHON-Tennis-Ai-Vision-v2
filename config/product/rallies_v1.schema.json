@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "session_id", "status", "rallies"],
+  "properties": {"schema_version": {"const": "rallies.v1"}, "session_id": {"type": "string"}, "status": {"enum": ["not_analyzed", "complete", "partial"]}, "rallies": {"type": "array"}}
+}

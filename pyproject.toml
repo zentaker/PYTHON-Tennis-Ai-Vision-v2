@@ -1,7 +1,7 @@
 [project]
 name = "tennis-vision-ai-v2"
-version = "0.0.1"
-description = "Tennis broadcast video analysis: 2D top and side views"
+version = "0.1.0"
+description = "TennisAI Session Analyzer Core and deterministic Analysis Bundle producer"
 requires-python = ">=3.11,<3.12"
 dependencies = [
     "numpy>=1.26,<2.0",
@@ -10,6 +10,7 @@ dependencies = [
     "matplotlib>=3.8",
     "pillow>=10.0",
     "tqdm>=4.66",
+    "jsonschema>=4.23,<5",
 ]
 
 [project.optional-dependencies]
@@ -28,6 +29,19 @@ dev = [
     "pytest>=8.0",
     "ipykernel>=6.29",
 ]
+
+[project.scripts]
+tennisai = "src.product.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
 
 [tool.ruff]
 line-length = 100

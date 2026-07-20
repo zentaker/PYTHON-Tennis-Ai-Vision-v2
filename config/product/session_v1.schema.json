@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "session_id", "source_video", "surface", "processing_profile", "status", "capabilities", "limitations"],
+  "properties": {"schema_version": {"const": "session.v1"}, "session_id": {"type": "string"}, "source_video": {"type": "object"}, "surface": {"type": "string"}, "processing_profile": {"enum": ["FAST", "STANDARD", "TACTICAL"]}, "status": {"type": "string"}, "capabilities": {"type": "array"}, "limitations": {"type": "array"}}
+}

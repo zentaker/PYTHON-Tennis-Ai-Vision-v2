@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tennisai.local/schemas/analysis-bundle-inputs-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "files", "capabilities", "limitations"],
+  "properties": {
+    "schema_version": {"const": "analysis_bundle_inputs.v1"},
+    "files": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "object", "additionalProperties": false, "required": ["path", "required", "media_type", "schema_version"], "properties": {"path": {"type": "string", "minLength": 1}, "required": {"type": "boolean"}, "media_type": {"type": "string", "minLength": 1}, "schema_version": {"type": "string", "minLength": 1}, "allow_empty_jsonl": {"type": "boolean"}}}},
+    "capabilities": {"type": "array", "items": {"type": "string"}},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}
