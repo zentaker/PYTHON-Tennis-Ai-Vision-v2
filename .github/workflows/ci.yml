@@ -110,6 +110,22 @@ jobs:
       - name: Validate Stage 5B v3.5 observation-conditioned evidence
         run: uv run python scripts/check_stage5b_v35_observation_conditioned.py
 
+      - name: Stage 5B v3.5.1 truthful Gate D and Gate A tests
+        run: |
+          uv run python scripts/run_stage5b_v351_truthful_gate_a.py \
+            --ball-track tests/fixtures/stage5b_v3/smoothed_trajectory_real.csv \
+            --stage4-events data/clips/nivel_a2_01/manual_annotation.json \
+            --p1-poses tests/fixtures/integration/p1_analytics_accepted/selected_player_pose.jsonl \
+            --p1-contact-audit tests/fixtures/integration/p1_analytics_accepted/selected_contact_audit.json \
+            --camera tests/fixtures/stage5b_v3/camera_model_refined.json \
+            --anchors-v4 config/ground_plane_calibration/player_contact_ground_anchors_v4.jsonl \
+            --output-dir .artifacts/stage5b-v351-truthful-gate-a/output \
+            --seed 42 --strict
+          uv run pytest tests/test_stage5b_v351_truthful_gate_a.py
+
+      - name: Validate Stage 5B v3.5.1 truthful evidence
+        run: uv run python scripts/check_stage5b_v351_truthful_gate_a.py
+
       - name: Ruff
         run: uv run ruff check .
 
@@ -339,6 +355,37 @@ jobs:
             config/stage5b_v3/stage5b_v35_holdout_report.json
             config/stage5b_v3/stage5b_v35_segments.json
             config/stage5b_v3/stage5b_v35_worst_residuals.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+
+      - name: Publish Stage 5B v3.5.1 truthful Gate D and Gate A evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage5b-v351-truthful-gate-a-evidence
+          path: |
+            docs/validation/assets/stage5b_v351_measurement_integrity.jpg
+            docs/validation/assets/stage5b_v351_contact_time_windows.jpg
+            docs/validation/assets/stage5b_v351_contact_candidate_geometry.jpg
+            docs/validation/assets/stage5b_v351_global_hypotheses.jpg
+            docs/validation/assets/stage5b_v351_reprojection_contact_sheet.jpg
+            docs/validation/assets/stage5b_v351_worst_reprojection_frames.jpg
+            docs/validation/assets/stage5b_v351_top_view.jpg
+            docs/validation/assets/stage5b_v351_side_view.jpg
+            docs/validation/assets/stage5b_v351_holdout.jpg
+            docs/validation/assets/stage5b_v351_per_segment_metrics.jpg
+            docs/validation/STAGE5B_V351_TRUTHFUL_GATE_AUDIT.md
+            config/stage5b_v3/stage5b_v35_result.json
+            .artifacts/stage5b-v351-truthful-gate-a/output/stage5b_v351_measurement_integrity.json
+            .artifacts/stage5b-v351-truthful-gate-a/output/stage5b_v351_freeze_runs.json
+            .artifacts/stage5b-v351-truthful-gate-a/output/stage5b_v351_source_provenance.json
+            .artifacts/stage5b-v351-truthful-gate-a/output/stage5b_v351_event_candidates.json
+            .artifacts/stage5b-v351-truthful-gate-a/output/stage5b_v351_edge_costs.json
+            .artifacts/stage5b-v351-truthful-gate-a/output/stage5b_v351_global_hypotheses.json
+            .artifacts/stage5b-v351-truthful-gate-a/output/stage5b_v351_holdout_report.json
+            .artifacts/stage5b-v351-truthful-gate-a/output/stage5b_v351_segments.json
+            .artifacts/stage5b-v351-truthful-gate-a/output/stage5b_v351_frame_residuals.csv
+            .artifacts/stage5b-v351-truthful-gate-a/output/stage5b_v351_worst_residuals.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 6
