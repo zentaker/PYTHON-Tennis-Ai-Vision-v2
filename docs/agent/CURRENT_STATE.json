@@ -1,14 +1,15 @@
 {
   "schema_version": 1,
-  "branch": "agent/p1-analytics-functional-wiring",
-  "base_sha": "772e4624de20a2012578e0ab68ba1eeb8ee03099",
-  "task": "Wire accepted P1 contact evidence into Analytics",
-  "status": "P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED",
+  "branch": "agent/core-productization-stage0a",
+  "base_sha": "ecff19f4d131fd251ac2ee32b5fc0b84ae558811",
+  "task": "Establish TennisAI Core product baseline and Analysis Bundle V1",
+  "status": "CORE_PRODUCTIZATION_STAGE0A_READY_FOR_REVIEW",
   "stages": {
     "stage_1_to_5a1": "VALIDATED",
-    "stage_5b": "BLOCKED_PENDING_APPROVED_XYZ",
+    "stage_5b": "RESEARCH_ARCHIVED_PR5_CLOSED_UNMERGED",
     "stage_p1": "P1_TEN_FRAME_ACCEPTANCE_PASSED",
-    "analytics_p1_wiring": "P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED"
+    "analytics_p1_wiring": "P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED",
+    "product_stage_0a": "READY_FOR_REVIEW"
   },
   "result": {
     "contacts": 5,
@@ -25,5 +26,5 @@
     "spend_generated": 0
   },
   "blocker": "APPROVED_STAGE5B_XYZ_REQUIRED",
-  "next_action": "Approve a reproducible Stage 5B XYZ source before implementing real 3D ball-speed analytics."
+  "next_action": "Core Productization Stage 0B — stable CLI and bundle producer."
 }

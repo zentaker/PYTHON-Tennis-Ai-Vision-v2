@@ -1,9 +1,12 @@
-# ROADMAP - Tennis Vision AI v2
+# ROADMAP - TennisAI Core Product
 
 **Version:** 0.3
 **Fecha de creacion:** 2026-05-18
 **Fecha de reconciliacion:** 2026-07-13
-**Estado:** Activo - P1 aceptado y wiring funcional P1 → Analytics validado
+**Estado:** CORE_PRODUCTIZATION_STAGE0A_READY_FOR_REVIEW
+
+The experimental Stage 5B branch is archived research. The official product path is
+the TennisAI Training Session Analyzer and its versioned Analysis Bundle.
 
 La pasada de datos activa es Nivel A2. Stage 1–4 están cerradas con gates aprobados y la
 la auditoría de cámara Stage 5A terminó con `READY_FOR_STAGE_5B` tras evaluar Stage 5A.1.
