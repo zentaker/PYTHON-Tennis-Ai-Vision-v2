@@ -1,0 +1,9 @@
+{
+  "schema_version": "analysis_bundle_inputs.v1",
+  "files": {
+    "session": {"path": "tests/fixtures/product/analysis_bundle_v1/inputs/session.json", "required": true, "media_type": "application/json", "schema_version": "session.v1"},
+    "rallies": {"path": "tests/fixtures/product/analysis_bundle_v1/inputs/rallies.json", "required": true, "media_type": "application/json", "schema_version": "rallies.v1"}
+  },
+  "capabilities": ["bundle_contract", "source_provenance"],
+  "limitations": ["runtime_analysis_not_wired"]
+}

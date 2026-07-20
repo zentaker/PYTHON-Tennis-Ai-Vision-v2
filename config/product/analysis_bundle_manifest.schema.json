@@ -10,13 +10,14 @@
     "core_version": {"type": "string", "minLength": 1},
     "session_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
     "created_at": {"type": "string", "format": "date-time"},
-    "source_video": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "format"], "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "format": {"enum": ["mp4", "mov"]}}},
+    "source_video": {"type": "object", "additionalProperties": false, "required": ["display_name", "sha256", "format", "size_bytes", "storage"], "properties": {"display_name": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "format": {"enum": ["mp4", "mov"]}, "size_bytes": {"type": "integer", "minimum": 0}, "storage": {"enum": ["external", "embedded"]}, "uri": {"type": "string"}}},
     "processing_profile": {"enum": ["FAST", "STANDARD", "TACTICAL"]},
     "surface": {"type": "string", "minLength": 1},
-    "files": {"type": "object", "additionalProperties": {"type": "object", "required": ["path", "required"], "properties": {"path": {"type": "string"}, "required": {"type": "boolean"}, "producer": {"type": "string"}, "consumer": {"type": "string"}, "version": {"type": "string"}}}},
+    "files": {"type": "object", "additionalProperties": {"type": "object", "required": ["path", "required", "producer", "consumer", "media_type", "schema_version", "size_bytes"], "properties": {"path": {"type": "string"}, "required": {"type": "boolean"}, "producer": {"type": "string"}, "consumer": {"type": "string"}, "media_type": {"type": "string"}, "schema_version": {"type": "string"}, "size_bytes": {"type": "integer", "minimum": 0}, "allow_empty_jsonl": {"type": "boolean"}}}},
     "capabilities": {"type": "array", "items": {"type": "string"}},
     "limitations": {"type": "array", "items": {"type": "string"}},
     "checksums": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^[a-f0-9]{64}$"}},
-    "status": {"enum": ["processing", "complete", "partial", "failed"]}
+    "status": {"enum": ["processing", "complete", "partial", "failed"]},
+    "bundle_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
   }
 }
