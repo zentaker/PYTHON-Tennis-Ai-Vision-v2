@@ -21,3 +21,9 @@ is explicitly `synthetic` with provenance `synthetic_contract_fixture`; it is no
 product evidence. The importer
 accepts a real short rally when its source video and existing track are supplied;
 it preserves their timestamps, confidence and provenance without rewriting them.
+
+The synthetic importer gate is accepted as
+`CORE_STAGE1A_SYNTHETIC_IMPORT_GATE_PASSED`. The real evidence gate is blocked as
+`REAL_SINGLE_RALLY_EVIDENCE_GATE_BLOCKED`; Stage 4 events and P1 serialized
+evidence do not replace a complete real Stage 3 ball track. Detailed record
+schemas remain candidates until a real asset selection is audited.

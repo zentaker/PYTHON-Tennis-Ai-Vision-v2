@@ -29,6 +29,10 @@
 - Real rally gate remains blocked by `REAL_REFERENCE_VIDEO_MISSING` and
   `REAL_STAGE3_BALL_TRACK_MISSING`; Stage 4/P1 fixtures do not substitute for a
   complete Stage 3 track and real video.
+- Synthetic importer acceptance gate passed:
+  `CORE_STAGE1A_SYNTHETIC_IMPORT_GATE_PASSED`. Real evidence gate remains
+  `REAL_SINGLE_RALLY_EVIDENCE_GATE_BLOCKED`; no real bundle is claimed and the
+  detailed schemas remain candidates pending real-asset audit.
 
 - Status: `P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED`.
 - Upstream: `P1_TEN_FRAME_ACCEPTANCE_PASSED`.
