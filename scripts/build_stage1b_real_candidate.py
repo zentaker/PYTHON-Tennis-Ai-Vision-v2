@@ -27,11 +27,39 @@ PASSED = "REAL_REFERENCE_ASSET_ALIGNMENT_PASSED"
 PARTIAL = "REAL_REFERENCE_ASSET_ALIGNMENT_PARTIAL"
 FAILED = "REAL_REFERENCE_ASSET_ALIGNMENT_FAILED"
 MARKER = ".stage1b-output-marker"
+FIXTURE_STAGING_MARKER = ".stage1b-fixture-staging-marker"
+FIXTURE_STAGING_MARKER_CONTENT = "stage1b-real-single-rally-fixture-staging-v1"
 CANONICAL_SOURCES = {"detected": "smoothed", "missing": "missing", "interpolated": "interpolated"}
 
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
+
+
+def _expected_fixture_path() -> Path:
+    return _repo_root() / "tests" / "fixtures" / "product" / "real_single_rally_nivel_a2_01"
+
+
+def _protected_fixture_output(path: Path) -> Path:
+    """Allow publication only to the single Stage 1B fixture directory."""
+    repo = _repo_root().resolve()
+    expected = _expected_fixture_path().resolve()
+    raw = repo / path if not path.is_absolute() else path
+    if ".." in raw.parts:
+        raise SystemExit("--fixture-output parent traversal rejected")
+    cursor = raw
+    while cursor != cursor.parent:
+        if cursor.is_symlink():
+            raise SystemExit("--fixture-output symlink rejected")
+        if cursor == repo:
+            break
+        cursor = cursor.parent
+    resolved = raw.resolve()
+    if resolved != expected:
+        raise SystemExit(f"--fixture-output must equal {expected}")
+    if expected.parent.is_symlink():
+        raise SystemExit("--fixture-output parent symlink rejected")
+    return expected
 
 
 def _regular_input(path: Path) -> Path:
@@ -606,11 +634,36 @@ def _write_json(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _owned_marker(path: Path) -> bool:
+    return path.is_file() and path.read_text(encoding="utf-8") == FIXTURE_STAGING_MARKER_CONTENT
+
+
+def _contains_symlink(path: Path) -> bool:
+    return (
+        any(item.is_symlink() for item in path.rglob("*")) if path.is_dir() else path.is_symlink()
+    )
+
+
+def _remove_owned_tree(path: Path) -> None:
+    if path.exists() or path.is_symlink():
+        if path.is_symlink() or _contains_symlink(path):
+            raise SystemExit(f"symlink found in protected Stage 1B path: {path}")
+        if not _owned_marker(path / FIXTURE_STAGING_MARKER):
+            raise SystemExit(f"refusing to remove unowned Stage 1B path: {path}")
+        shutil.rmtree(path)
+
+
 def _publish_fixture(fixture: Path, output: Path, bundle: Path) -> None:
-    staging = fixture.parent / f".{fixture.name}.stage1b-staging"
-    if staging.exists():
-        shutil.rmtree(staging)
-    staging.mkdir(parents=True)
+    fixture = _protected_fixture_output(fixture)
+    parent = fixture.parent
+    staging = parent / ".real_single_rally_nivel_a2_01.stage1b-staging"
+    backup = parent / ".real_single_rally_nivel_a2_01.stage1b-backup"
+    if staging.exists() or staging.is_symlink():
+        _remove_owned_tree(staging)
+    if backup.exists() or backup.is_symlink():
+        _remove_owned_tree(backup)
+    staging.mkdir(parents=False)
+    (staging / FIXTURE_STAGING_MARKER).write_text(FIXTURE_STAGING_MARKER_CONTENT, encoding="utf-8")
     bundle_names = (
         "manifest.json",
         "session.json",
@@ -633,17 +686,50 @@ def _publish_fixture(fixture: Path, output: Path, bundle: Path) -> None:
         "track-court-preview.svg",
         "event-timeline.svg",
     )
-    for name in bundle_names:
-        shutil.copy2(bundle / name, staging / name)
-    for name in report_names:
-        shutil.copy2(output / name, staging / name)
-    (staging / "clips").mkdir()
-    (staging / "thumbnails").mkdir()
-    (staging / "clips/.gitkeep").write_text("", encoding="utf-8")
-    (staging / "thumbnails/.gitkeep").write_text("", encoding="utf-8")
-    if fixture.exists():
-        shutil.rmtree(fixture)
-    staging.rename(fixture)
+    try:
+        for name in bundle_names:
+            source = bundle / name
+            if source.is_symlink() or not source.is_file():
+                raise RuntimeError(f"missing or symlinked bundle file: {source}")
+            shutil.copy2(source, staging / name)
+        for name in report_names:
+            source = output / name
+            if source.is_symlink() or not source.is_file():
+                raise RuntimeError(f"missing or symlinked report file: {source}")
+            shutil.copy2(source, staging / name)
+        (staging / "clips").mkdir()
+        (staging / "thumbnails").mkdir()
+        (staging / "clips/.gitkeep").write_text("", encoding="utf-8")
+        (staging / "thumbnails/.gitkeep").write_text("", encoding="utf-8")
+        required = [staging / name for name in (*bundle_names, *report_names)]
+        if not all(item.is_file() and not item.is_symlink() for item in required):
+            raise RuntimeError("staging validation failed")
+        if fixture.exists():
+            if _contains_symlink(fixture):
+                raise RuntimeError("symlink found in existing Stage 1B fixture")
+            fixture.rename(backup)
+        try:
+            staging.rename(fixture)
+            (fixture / FIXTURE_STAGING_MARKER).unlink()
+        except Exception:
+            if backup.exists() and not fixture.exists():
+                backup.rename(fixture)
+            raise
+        if backup.exists():
+            shutil.rmtree(backup)
+    except Exception:
+        if staging.exists() or staging.is_symlink():
+            _remove_owned_tree(staging)
+        if backup.exists() and not fixture.exists():
+            backup.rename(fixture)
+        raise
+
+
+def _require_publishable_alignment(alignment: dict[str, Any]) -> None:
+    if alignment.get("gate_derived") != PASSED:
+        raise SystemExit(
+            f"fixture publication blocked by alignment gate: {alignment.get('gate_derived')}"
+        )
 
 
 def main() -> int:
@@ -695,8 +781,7 @@ def main() -> int:
     alignment = evaluate_asset_alignment(
         video, timestamps, track, events, calibration, asset_hashes, clip_manifest
     )
-    if alignment["gate_derived"] == FAILED:
-        raise SystemExit(f"{FAILED}: {', '.join(alignment['blockers'])}")
+    _require_publishable_alignment(alignment)
     output = _protected_output(args.output)
     surface = clip_manifest.get("surface", "unknown")
     if surface not in {"clay", "hard", "grass", "carpet", "unknown"}:
@@ -832,7 +917,8 @@ def main() -> int:
         },
     )
     if args.fixture_output:
-        _publish_fixture(args.fixture_output, output, build_a)
+        fixture_output = _protected_fixture_output(args.fixture_output)
+        _publish_fixture(fixture_output, output, build_a)
     return 0
 
 

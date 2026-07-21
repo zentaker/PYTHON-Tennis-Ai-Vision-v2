@@ -1,10 +1,8 @@
 # Current task
 
-Core Stage 1B — final real evidence and coordinate-space patch.
+Core Stage 1B — fixture publication safety release patch.
 
-The selected `nivel_a2_01` assets remain unchanged. Alignment is now derived from
-22 explicit checks, six sanitized asset hashes, detailed reports and event-level
-track provenance. Encoded video space (1536×2746) is distinguished from canonical
-analysis space (2746×1536); the fixture contains no video or personal paths.
-The candidate remains pending final human audit; no integration acceptance is
-claimed.
+The accepted `nivel_a2_01` bundle and all selected assets remain unchanged. Fixture
+publication is restricted to the exact Stage 1B path, uses owned staging and an
+atomic rename with rollback. Bad alignment gates cannot reach publication. The
+merge gate remains pending final release audit; no new data or inference was run.

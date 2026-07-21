@@ -72,8 +72,9 @@ sin copiar el video ni ejecutar inferencia. El candidato determinista contiene u
 visibles, 19 interpoladas y 125 no visibles), 10 eventos (4 contactos, 5 botes y
 1 saque), y `surface: unknown`. Los estados de sesión y rally son `partial` para
 preservar la ausencia de observaciones. El bundle derivado no contiene video ni
-modelos; sus gates de integridad/provenance/evidencia están pasados y el gate
-final es `REAL_SINGLE_RALLY_INTEGRATION_GATE_PENDING_FINAL_AUDIT`.
+modelos; la auditoría de evidencia y el gate de datos están pasados. La
+publicación está protegida y el gate final es
+`REAL_SINGLE_RALLY_MERGE_GATE_PENDING_FINAL_RELEASE_AUDIT`.
 
 ## 3. Niveles de generalizacion
 

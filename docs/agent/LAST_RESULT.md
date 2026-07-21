@@ -62,10 +62,22 @@
   `STAGE1B_REAL_ASSET_PROVENANCE_CONFIRMED`,
   `STAGE1B_ALIGNMENT_EVIDENCE_PATCH_IMPLEMENTED`, with
   `REAL_SINGLE_RALLY_INTEGRATION_GATE_PENDING_FINAL_AUDIT` remaining.
-- Full local suite: 318 passed; the five remaining failures are
+- Full local suite: 321 passed; the five remaining failures are
   `tests/test_modal_adapter.py::test_modal_adapter_is_import_safe_and_core_stays_provider_neutral`,
   `tests/test_modal_adapter.py::test_modal_contract_uses_one_dockerfile_and_guarded_limits`,
   `tests/test_modal_adapter.py::test_smoke_package_has_exactly_ten_verified_frames`,
   `tests/test_vertical_reference_tool.py::test_self_test_passes_without_gpu_or_event_annotator_state`,
   and `tests/test_vertical_reference_tool.py::test_post_classification_uses_regulation_geometry`;
   each requires ignored local Stage 3/5A or Modal smoke assets absent from this worktree.
+- Fixture publication safety patch implemented: `--fixture-output` now accepts
+  only the exact Stage 1B fixture path, rejects traversal/external/root/fixture
+  variants and symlink segments, and uses owned staging with atomic replacement
+  and rollback. A failed alignment gate is blocked before publication.
+- Bad video SHA was exercised through `evaluate_asset_alignment` with an all-zero
+  expected SHA; the gate failed, `video_sha_expected` was a blocker, and the
+  publication helper rejected the failed result. Bundle fingerprint remained
+  `1c0bd683ea349b682be852d02fe7917bea181d8daad42aa97737578d8ceb8009`.
+- Gates: `STAGE1B_REAL_EVIDENCE_AUDIT_PASSED`,
+  `REAL_SINGLE_RALLY_DATA_GATE_PASSED`,
+  `STAGE1B_FIXTURE_PUBLICATION_SAFETY_PATCH_IMPLEMENTED`, and
+  `REAL_SINGLE_RALLY_MERGE_GATE_PENDING_FINAL_RELEASE_AUDIT`.

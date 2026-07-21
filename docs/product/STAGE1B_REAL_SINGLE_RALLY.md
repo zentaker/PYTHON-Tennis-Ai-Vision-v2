@@ -36,8 +36,8 @@ without embedding video frames.
 ## Gate
 
 `REAL_REFERENCE_ASSET_ALIGNMENT_PASSED` is derived from 22 explicit checks.
-`STAGE1B_BUNDLE_INTEGRITY_PASSED`, `STAGE1B_REAL_ASSET_PROVENANCE_CONFIRMED`
-and `STAGE1B_ALIGNMENT_EVIDENCE_PATCH_IMPLEMENTED` are recorded. The product
-gate remains `REAL_SINGLE_RALLY_INTEGRATION_GATE_PENDING_FINAL_AUDIT`. Human
-review of the derived evidence is the next gate; this document must not be read
-as approval.
+`STAGE1B_REAL_EVIDENCE_AUDIT_PASSED` and `REAL_SINGLE_RALLY_DATA_GATE_PASSED`
+are recorded. Fixture publication is restricted and atomic under
+`STAGE1B_FIXTURE_PUBLICATION_SAFETY_PATCH_IMPLEMENTED`. The merge gate remains
+`REAL_SINGLE_RALLY_MERGE_GATE_PENDING_FINAL_RELEASE_AUDIT`. Human review of the
+release evidence is the next gate; this document must not be read as approval.
