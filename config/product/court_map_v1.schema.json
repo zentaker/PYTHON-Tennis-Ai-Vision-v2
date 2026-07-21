@@ -3,18 +3,20 @@
   "$id": "https://tennisai.local/schemas/court-map-v1.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "session_id", "coordinate_system", "image_width", "image_height", "court_polygon", "net_line", "homography", "zones", "calibration_status", "limitations"],
+  "required": ["schema_version", "session_id", "coordinate_system", "court_coordinate_system", "image_width", "image_height", "court_polygon", "net_line", "homography_pixel_to_court", "zones", "provenance", "calibration_status", "limitations"],
   "properties": {
     "schema_version": {"const": "court_map.v1"},
     "session_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
-    "coordinate_system": {"type": "string", "minLength": 1},
+    "coordinate_system": {"const": "image_pixels"},
+    "court_coordinate_system": {"const": "court_meters"},
     "image_width": {"type": "integer", "minimum": 1},
     "image_height": {"type": "integer", "minimum": 1},
     "court_polygon": {"type": "array", "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}}, "minItems": 4},
     "net_line": {"type": ["array", "null"]},
-    "homography": {"type": ["array", "null"]},
+    "homography_pixel_to_court": {"anyOf": [{"type": "null"}, {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}}}]},
     "zones": {"type": "object", "additionalProperties": true},
-    "calibration_status": {"enum": ["approved", "partial", "unknown", "missing"]},
+    "provenance": {"type": "string", "minLength": 1},
+    "calibration_status": {"enum": ["approved", "partial", "synthetic", "unknown", "missing"]},
     "limitations": {"type": "array", "items": {"type": "string"}}
   }
 }

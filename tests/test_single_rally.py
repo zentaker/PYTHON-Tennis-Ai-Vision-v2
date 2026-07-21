@@ -9,6 +9,8 @@ import pytest
 
 from src.product.single_rally.errors import SingleRallyError
 from src.product.single_rally.importer import import_single_rally
+from src.product.single_rally.adapters import adapt_court_map
+from src.product.single_rally.validation import _validate_court_semantics
 from src.product.single_rally.validation import validate_single_rally_bundle
 from src.product.cli import main
 
@@ -166,6 +168,62 @@ def test_single_rally_package_has_no_heavy_model_imports() -> None:
     )
     assert "torch" not in package
     assert "ultralytics" not in package
+
+
+@pytest.mark.parametrize("case", ["outside", "shape", "nan", "zero_dimensions"])
+def test_court_geometry_rejections(tmp_path: Path, case: str) -> None:
+    path = tmp_path / "court.json"
+    value = json.loads((FIXTURE / "court_map.json").read_text())
+    if case == "outside":
+        value["court_corners_pixel"]["far_left"] = [-1, 0]
+    elif case == "shape":
+        value["H_pixel_to_court"] = [[1, 0], [0, 1]]
+    elif case == "nan":
+        value["H_pixel_to_court"][0][0] = float("nan")
+    else:
+        value["frame_dimensions"]["width"] = 0
+    path.write_text(json.dumps(value))
+    with pytest.raises(SingleRallyError):
+        adapt_court_map(path, "session_1")
+
+
+def test_court_semantics_reject_unsafe_statuses(tmp_path: Path) -> None:
+    court = adapt_court_map(FIXTURE / "court_map.json", "session_1")
+    court["calibration_status"] = "approved"
+    with pytest.raises(SingleRallyError):
+        _validate_court_semantics(court)
+    court["calibration_status"] = "synthetic"
+    court["limitations"] = []
+    with pytest.raises(SingleRallyError):
+        _validate_court_semantics(court)
+    court["limitations"] = ["synthetic_calibration_not_product_evidence"]
+    court["homography_pixel_to_court"] = None
+    court["calibration_status"] = "approved"
+    court["provenance"] = "existing_court_calibration"
+    with pytest.raises(SingleRallyError):
+        _validate_court_semantics(court)
+
+
+def test_import_hashes_source_streaming(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    descriptor = _inputs(tmp_path)
+    source = _source(tmp_path)
+    source.write_bytes(b"x" * (2 * 1024 * 1024))
+
+    def fail_read_bytes(_self: Path) -> bytes:
+        raise AssertionError("source video must be hashed through streaming helper")
+
+    monkeypatch.setattr(Path, "read_bytes", fail_read_bytes)
+    result = import_single_rally(
+        source,
+        descriptor,
+        "session_1",
+        "rally_1",
+        "STANDARD",
+        "clay",
+        tmp_path / "stream",
+        "2026-07-20T00:00:00Z",
+    )
+    assert len(result["source_sha256"]) == 64
 
 
 def test_rally_cli_exit_codes(tmp_path: Path) -> None:

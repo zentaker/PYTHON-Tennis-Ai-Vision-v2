@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -39,6 +40,43 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
+def _validate_court_semantics(court: dict[str, Any]) -> None:
+    if (
+        court["coordinate_system"] != "image_pixels"
+        or court["court_coordinate_system"] != "court_meters"
+    ):
+        raise SingleRallyError("court coordinate systems are inconsistent")
+    width, height = court["image_width"], court["image_height"]
+    if width <= 0 or height <= 0:
+        raise SingleRallyError("court image dimensions must be positive")
+    polygon = court["court_polygon"]
+    if len(polygon) != 4:
+        raise SingleRallyError("court polygon must contain exactly four points")
+    for point in polygon:
+        if len(point) != 2 or any(not math.isfinite(float(value)) for value in point):
+            raise SingleRallyError("court polygon contains a non-finite point")
+        if not 0 <= point[0] < width or not 0 <= point[1] < height:
+            raise SingleRallyError("court polygon point is outside image bounds")
+    homography = court["homography_pixel_to_court"]
+    if homography is not None:
+        if len(homography) != 3 or any(len(row) != 3 for row in homography):
+            raise SingleRallyError("homography_pixel_to_court must be 3x3")
+        if any(not math.isfinite(float(value)) for row in homography for value in row):
+            raise SingleRallyError("homography_pixel_to_court contains a non-finite value")
+    synthetic = court["provenance"] == "synthetic_contract_fixture"
+    if court["calibration_status"] == "approved" and (synthetic or homography is None):
+        raise SingleRallyError(
+            "approved calibration requires non-synthetic provenance and homography"
+        )
+    if synthetic and court["calibration_status"] != "synthetic":
+        raise SingleRallyError("synthetic calibration cannot be reported as approved")
+    if (
+        court["calibration_status"] == "synthetic"
+        and "synthetic_calibration_not_product_evidence" not in court["limitations"]
+    ):
+        raise SingleRallyError("synthetic calibration limitation is missing")
+
+
 def validate_single_rally_bundle(bundle: Path) -> dict[str, Any]:
     base = validate_bundle(bundle)
     try:
@@ -59,6 +97,7 @@ def validate_single_rally_bundle(bundle: Path) -> dict[str, Any]:
     for point in track:
         _check(point, "track")
     _check(court, "court")
+    _validate_court_semantics(court)
     _check(metrics, "metrics")
     session_id = base["session_id"]
     rally_id = rally["rally_id"]

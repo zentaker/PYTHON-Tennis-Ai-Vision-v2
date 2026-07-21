@@ -3,5 +3,6 @@
   "court_corners_pixel": {"far_left": [0, 0], "far_right": [100, 0], "near_left": [0, 100], "near_right": [100, 100]},
   "frame_dimensions": {"width": 640, "height": 480},
   "layout": "singles",
-  "orientation_validation": {"passed": true}
+  "orientation_validation": {"passed": true},
+  "provenance": "synthetic_contract_fixture"
 }

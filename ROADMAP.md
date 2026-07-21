@@ -49,12 +49,15 @@ serán contratos versionados independientes y no deben romper Analysis Bundle V1
 
 ### Core Stage 1A — Single Rally Contract & Existing-Output Import
 
-Estado: `CORE_STAGE1A_SINGLE_RALLY_IMPORT_READY_FOR_REVIEW`. La capa read-only
+Estado: `CORE_STAGE1A_SINGLE_RALLY_IMPORT_READY_FOR_REVIEW`; gates:
+`STAGE1A_IMPORTER_IMPLEMENTATION_ACCEPTED` y `STAGE1A_COURT_CONTRACT_CORRECTED`.
+La capa read-only
 convierte outputs existentes en un rally canónico y un Analysis Bundle V1 válido.
 El fixture contractual determinista contiene un rally, cinco observaciones, tres
 eventos, un contacto y un bote. El video real de referencia y un track Stage 3
-versionado no están disponibles localmente (`REAL_REFERENCE_VIDEO_MISSING`), por
-lo que no se presenta un bundle real ni se ejecuta inferencia.
+versionado no están disponibles localmente (`REAL_REFERENCE_VIDEO_MISSING` y
+`REAL_STAGE3_BALL_TRACK_MISSING`), por lo que no se presenta un bundle real ni se
+ejecuta inferencia. El gate real es `STAGE1A_REAL_RALLY_GATE_BLOCKED`.
 
 ## 3. Niveles de generalizacion
 

@@ -23,6 +23,12 @@
 - Real reference video and versioned Stage 3 track are unavailable locally:
   `REAL_REFERENCE_VIDEO_MISSING`. Stage 4 manual events, VFR timestamps, 2D court
   calibration and accepted serialized P1 fixture are inventoried and importable.
+- Stage 1A court contract corrected: image-pixel polygon, court-meter coordinate
+  system, `homography_pixel_to_court`, provenance and synthetic calibration status.
+  Gate: `STAGE1A_COURT_CONTRACT_CORRECTED`.
+- Real rally gate remains blocked by `REAL_REFERENCE_VIDEO_MISSING` and
+  `REAL_STAGE3_BALL_TRACK_MISSING`; Stage 4/P1 fixtures do not substitute for a
+  complete Stage 3 track and real video.
 
 - Status: `P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED`.
 - Upstream: `P1_TEN_FRAME_ACCEPTANCE_PASSED`.

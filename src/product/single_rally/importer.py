@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import math
 import tempfile
@@ -10,6 +9,7 @@ from typing import Any
 import jsonschema
 
 from ..analysis_bundle.builder import build_bundle
+from ..analysis_bundle.checksums import sha256_file
 from .adapters import (
     adapt_court_map,
     load_ball_track,
@@ -204,7 +204,7 @@ def import_single_rally(
         "limitations": limitations,
     }
     metrics = derive_metrics(session_id, rally_id, start, end, track, events, limitations)
-    source_sha = hashlib.sha256(source_video.read_bytes()).hexdigest()
+    source_sha = sha256_file(source_video)
     with tempfile.TemporaryDirectory(prefix="single-rally-import-") as temp_name:
         temp = Path(temp_name)
         (temp / "session.json").write_text(

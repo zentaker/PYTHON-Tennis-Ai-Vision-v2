@@ -155,22 +155,66 @@ def adapt_court_map(path: Path, session_id: str) -> dict[str, Any]:
     payload = load_json(path)
     dimensions = payload.get("frame_dimensions", {})
     corners = payload.get("court_corners_pixel", {})
+    width, height = dimensions.get("width"), dimensions.get("height")
+    if (
+        isinstance(width, bool)
+        or isinstance(height, bool)
+        or not isinstance(width, int)
+        or not isinstance(height, int)
+        or width <= 0
+        or height <= 0
+    ):
+        raise SingleRallyError("court calibration dimensions must be positive integers")
     order = ["far_left", "far_right", "near_right", "near_left"]
-    polygon = [corners[name] for name in order if name in corners]
-    if len(polygon) < 4:
-        raise SingleRallyError("court calibration does not contain four court corners")
+    if set(corners) != set(order):
+        raise SingleRallyError("court calibration must contain exactly four named corners")
+    polygon: list[list[float]] = []
+    for name in order:
+        point = corners[name]
+        if not isinstance(point, (list, tuple)) or len(point) != 2:
+            raise SingleRallyError(f"court corner {name} must contain two coordinates")
+        values = [_number(value, f"court corner {name}") for value in point]
+        if (
+            values[0] is None
+            or values[1] is None
+            or not 0 <= values[0] <= width
+            or not 0 <= values[1] <= height
+        ):
+            raise SingleRallyError(f"court corner {name} is outside image bounds")
+        polygon.append([values[0], values[1]])
+    homography = payload.get("H_pixel_to_court")
+    if homography is not None:
+        if (
+            not isinstance(homography, list)
+            or len(homography) != 3
+            or any(not isinstance(row, list) or len(row) != 3 for row in homography)
+        ):
+            raise SingleRallyError("homography must be a 3x3 matrix")
+        if any(_number(value, "homography value") is None for row in homography for value in row):
+            raise SingleRallyError("homography must contain finite values")
     orientation = payload.get("orientation_validation", {})
-    status = "approved" if orientation.get("passed") else "partial"
+    provenance = str(payload.get("provenance", "existing_court_calibration"))
+    synthetic = provenance == "synthetic_contract_fixture"
+    status = (
+        "synthetic"
+        if synthetic
+        else ("approved" if orientation.get("passed") and homography is not None else "partial")
+    )
+    limitations = ["imported_existing_calibration", "no_3d_reconstruction"]
+    if synthetic:
+        limitations.append("synthetic_calibration_not_product_evidence")
     return {
         "schema_version": "court_map.v1",
         "session_id": session_id,
-        "coordinate_system": "court_meters",
-        "image_width": int(dimensions.get("width", 0)),
-        "image_height": int(dimensions.get("height", 0)),
+        "coordinate_system": "image_pixels",
+        "court_coordinate_system": "court_meters",
+        "image_width": width,
+        "image_height": height,
         "court_polygon": polygon,
         "net_line": None,
-        "homography": payload.get("H_pixel_to_court"),
+        "homography_pixel_to_court": homography,
         "zones": {"source_layout": payload.get("layout", "unknown")},
+        "provenance": provenance,
         "calibration_status": status,
-        "limitations": ["imported_existing_calibration", "no_3d_reconstruction"],
+        "limitations": limitations,
     }
