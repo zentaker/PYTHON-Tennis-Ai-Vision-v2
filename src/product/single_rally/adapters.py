@@ -89,14 +89,21 @@ def _track_row(row: dict[str, Any], frame_timestamps: dict[int, float]) -> dict[
         if frame_id not in frame_timestamps:
             raise SingleRallyError(f"missing timestamp for frame {frame_id}")
         timestamp = frame_timestamps[frame_id]
-    x = row.get("pixel_x", row.get("x_smooth", row.get("x_pixel", row.get("x"))))
-    y = row.get("pixel_y", row.get("y_smooth", row.get("y_pixel", row.get("y"))))
+    declared_source = str(row.get("source", "raw"))
+    if "x_smooth" in row:
+        x = row.get("x_smooth")
+        y = row.get("y_smooth")
+    else:
+        x = row.get("pixel_x", row.get("x_pixel", row.get("x")))
+        y = row.get("pixel_y", row.get("y_pixel", row.get("y")))
+    if x in (None, "") or y in (None, ""):
+        x, y = None, None
     x_value = _number(x, "pixel_x", allow_none=True)
     y_value = _number(y, "pixel_y", allow_none=True)
     confidence = _number(row.get("confidence", 0.0), "confidence")
     if confidence is None or not 0 <= confidence <= 1:
         raise SingleRallyError("confidence must be between 0 and 1")
-    source = str(row.get("source", "raw"))
+    source = {"detected": "smoothed", "missing": "raw"}.get(declared_source, declared_source)
     if source not in {"raw", "smoothed", "interpolated"}:
         source = "raw"
     visible = row.get(
@@ -107,6 +114,10 @@ def _track_row(row: dict[str, Any], frame_timestamps: dict[int, float]) -> dict[
     warnings = row.get("warnings", [])
     if not isinstance(warnings, list):
         warnings = [str(warnings)]
+    if declared_source == "missing":
+        warnings = [*warnings, "stage3_observation_missing"]
+    if declared_source == "detected":
+        warnings = [*warnings, "stage3_source_detected_mapped_to_smoothed"]
     return {
         "schema_version": "ball_track_point.v1",
         "rally_id": "",
@@ -166,8 +177,8 @@ def adapt_court_map(path: Path, session_id: str) -> dict[str, Any]:
     ):
         raise SingleRallyError("court calibration dimensions must be positive integers")
     order = ["far_left", "far_right", "near_right", "near_left"]
-    if set(corners) != set(order):
-        raise SingleRallyError("court calibration must contain exactly four named corners")
+    if not set(order).issubset(corners):
+        raise SingleRallyError("court calibration must contain the four outer court corners")
     polygon: list[list[float]] = []
     for name in order:
         point = corners[name]

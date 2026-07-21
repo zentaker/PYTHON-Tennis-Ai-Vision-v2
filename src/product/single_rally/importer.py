@@ -184,6 +184,7 @@ def import_single_rally(
     ]
     confidence = sum(confidence_values) / len(confidence_values) if confidence_values else None
     players = {item["player"] for item in events if item["player"] in {"near", "far"}}
+    rally_status = "partial" if any(not item["visible"] for item in track) else "complete"
     rally = {
         "schema_version": "rally_record.v1",
         "rally_id": rally_id,
@@ -194,7 +195,7 @@ def import_single_rally(
         "duration_seconds": end - start,
         "source_start_frame": track[0]["frame_id"],
         "source_end_frame": track[-1]["frame_id"],
-        "status": "complete",
+        "status": rally_status,
         "event_count": len(events),
         "ball_observation_count": len(track),
         "contact_count": sum(item["event_type"] == "contact" for item in events),
@@ -215,7 +216,7 @@ def import_single_rally(
                     "source_video": {"display_name": source_video.name, "sha256": source_sha},
                     "surface": surface,
                     "processing_profile": profile,
-                    "status": "complete",
+                    "status": rally_status,
                     "capabilities": ["single_rally_import", "existing_output_transport"],
                     "limitations": limitations,
                 },
@@ -228,7 +229,7 @@ def import_single_rally(
                 {
                     "schema_version": "rallies.v1",
                     "session_id": session_id,
-                    "status": "complete",
+                    "status": rally_status,
                     "rallies": [rally],
                 },
                 sort_keys=True,
