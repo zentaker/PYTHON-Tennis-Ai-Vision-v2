@@ -1,0 +1,12 @@
+{
+  "schema_version": "single_rally_inputs.v1",
+  "files": {
+    "events": "events.json",
+    "ball_track": "ball_track.csv",
+    "court_map": "court_map.json"
+  },
+  "start_time_seconds": 0.1,
+  "end_time_seconds": 0.5,
+  "index": 0,
+  "limitations": ["synthetic_contract_fixture"]
+}
