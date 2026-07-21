@@ -1,11 +1,9 @@
 # Current task
 
-Analysis Bundle V1 transport contract is frozen after the Stage 0B final human
-gate. The next Core task is Stage 1 — Single Rally Analyzer; no implementation is
-started on this branch.
+Core Stage 1A — Single Rally Contract & Existing-Output Import.
 
-The freeze covers the bundle directory layout, manifest, session and rallies
-envelopes, packaging statuses, checksums, bundle fingerprint, profile names and
-the stable Core CLI contract. Detailed contracts for rally records, events, ball
-tracks, player tracks, poses, court map, metrics and tactical patterns are
-independent versioned contracts and must not break Analysis Bundle V1.
+The read-only importer converts supplied existing events, ball observations and
+2D court calibration into one versioned rally record and an Analysis Bundle V1.
+It does not run inference, tracking, segmentation, models or Web code. The local
+release is a synthetic contract fixture because `REAL_REFERENCE_VIDEO_MISSING` and
+no versioned Stage 3 track is available in this worktree.

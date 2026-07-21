@@ -17,6 +17,12 @@
   manifest/session/rallies envelopes, packaging statuses, checksums, fingerprint,
   profile names and Core CLI; detailed analytical record schemas remain independent
   versioned contracts.
+- Stage 1A importer, versioned record schemas, rally CLI and integrity validator
+  are implemented read-only. Synthetic fixture: 1 rally, 5 ball observations,
+  3 events, 1 contact and 1 bounce; deterministic fingerprint verified.
+- Real reference video and versioned Stage 3 track are unavailable locally:
+  `REAL_REFERENCE_VIDEO_MISSING`. Stage 4 manual events, VFR timestamps, 2D court
+  calibration and accepted serialized P1 fixture are inventoried and importable.
 
 - Status: `P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED`.
 - Upstream: `P1_TEN_FRAME_ACCEPTANCE_PASSED`.

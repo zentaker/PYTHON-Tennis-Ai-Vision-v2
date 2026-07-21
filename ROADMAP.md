@@ -3,7 +3,7 @@
 **Version:** 0.3
 **Fecha de creacion:** 2026-05-18
 **Fecha de reconciliacion:** 2026-07-13
-**Estado:** ANALYSIS_BUNDLE_V1_TRANSPORT_CONTRACT_FROZEN
+**Estado:** CORE_STAGE1A_SINGLE_RALLY_IMPORT_READY_FOR_REVIEW
 
 The experimental Stage 5B branch is archived research. The official product path is
 the TennisAI Training Session Analyzer and its versioned Analysis Bundle.
@@ -46,6 +46,15 @@ layout del bundle, manifest, envelopes de sesión y rallies, estados de packagin
 checksums, fingerprint, perfiles y contrato CLI. Los schemas detallados de rally,
 events, ball tracks, player tracks, poses, court map, metrics y tactical patterns
 serán contratos versionados independientes y no deben romper Analysis Bundle V1.
+
+### Core Stage 1A — Single Rally Contract & Existing-Output Import
+
+Estado: `CORE_STAGE1A_SINGLE_RALLY_IMPORT_READY_FOR_REVIEW`. La capa read-only
+convierte outputs existentes en un rally canónico y un Analysis Bundle V1 válido.
+El fixture contractual determinista contiene un rally, cinco observaciones, tres
+eventos, un contacto y un bote. El video real de referencia y un track Stage 3
+versionado no están disponibles localmente (`REAL_REFERENCE_VIDEO_MISSING`), por
+lo que no se presenta un bundle real ni se ejecuta inferencia.
 
 ## 3. Niveles de generalizacion
 
