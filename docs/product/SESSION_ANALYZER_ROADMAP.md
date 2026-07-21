@@ -5,7 +5,8 @@
 | 0A | Product baseline and contracts | docs, schema, fixture | approved main | manifest schema and inventory review | runtime refactor |
 | 0B | Stable CLI and Bundle producer | existing outputs → Analysis Bundle | 0A | deterministic fixture bundle and validator | inference, Web repo |
 | 0C | Performance baseline on approved short clip | approved clip/profile | 0B | CPU/resource report | cloud optimization |
-| 1 | Single Rally Analyzer | one rally → events/clip/metrics | 0B | rally bundle acceptance | long-video scan |
+| 1A | Single Rally Contract & Existing-Output Import | existing short-rally outputs → one Analysis Bundle | 0B | contract fixture and integrity audit | inference, long-video scan, Web |
+| 1 | Single Rally Analyzer | one rally → events/clip/metrics | 1A | rally bundle acceptance | long-video scan |
 | 2 | Long-video activity scan and segmentation | session video → rallies | 1 | boundary precision audit | web UI |
 | 3 | Court Analytics 2D | rallies + court map | 2 | 2D event/zone audit | validated XYZ |
 | 4 | TennisAI Web Viewer MVP | Analysis Bundle | 3 | separate web smoke test | model execution in web |

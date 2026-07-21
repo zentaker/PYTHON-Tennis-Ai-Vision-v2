@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tennisai.local/schemas/rally-record-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "rally_id", "session_id", "index", "start_time_seconds", "end_time_seconds", "duration_seconds", "source_start_frame", "source_end_frame", "status", "event_count", "ball_observation_count", "contact_count", "bounce_count", "player_count", "confidence", "limitations"],
+  "properties": {
+    "schema_version": {"const": "rally_record.v1"},
+    "rally_id": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9._-]+$"},
+    "session_id": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9._-]+$"},
+    "index": {"type": "integer", "minimum": 0},
+    "start_time_seconds": {"type": "number", "minimum": 0},
+    "end_time_seconds": {"type": "number", "minimum": 0},
+    "duration_seconds": {"type": "number", "exclusiveMinimum": 0},
+    "source_start_frame": {"type": "integer", "minimum": 0},
+    "source_end_frame": {"type": "integer", "minimum": 0},
+    "status": {"enum": ["complete", "partial", "invalid"]},
+    "event_count": {"type": "integer", "minimum": 0},
+    "ball_observation_count": {"type": "integer", "minimum": 0},
+    "contact_count": {"type": "integer", "minimum": 0},
+    "bounce_count": {"type": "integer", "minimum": 0},
+    "player_count": {"type": "integer", "minimum": 0},
+    "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}

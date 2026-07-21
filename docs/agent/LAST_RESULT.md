@@ -17,6 +17,22 @@
   manifest/session/rallies envelopes, packaging statuses, checksums, fingerprint,
   profile names and Core CLI; detailed analytical record schemas remain independent
   versioned contracts.
+- Stage 1A importer, versioned record schemas, rally CLI and integrity validator
+  are implemented read-only. Synthetic fixture: 1 rally, 5 ball observations,
+  3 events, 1 contact and 1 bounce; deterministic fingerprint verified.
+- Real reference video and versioned Stage 3 track are unavailable locally:
+  `REAL_REFERENCE_VIDEO_MISSING`. Stage 4 manual events, VFR timestamps, 2D court
+  calibration and accepted serialized P1 fixture are inventoried and importable.
+- Stage 1A court contract corrected: image-pixel polygon, court-meter coordinate
+  system, `homography_pixel_to_court`, provenance and synthetic calibration status.
+  Gate: `STAGE1A_COURT_CONTRACT_CORRECTED`.
+- Real rally gate remains blocked by `REAL_REFERENCE_VIDEO_MISSING` and
+  `REAL_STAGE3_BALL_TRACK_MISSING`; Stage 4/P1 fixtures do not substitute for a
+  complete Stage 3 track and real video.
+- Synthetic importer acceptance gate passed:
+  `CORE_STAGE1A_SYNTHETIC_IMPORT_GATE_PASSED`. Real evidence gate remains
+  `REAL_SINGLE_RALLY_EVIDENCE_GATE_BLOCKED`; no real bundle is claimed and the
+  detailed schemas remain candidates pending real-asset audit.
 
 - Status: `P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED`.
 - Upstream: `P1_TEN_FRAME_ACCEPTANCE_PASSED`.

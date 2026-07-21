@@ -1,9 +1,14 @@
 {
   "schema_version": 1,
-  "branch": "agent/core-productization-stage0b",
-  "base_sha": "d5a00c23f267c91371ce575343979b8bc2d06061",
-  "task": "Build stable TennisAI Analysis Bundle V1 CLI",
-  "status": "ANALYSIS_BUNDLE_V1_TRANSPORT_CONTRACT_FROZEN",
+  "branch": "agent/single-rally-analyzer-stage1",
+  "base_sha": "1684b02a42dc15db357fa2b7d8f1af1e99329332",
+  "task": "Import existing Core outputs as a Single Rally Analysis Bundle",
+  "status": "CORE_STAGE1A_SYNTHETIC_IMPORT_ACCEPTED",
+  "stage1a_importer_implementation_gate": "STAGE1A_IMPORTER_IMPLEMENTATION_ACCEPTED",
+  "stage1a_court_contract_gate": "STAGE1A_COURT_CONTRACT_CORRECTED",
+  "stage1a_human_gate": "CORE_STAGE1A_SYNTHETIC_IMPORT_GATE_PASSED",
+  "stage1a_real_evidence_gate": "REAL_SINGLE_RALLY_EVIDENCE_GATE_BLOCKED",
+  "stage1a_real_rally_gate": "STAGE1A_REAL_RALLY_GATE_BLOCKED",
   "stage0b_implementation_gate": "STAGE0B_IMPLEMENTATION_ACCEPTED",
   "stage0b_human_gate": "STAGE0B_FINAL_HUMAN_GATE_PASSED",
   "analysis_bundle_v1_gate": "ANALYSIS_BUNDLE_V1_TRANSPORT_CONTRACT_FROZEN",
@@ -13,7 +18,8 @@
     "stage_p1": "P1_TEN_FRAME_ACCEPTANCE_PASSED",
     "analytics_p1_wiring": "P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED",
     "product_stage_0a": "MERGED_BASELINE",
-    "product_stage_0b": "TRANSPORT_CONTRACT_FROZEN"
+    "product_stage_0b": "TRANSPORT_CONTRACT_FROZEN",
+    "product_stage_1a": "READY_FOR_REVIEW"
   },
   "result": {
     "contacts": 5,
@@ -29,6 +35,6 @@
     "gpu_calls": 0,
     "spend_generated": 0
   },
-  "blocker": "NONE",
-  "next_action": "Core Stage 1 — Single Rally Analyzer; prepare a separate TennisAI-Web agent."
+  "blocker": "REAL_REFERENCE_VIDEO_MISSING_AND_REAL_STAGE3_TRACK_MISSING",
+  "next_action": "Reference asset selection audit on recovery branch before any real import."
 }

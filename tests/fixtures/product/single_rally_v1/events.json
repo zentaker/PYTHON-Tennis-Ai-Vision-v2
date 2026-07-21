@@ -1,0 +1,7 @@
+{
+  "narrative_events": [
+    {"id": "event_001", "type": "serve", "frame_start": 10, "time_start_seconds": 0.2, "player": "near", "source": "synthetic_contract_fixture"},
+    {"id": "event_002", "type": "bounce", "frame_start": 15, "time_start_seconds": 0.3, "player": "unknown", "source": "synthetic_contract_fixture"},
+    {"id": "event_003", "type": "hit", "frame_start": 20, "time_start_seconds": 0.4, "player": "far", "source": "synthetic_contract_fixture"}
+  ]
+}

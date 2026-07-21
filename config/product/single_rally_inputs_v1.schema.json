@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tennisai.local/schemas/single-rally-inputs-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "files", "start_time_seconds", "end_time_seconds"],
+  "properties": {
+    "schema_version": {"const": "single_rally_inputs.v1"},
+    "files": {"type": "object", "additionalProperties": false, "required": ["events", "ball_track", "court_map"], "properties": {
+      "events": {"type": "string", "minLength": 1},
+      "ball_track": {"type": "string", "minLength": 1},
+      "court_map": {"type": "string", "minLength": 1},
+      "frame_timestamps": {"type": "string", "minLength": 1},
+      "p1_evidence": {"type": "string", "minLength": 1}
+    }},
+    "start_time_seconds": {"type": "number", "minimum": 0},
+    "end_time_seconds": {"type": "number", "minimum": 0},
+    "index": {"type": "integer", "minimum": 0},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}

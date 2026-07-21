@@ -1,0 +1,6 @@
+frame_id,timestamp_seconds,x_pixel,y_pixel,confidence,detected,source
+10,0.2,100.0,200.0,0.90,true,raw
+12,0.25,110.0,190.0,0.85,true,smoothed
+15,0.3,120.0,180.0,0.80,true,smoothed
+18,0.35,130.0,170.0,0.75,true,interpolated
+20,0.4,140.0,160.0,0.70,true,raw

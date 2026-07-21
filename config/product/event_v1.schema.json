@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tennisai.local/schemas/event-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "event_id", "rally_id", "event_type", "timestamp_seconds", "frame_id", "player", "pixel", "confidence", "provenance", "labels", "limitations"],
+  "properties": {
+    "schema_version": {"const": "event.v1"},
+    "event_id": {"type": "string", "minLength": 1},
+    "rally_id": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9._-]+$"},
+    "event_type": {"enum": ["contact", "bounce", "serve", "out", "unknown"]},
+    "timestamp_seconds": {"type": "number", "minimum": 0},
+    "frame_id": {"type": "integer", "minimum": 0},
+    "player": {"enum": ["near", "far", "unknown"]},
+    "pixel": {"type": ["object", "null"], "additionalProperties": false, "required": ["x", "y"], "properties": {"x": {"type": "number"}, "y": {"type": "number"}}},
+    "court_position": {"type": ["object", "null"]},
+    "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "provenance": {"type": "object", "additionalProperties": true},
+    "labels": {"type": "object", "additionalProperties": true},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}
