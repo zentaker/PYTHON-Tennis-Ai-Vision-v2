@@ -29,6 +29,13 @@
 - Real rally gate remains blocked by `REAL_REFERENCE_VIDEO_MISSING` and
   `REAL_STAGE3_BALL_TRACK_MISSING`; Stage 4/P1 fixtures do not substitute for a
   complete Stage 3 track and real video.
+- Recovery found a corresponding external `nivel_a2_01` video and local ignored
+  Stage 3 track. SHA, frame range, VFR timestamps, Stage 4 events and calibration
+  align; surface metadata is unavailable and remains `unknown`.
+- Real candidate built deterministically: 1 rally, 527 observations, 10 events,
+  4 contacts and 5 bounces. Session/rally status is `partial` because the source
+  track contains non-visible observations. Gate:
+  `REAL_SINGLE_RALLY_BUNDLE_CANDIDATE_PENDING_HUMAN_AUDIT`.
 - Synthetic importer acceptance gate passed:
   `CORE_STAGE1A_SYNTHETIC_IMPORT_GATE_PASSED`. Real evidence gate remains
   `REAL_SINGLE_RALLY_EVIDENCE_GATE_BLOCKED`; no real bundle is claimed and the

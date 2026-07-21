@@ -3,7 +3,7 @@
 **Version:** 0.3
 **Fecha de creacion:** 2026-05-18
 **Fecha de reconciliacion:** 2026-07-13
-**Estado:** CORE_STAGE1A_SINGLE_RALLY_IMPORT_READY_FOR_REVIEW
+**Estado:** CORE_STAGE1B_REAL_SINGLE_RALLY_CANDIDATE_READY_FOR_REVIEW
 
 The experimental Stage 5B branch is archived research. The official product path is
 the TennisAI Training Session Analyzer and its versioned Analysis Bundle.
@@ -62,6 +62,17 @@ ejecuta inferencia. El gate real es `STAGE1A_REAL_RALLY_GATE_BLOCKED` y la
 evidencia real está bloqueada como `REAL_SINGLE_RALLY_EVIDENCE_GATE_BLOCKED`.
 Los schemas detallados siguen siendo candidatos hasta una auditoría de assets
 reales.
+
+### Core Stage 1B — Real Single Rally Bundle Candidate
+
+Estado: `CORE_STAGE1B_REAL_SINGLE_RALLY_CANDIDATE_READY_FOR_REVIEW`. La referencia
+real `nivel_a2_01` (video externo, track Stage 3 ignorado, timestamps VFR, eventos
+Stage 4 y calibración 2D existente) quedó alineada sin copiar el video ni ejecutar
+inferencia. El candidato determinista contiene un rally, 527 observaciones (383
+visibles, 19 interpoladas y 125 no visibles), 10 eventos (4 contactos, 5 botes y
+1 saque), y `surface: unknown`. Los estados de sesión y rally son `partial` para
+preservar la ausencia de observaciones. El bundle derivado no contiene video ni
+modelos; su gate es `REAL_SINGLE_RALLY_BUNDLE_CANDIDATE_PENDING_HUMAN_AUDIT`.
 
 ## 3. Niveles de generalizacion
 
