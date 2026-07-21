@@ -1,0 +1,14 @@
+{
+  "asset_alignment_gate": "REAL_REFERENCE_ASSET_ALIGNMENT_PASSED",
+  "display_name": "source.mp4",
+  "duration_seconds": 10.488333,
+  "fps_nominal": "60/1",
+  "frame_count": 527,
+  "height": 2746,
+  "provenance": "existing_local_reference_assets",
+  "rally_id": "rally_001",
+  "session_id": "nivel_a2_01",
+  "sha256": "e2a05a8eda9be4d821ae1acc60355c7c0403e450ac0febd6bb3c6a62e0aa5774",
+  "surface": "unknown",
+  "width": 1536
+}
