@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tennisai.local/schemas/metrics-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "session_id", "rally_id", "duration_seconds", "ball_observations", "contacts", "bounces", "near_player_contacts", "far_player_contacts", "unknown_player_contacts", "data_quality", "limitations"],
+  "properties": {
+    "schema_version": {"const": "metrics.v1"},
+    "session_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
+    "rally_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
+    "duration_seconds": {"type": "number", "minimum": 0},
+    "ball_observations": {"type": "integer", "minimum": 0},
+    "contacts": {"type": "integer", "minimum": 0},
+    "bounces": {"type": "integer", "minimum": 0},
+    "near_player_contacts": {"type": "integer", "minimum": 0},
+    "far_player_contacts": {"type": "integer", "minimum": 0},
+    "unknown_player_contacts": {"type": "integer", "minimum": 0},
+    "data_quality": {"enum": ["high", "medium", "low", "unknown"]},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}
