@@ -51,6 +51,13 @@ jobs:
           test "$(jq -r '.fingerprints_identical' .artifacts/stage0b-analysis-bundle-fixture/build-report.json)" = "true"
           uv run pytest tests/test_analysis_bundle_*.py tests/test_product_*.py
 
+      - name: Stage 1A deterministic single-rally import fixture
+        run: |
+          uv run python scripts/build_stage1a_fixture.py
+          uv run tennisai rally validate --bundle .artifacts/stage1a-single-rally-import/bundle --json
+          test "$(jq -r '.fingerprints_identical' .artifacts/stage1a-single-rally-import/import-report.json)" = "true"
+          uv run pytest tests/test_single_rally.py
+
       - name: Ruff
         run: uv run ruff check .
 
@@ -73,6 +80,24 @@ jobs:
             .artifacts/stage0b-analysis-bundle-fixture/rallies.json
             .artifacts/stage0b-analysis-bundle-fixture/build-report.json
             .artifacts/stage0b-analysis-bundle-fixture/validation-report.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+
+      - name: Publish Stage 1A single-rally import fixture
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage1a-single-rally-import
+          path: |
+            .artifacts/stage1a-single-rally-import/manifest.json
+            .artifacts/stage1a-single-rally-import/session.json
+            .artifacts/stage1a-single-rally-import/rallies.json
+            .artifacts/stage1a-single-rally-import/events.jsonl
+            .artifacts/stage1a-single-rally-import/ball_track.jsonl
+            .artifacts/stage1a-single-rally-import/court_map.json
+            .artifacts/stage1a-single-rally-import/metrics.json
+            .artifacts/stage1a-single-rally-import/import-report.json
+            .artifacts/stage1a-single-rally-import/validation-report.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 6

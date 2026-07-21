@@ -15,6 +15,9 @@ from .analysis_bundle.errors import (
 )
 from .analysis_bundle.profiles import resolve_profile
 from .analysis_bundle.validator import validate_bundle
+from .single_rally.errors import SingleRallyError
+from .single_rally.importer import import_single_rally
+from .single_rally.validation import validate_single_rally_bundle
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -42,6 +45,22 @@ def _build_parser() -> argparse.ArgumentParser:
     show = profile_sub.add_parser("show")
     show.add_argument("name")
     show.add_argument("--json", action="store_true")
+    rally = sub.add_parser("rally")
+    rally_sub = rally.add_subparsers(dest="rally_command", required=True)
+    rally_import = rally_sub.add_parser("import")
+    rally_import.add_argument("--source-video", type=Path, required=True)
+    rally_import.add_argument("--inputs", type=Path, required=True)
+    rally_import.add_argument("--session-id", required=True)
+    rally_import.add_argument("--rally-id", required=True)
+    rally_import.add_argument("--profile", required=True)
+    rally_import.add_argument("--surface", required=True)
+    rally_import.add_argument("--output", type=Path, required=True)
+    rally_import.add_argument("--created-at")
+    rally_import.add_argument("--overwrite", action="store_true")
+    rally_import.add_argument("--json", action="store_true")
+    rally_validate = rally_sub.add_parser("validate")
+    rally_validate.add_argument("--bundle", type=Path, required=True)
+    rally_validate.add_argument("--json", action="store_true")
     return parser
 
 
@@ -50,6 +69,21 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "profile":
             result = resolve_profile(args.name)
+        elif args.command == "rally":
+            if args.rally_command == "import":
+                result = import_single_rally(
+                    args.source_video,
+                    args.inputs,
+                    args.session_id,
+                    args.rally_id,
+                    args.profile,
+                    args.surface,
+                    args.output,
+                    args.created_at,
+                    args.overwrite,
+                )
+            else:
+                result = validate_single_rally_bundle(args.bundle)
         elif args.bundle_command == "build":
             result = build_bundle(
                 args.source_video,
@@ -70,7 +104,13 @@ def main(argv: list[str] | None = None) -> int:
             else _human(result, args)
         )
         return 0
-    except (BundleInputError, BundleSchemaError, BundleIntegrityError, BundlePathError) as exc:
+    except (
+        BundleInputError,
+        BundleSchemaError,
+        BundleIntegrityError,
+        BundlePathError,
+        SingleRallyError,
+    ) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 3 if isinstance(exc, (BundleInputError, BundlePathError)) else 2
     except BundleBuildError as exc:
@@ -81,6 +121,8 @@ def main(argv: list[str] | None = None) -> int:
 def _human(result: dict, args) -> str:
     if args.command == "profile":
         return json.dumps(result, indent=2, sort_keys=True)
+    if args.command == "rally":
+        return f"Single rally valid: {result['rally_id']}\nFingerprint: {result['fingerprint']}"
     if args.bundle_command == "validate":
         return f"Bundle valid: {result['session_id']}\nFingerprint: {result['fingerprint']}\nFiles verified: {result['files_verified']}"
     return f"Bundle built: {result['session_id']}\nFingerprint: {result['fingerprint']}\nFiles verified: {result['files_verified']}"
