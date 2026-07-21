@@ -121,6 +121,12 @@ jobs:
             tests/fixtures/product/real_single_rally_nivel_a2_01/metrics.json
             tests/fixtures/product/real_single_rally_nivel_a2_01/REFERENCE_SOURCE.json
             tests/fixtures/product/real_single_rally_nivel_a2_01/alignment-report.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/video-metadata.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/timestamp-audit.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/track-audit.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/event-track-alignment.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/calibration-audit.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/asset-hashes.json
             tests/fixtures/product/real_single_rally_nivel_a2_01/validation-report.json
             tests/fixtures/product/real_single_rally_nivel_a2_01/track-court-preview.svg
             tests/fixtures/product/real_single_rally_nivel_a2_01/event-timeline.svg

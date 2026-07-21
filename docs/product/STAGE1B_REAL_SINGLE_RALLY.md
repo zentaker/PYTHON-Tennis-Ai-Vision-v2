@@ -7,7 +7,9 @@ inference run.
 ## Aligned references
 
 - Selected external video: `nivel_a2_01/source.mp4` (10.488333 seconds,
-  1536×2746 source pixels, 527 frames).
+  encoded 1536×2746 pixels, 527 frames).
+- Canonical analysis space is 2746×1536 pixels after the recorded 90-degree
+  display-matrix transform; track and court coordinates use this canonical space.
 - Existing Stage 3 trajectory: `nivel_a2_01/smoothed_trajectory.csv`, with
   527 frame rows: 383 visible, 19 interpolated and 125 missing/non-visible.
 - Existing VFR timestamps cover frames 0–526; Stage 4 manual events cover the
@@ -24,15 +26,18 @@ remains `unknown`. `manifest.status` is `complete`; `session.status` and
 `rallies.status` are `partial` because the source track preserves non-visible
 observations rather than fabricating positions.
 
-The bundle uses image-pixel observations and an existing 2D pixel-to-court
-calibration with `calibration_status: approved`; it makes no 3D or Stage 5B
-claim. Two independent builds have the same fingerprint and source verification
-passes. SVG previews show the track/court and event timeline without embedding
-video frames.
+The bundle uses canonical image-pixel observations and an existing 2D
+pixel-to-court calibration with `calibration_status: approved` and
+`court_layout: doubles`; it makes no 3D or Stage 5B claim. Two independent builds
+have the same fingerprint and source verification passes. SVG previews are
+segmented at missing observations and show the track/court and event timeline
+without embedding video frames.
 
 ## Gate
 
-`REAL_REFERENCE_ASSET_ALIGNMENT_PASSED` confirms correspondence of the selected
-assets. The product gate remains
-`REAL_SINGLE_RALLY_BUNDLE_CANDIDATE_PENDING_HUMAN_AUDIT`. Human review of the
-derived evidence is the next gate; this document must not be read as approval.
+`REAL_REFERENCE_ASSET_ALIGNMENT_PASSED` is derived from 22 explicit checks.
+`STAGE1B_BUNDLE_INTEGRITY_PASSED`, `STAGE1B_REAL_ASSET_PROVENANCE_CONFIRMED`
+and `STAGE1B_ALIGNMENT_EVIDENCE_PATCH_IMPLEMENTED` are recorded. The product
+gate remains `REAL_SINGLE_RALLY_INTEGRATION_GATE_PENDING_FINAL_AUDIT`. Human
+review of the derived evidence is the next gate; this document must not be read
+as approval.

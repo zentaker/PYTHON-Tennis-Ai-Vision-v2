@@ -67,12 +67,13 @@ reales.
 
 Estado: `CORE_STAGE1B_REAL_SINGLE_RALLY_CANDIDATE_READY_FOR_REVIEW`. La referencia
 real `nivel_a2_01` (video externo, track Stage 3 ignorado, timestamps VFR, eventos
-Stage 4 y calibración 2D existente) quedó alineada sin copiar el video ni ejecutar
-inferencia. El candidato determinista contiene un rally, 527 observaciones (383
+Stage 4 y calibración 2D existente) quedó alineada mediante 22 checks explícitos,
+sin copiar el video ni ejecutar inferencia. El candidato determinista contiene un rally, 527 observaciones (383
 visibles, 19 interpoladas y 125 no visibles), 10 eventos (4 contactos, 5 botes y
 1 saque), y `surface: unknown`. Los estados de sesión y rally son `partial` para
 preservar la ausencia de observaciones. El bundle derivado no contiene video ni
-modelos; su gate es `REAL_SINGLE_RALLY_BUNDLE_CANDIDATE_PENDING_HUMAN_AUDIT`.
+modelos; sus gates de integridad/provenance/evidencia están pasados y el gate
+final es `REAL_SINGLE_RALLY_INTEGRATION_GATE_PENDING_FINAL_AUDIT`.
 
 ## 3. Niveles de generalizacion
 

@@ -1,7 +1,137 @@
 {
-  "event_count": 10,
-  "status": "REAL_REFERENCE_ASSET_ALIGNMENT_PASSED",
-  "timestamp_audit": true,
-  "track_audit": true,
-  "video_sha_verified": true
+  "blockers": [],
+  "checks": [
+    {
+      "detail": "source SHA matches expected reference",
+      "name": "video_sha_expected",
+      "status": "passed"
+    },
+    {
+      "detail": "source SHA matches clip manifest",
+      "name": "video_sha_manifest",
+      "status": "passed"
+    },
+    {
+      "detail": "ffprobe frame count equals timestamp records",
+      "name": "frame_count_matches_timestamps",
+      "status": "passed"
+    },
+    {
+      "detail": "timestamp frame IDs are unique and contiguous",
+      "name": "timestamps_unique_contiguous",
+      "status": "passed"
+    },
+    {
+      "detail": "timestamps are finite, non-negative and ordered",
+      "name": "timestamps_finite_nondecreasing",
+      "status": "passed"
+    },
+    {
+      "detail": "first timestamp frame is zero",
+      "name": "timestamp_first_frame",
+      "status": "passed"
+    },
+    {
+      "detail": "last timestamp frame reaches video end",
+      "name": "timestamp_last_frame",
+      "status": "passed"
+    },
+    {
+      "detail": "timestamp coverage is compatible with video duration",
+      "name": "duration_compatible",
+      "status": "passed"
+    },
+    {
+      "detail": "track covers exactly the timestamp frame IDs",
+      "name": "track_timestamp_frame_ids",
+      "status": "passed"
+    },
+    {
+      "detail": "track IDs are ordered and unique",
+      "name": "track_ordered_unique",
+      "status": "passed"
+    },
+    {
+      "detail": "no track frame lies outside the video",
+      "name": "track_in_video",
+      "status": "passed"
+    },
+    {
+      "detail": "track canonical dimensions are consistent",
+      "name": "track_canonical_dimensions",
+      "status": "passed"
+    },
+    {
+      "detail": "event IDs are unique",
+      "name": "event_ids_unique",
+      "status": "passed"
+    },
+    {
+      "detail": "events are ordered",
+      "name": "events_ordered",
+      "status": "passed"
+    },
+    {
+      "detail": "events are within video frame/time range",
+      "name": "events_in_range",
+      "status": "passed"
+    },
+    {
+      "detail": "each event has a matching track frame",
+      "name": "events_related_to_track",
+      "status": "passed"
+    },
+    {
+      "detail": "calibration uses canonical dimensions",
+      "name": "calibration_dimensions",
+      "status": "passed"
+    },
+    {
+      "detail": "four outer calibration corners are valid",
+      "name": "calibration_corners",
+      "status": "passed"
+    },
+    {
+      "detail": "homography is finite 3x3 and non-singular",
+      "name": "calibration_homography",
+      "status": "passed"
+    },
+    {
+      "detail": "calibration provenance is non-synthetic",
+      "name": "calibration_provenance",
+      "status": "passed"
+    },
+    {
+      "detail": "six selected asset hashes are recorded",
+      "name": "asset_hashes_recorded",
+      "status": "passed"
+    },
+    {
+      "detail": "all assets identify nivel_a2_01",
+      "name": "asset_identity",
+      "status": "passed"
+    }
+  ],
+  "checks_executed": 22,
+  "checks_failed": 0,
+  "checks_partial": 0,
+  "checks_passed": 22,
+  "event_track_summary": {
+    "detected_exact": 8,
+    "interpolated_exact": 2,
+    "invalid": 0,
+    "missing_exact": 0,
+    "nearest_detected": 0
+  },
+  "gate_derived": "REAL_REFERENCE_ASSET_ALIGNMENT_PASSED",
+  "references": [
+    "video-metadata.json",
+    "timestamp-audit.json",
+    "track-audit.json",
+    "event-track-alignment.json",
+    "calibration-audit.json",
+    "asset-hashes.json"
+  ],
+  "video_sha_verified": true,
+  "warnings": []
 }

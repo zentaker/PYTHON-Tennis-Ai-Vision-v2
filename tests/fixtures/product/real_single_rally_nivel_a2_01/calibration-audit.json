@@ -1,0 +1,23 @@
+{
+  "calibration_status": "approved",
+  "corners_valid": true,
+  "dimensions": {
+    "height": 1536,
+    "width": 2746
+  },
+  "dimensions_match_canonical": true,
+  "display_name": "homography.json",
+  "homography_determinant": -0.0019565400307170588,
+  "homography_finite": true,
+  "homography_non_singular": true,
+  "homography_shape": [
+    3,
+    3
+  ],
+  "layout": "doubles",
+  "non_synthetic_provenance": true,
+  "orientation_passed": true,
+  "outer_corner_count": 4,
+  "provenance": "existing_court_calibration",
+  "sha256": "5ad0c3a78e4c90c8ea11045a400aa207df8afc3692a0a0b783220f453bcbfb54"
+}

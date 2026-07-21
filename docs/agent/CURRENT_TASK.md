@@ -1,8 +1,10 @@
 # Current task
 
-Core Stage 1B — Real Single Rally Bundle Candidate.
+Core Stage 1B — final real evidence and coordinate-space patch.
 
-The selected external video, existing Stage 3 track, Stage 4 manual events,
-frame timestamps and 2D calibration align to `nivel_a2_01`. The approved importer
-created a deterministic real candidate without copying or decoding the video.
-The candidate remains pending human audit; no real-rally acceptance is claimed.
+The selected `nivel_a2_01` assets remain unchanged. Alignment is now derived from
+22 explicit checks, six sanitized asset hashes, detailed reports and event-level
+track provenance. Encoded video space (1536×2746) is distinguished from canonical
+analysis space (2746×1536); the fixture contains no video or personal paths.
+The candidate remains pending final human audit; no integration acceptance is
+claimed.

@@ -1,0 +1,30 @@
+{
+  "bounds_ok": true,
+  "canonical_dimensions_consistent": true,
+  "canonical_height": 1536,
+  "canonical_width": 2746,
+  "confidence_available": true,
+  "display_name": "smoothed_trajectory.csv",
+  "first_frame": 0,
+  "first_timestamp_seconds": 0.0,
+  "format": "CSV",
+  "frame_ids_ordered": true,
+  "frame_ids_unique": true,
+  "interpolated_observations": 19,
+  "last_frame": 526,
+  "last_timestamp_seconds": 10.471667,
+  "max_non_visible_run": 81,
+  "missing_observations": 125,
+  "observations": 527,
+  "out_of_video_frames": [],
+  "sha256": "bdca945805c75f282b59b498b046ce9dac643eba4034e9edb15795f1855172fe",
+  "source_counts": {
+    "interpolated": 19,
+    "missing": 125,
+    "smoothed": 383
+  },
+  "timestamps_associable": true,
+  "timestamps_direct": true,
+  "timestamps_non_decreasing": true,
+  "visible_observations": 383
+}

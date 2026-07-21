@@ -50,3 +50,22 @@
 - Kinematics: null; blocker `APPROVED_STAGE5B_XYZ_REQUIRED`.
 - Full rally: not validated.
 - Cloud calls / GPU calls / spend: 0 / 0 / 0.
+- Stage 1B final evidence patch: alignment is derived (22 checks passed), not
+  hardcoded. The six selected asset SHA-256 values are published without paths.
+- Reports now include ffprobe side-data rotation, encoded/canonical dimensions,
+  timestamp and track audits, calibration audit, event-level alignment and
+  sanitized asset hashes. The track preview is segmented around missing frames;
+  smoothed segments are solid and interpolated segments are dashed.
+- Event alignment: 10 exact frames, 8 smoothed/detected and 2 interpolated;
+  missing positions 0; maximum timestamp delta 0 seconds.
+- New gate state: `STAGE1B_BUNDLE_INTEGRITY_PASSED`,
+  `STAGE1B_REAL_ASSET_PROVENANCE_CONFIRMED`,
+  `STAGE1B_ALIGNMENT_EVIDENCE_PATCH_IMPLEMENTED`, with
+  `REAL_SINGLE_RALLY_INTEGRATION_GATE_PENDING_FINAL_AUDIT` remaining.
+- Full local suite: 318 passed; the five remaining failures are
+  `tests/test_modal_adapter.py::test_modal_adapter_is_import_safe_and_core_stays_provider_neutral`,
+  `tests/test_modal_adapter.py::test_modal_contract_uses_one_dockerfile_and_guarded_limits`,
+  `tests/test_modal_adapter.py::test_smoke_package_has_exactly_ten_verified_frames`,
+  `tests/test_vertical_reference_tool.py::test_self_test_passes_without_gpu_or_event_annotator_state`,
+  and `tests/test_vertical_reference_tool.py::test_post_classification_uses_regulation_geometry`;
+  each requires ignored local Stage 3/5A or Modal smoke assets absent from this worktree.
