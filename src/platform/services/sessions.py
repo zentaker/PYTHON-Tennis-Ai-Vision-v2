@@ -11,6 +11,7 @@ from ..db.models import SessionRecord
 from ..db.repositories.sessions import get_session as repository_get_session
 from ..db.repositories.sessions import list_sessions as repository_list_sessions
 from ..domain.enums import SessionStatus
+from ..domain.errors import PlatformError
 from ..domain.transitions import require_transition
 
 
@@ -25,7 +26,7 @@ def decode_cursor(cursor: str) -> tuple[datetime, UUID]:
         created, identifier = base64.urlsafe_b64decode(padded).decode().split("|", 1)
         return datetime.fromisoformat(created), UUID(identifier)
     except (ValueError, UnicodeDecodeError) as exc:
-        raise ValueError("invalid cursor") from exc
+        raise PlatformError(400, "INVALID_CURSOR", "cursor is invalid") from exc
 
 
 def create_session(db: Session, title: str, processing_profile: str, surface: str) -> SessionRecord:
@@ -46,12 +47,12 @@ def get_session(db: Session, session_id: UUID) -> SessionRecord | None:
 
 
 def list_sessions(
-    db: Session, limit: int, cursor: str | None, status: str | None, order: str
+    db: Session, limit: int, cursor: str | None, status: SessionStatus | None, order: str
 ) -> tuple[list[SessionRecord], str | None]:
     limit = max(1, min(limit, 100))
     statement = select(SessionRecord)
     if status:
-        statement = statement.where(SessionRecord.status == status)
+        statement = statement.where(SessionRecord.status == status.value)
     descending = order != "oldest"
     if cursor:
         created_at, session_id = decode_cursor(cursor)
@@ -78,11 +79,14 @@ def list_sessions(
     return records[:limit], next_cursor
 
 
-def transition_session(db: Session, record: SessionRecord, target: SessionStatus) -> SessionRecord:
+def transition_session(
+    db: Session, record: SessionRecord, target: SessionStatus, *, commit: bool = True
+) -> SessionRecord:
     current = SessionStatus(record.status)
     require_transition(current, target)
     record.status = target.value
     record.updated_at = datetime.now(timezone.utc)
-    db.commit()
-    db.refresh(record)
+    if commit:
+        db.commit()
+        db.refresh(record)
     return record

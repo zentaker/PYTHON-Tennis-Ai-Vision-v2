@@ -15,6 +15,7 @@ class Video(Base):
     __table_args__ = (
         Index("ix_videos_session_id", "session_id"),
         Index("ix_videos_sha256", "sha256"),
+        UniqueConstraint("session_id", "role", name="uq_videos_session_role"),
         UniqueConstraint("object_key", name="uq_videos_object_key"),
     )
 

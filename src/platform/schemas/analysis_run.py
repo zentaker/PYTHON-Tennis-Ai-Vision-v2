@@ -5,12 +5,14 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from ..domain.enums import AnalysisRunStatus, ProcessingProfile
+
 
 class AnalysisRunResponse(BaseModel):
     id: UUID
     session_id: UUID
-    status: str
-    processing_profile: str
+    status: AnalysisRunStatus
+    processing_profile: ProcessingProfile
     core_version: str | None = None
     bundle_fingerprint: str | None = None
     created_at: datetime

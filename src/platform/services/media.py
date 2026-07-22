@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from ..db.models import SessionRecord, Video
 from ..db.repositories.videos import get_source_video, get_video
+from ..domain.errors import PlatformError
 from ..storage.interface import ObjectStorage, PresignedObject
 
 
@@ -14,5 +15,5 @@ def create_media_download(
 ) -> tuple[Video, PresignedObject]:
     video = get_video(db, session, video_id) if video_id else get_source_video(db, session)
     if not video:
-        raise LookupError("source video not found")
+        raise PlatformError(404, "VIDEO_NOT_FOUND", "source video not found")
     return video, storage.create_presigned_download(video.object_key, video.content_type)

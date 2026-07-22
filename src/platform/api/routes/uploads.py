@@ -9,7 +9,7 @@ from ...schemas.upload import UploadComplete, UploadCompleteResponse, UploadInit
 from ...services.sessions import get_session
 from ...services.uploads import complete_upload, initiate_upload
 from ..dependencies import db, settings, storage
-from ..errors import ERROR_RESPONSES, invalid, not_found
+from ..errors import ERROR_RESPONSES, not_found
 
 router = APIRouter(prefix="/api/v1/sessions/{session_id}/uploads")
 
@@ -54,19 +54,16 @@ def initiate(
     session = get_session(database, session_id)
     if not session:
         raise not_found("session not found")
-    try:
-        video, presigned = initiate_upload(
-            database,
-            object_storage,
-            platform_settings,
-            session,
-            payload.display_name,
-            payload.content_type,
-            payload.size_bytes,
-            payload.sha256,
-        )
-    except (ValueError, OSError) as exc:
-        raise invalid(str(exc)) from exc
+    video, presigned = initiate_upload(
+        database,
+        object_storage,
+        platform_settings,
+        session,
+        payload.display_name,
+        payload.content_type,
+        payload.size_bytes,
+        payload.sha256,
+    )
     return {
         "video_id": video.id,
         "object_key": video.object_key,
@@ -115,19 +112,14 @@ def complete(
     session = get_session(database, session_id)
     if not session:
         raise not_found("session not found")
-    try:
-        video = complete_upload(
-            database,
-            object_storage,
-            platform_settings,
-            session,
-            video_id,
-            payload.size_bytes,
-            payload.content_type,
-            payload.sha256,
-        )
-    except LookupError as exc:
-        raise not_found(str(exc)) from exc
-    except (ValueError, OSError) as exc:
-        raise invalid(str(exc)) from exc
+    video = complete_upload(
+        database,
+        object_storage,
+        platform_settings,
+        session,
+        video_id,
+        payload.size_bytes,
+        payload.content_type,
+        payload.sha256,
+    )
     return {"video_id": video.id, "status": "UPLOADED", "integrity_status": video.integrity_status}

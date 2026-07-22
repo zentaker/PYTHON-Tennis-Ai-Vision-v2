@@ -5,10 +5,12 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from ..domain.enums import IntegrityStatus, VideoContentType
+
 
 class UploadInitiate(BaseModel):
     display_name: str = Field(min_length=1, max_length=255)
-    content_type: str
+    content_type: VideoContentType
     size_bytes: int = Field(gt=0)
     sha256: str | None = Field(default=None, min_length=64, max_length=64)
 
@@ -24,14 +26,14 @@ class UploadResponse(BaseModel):
 
 class UploadComplete(BaseModel):
     size_bytes: int = Field(gt=0)
-    content_type: str
+    content_type: VideoContentType
     sha256: str | None = Field(default=None, min_length=64, max_length=64)
 
 
 class UploadCompleteResponse(BaseModel):
     video_id: UUID
     status: str
-    integrity_status: str
+    integrity_status: IntegrityStatus
 
 
 class MediaResponse(BaseModel):

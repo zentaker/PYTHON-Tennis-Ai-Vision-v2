@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .enums import SessionStatus
+from .errors import PlatformError
 
 _TRANSITIONS: dict[SessionStatus, frozenset[SessionStatus]] = {
     SessionStatus.DRAFT: frozenset({SessionStatus.AWAITING_UPLOAD}),
@@ -24,4 +25,9 @@ def can_transition(current: SessionStatus, target: SessionStatus) -> bool:
 
 def require_transition(current: SessionStatus, target: SessionStatus) -> None:
     if not can_transition(current, target):
-        raise ValueError(f"invalid session transition: {current} -> {target}")
+        raise PlatformError(
+            409,
+            "INVALID_SESSION_STATE",
+            f"invalid session transition: {current} -> {target}",
+            {"current": current.value, "target": target.value},
+        )

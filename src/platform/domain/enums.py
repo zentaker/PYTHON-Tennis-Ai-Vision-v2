@@ -25,6 +25,25 @@ class AnalysisRunStatus(StrEnum):
     CANCELLED = "CANCELLED"
 
 
+class ProcessingProfile(StrEnum):
+    FAST = "FAST"
+    STANDARD = "STANDARD"
+    TACTICAL = "TACTICAL"
+
+
+class Surface(StrEnum):
+    CLAY = "clay"
+    HARD = "hard"
+    GRASS = "grass"
+    CARPET = "carpet"
+    UNKNOWN = "unknown"
+
+
+class VideoContentType(StrEnum):
+    MP4 = "video/mp4"
+    QUICKTIME = "video/quicktime"
+
+
 class VideoRole(StrEnum):
     SOURCE = "SOURCE"
 

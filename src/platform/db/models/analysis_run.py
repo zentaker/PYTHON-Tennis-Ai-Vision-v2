@@ -26,5 +26,7 @@ class AnalysisRun(Base):
     error_code: Mapped[str | None] = mapped_column(String(80), nullable=True)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    session = relationship("SessionRecord", back_populates="analysis_runs")
+    session = relationship(
+        "SessionRecord", back_populates="analysis_runs", foreign_keys=[session_id]
+    )
     artifacts = relationship("Artifact", back_populates="analysis_run")

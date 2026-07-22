@@ -30,6 +30,8 @@ def upgrade() -> None:
     )
     op.create_index("ix_sessions_status", "sessions", ["status"])
     op.create_index("ix_sessions_created_at", "sessions", ["created_at"])
+    op.create_index("ix_sessions_source_video_id", "sessions", ["source_video_id"])
+    op.create_index("ix_sessions_latest_analysis_run_id", "sessions", ["latest_analysis_run_id"])
     op.create_table(
         "videos",
         sa.Column("id", sa.Uuid(), nullable=False),
@@ -49,6 +51,7 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.ForeignKeyConstraint(["session_id"], ["sessions.id"]),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("session_id", "role", name="uq_videos_session_role"),
         sa.UniqueConstraint("object_key", name="uq_videos_object_key"),
     )
     op.create_index("ix_videos_session_id", "videos", ["session_id"])
@@ -86,9 +89,27 @@ def upgrade() -> None:
         sa.UniqueConstraint("object_key"),
     )
     op.create_index("ix_artifacts_analysis_run_id", "artifacts", ["analysis_run_id"])
+    op.create_foreign_key(
+        "fk_sessions_source_video_id",
+        "sessions",
+        "videos",
+        ["source_video_id"],
+        ["id"],
+        ondelete="SET NULL",
+    )
+    op.create_foreign_key(
+        "fk_sessions_latest_analysis_run_id",
+        "sessions",
+        "analysis_runs",
+        ["latest_analysis_run_id"],
+        ["id"],
+        ondelete="SET NULL",
+    )
 
 
 def downgrade() -> None:
+    op.drop_constraint("fk_sessions_latest_analysis_run_id", "sessions", type_="foreignkey")
+    op.drop_constraint("fk_sessions_source_video_id", "sessions", type_="foreignkey")
     op.drop_index("ix_artifacts_analysis_run_id", table_name="artifacts")
     op.drop_table("artifacts")
     op.drop_index("ix_analysis_runs_session_id", table_name="analysis_runs")
@@ -98,4 +119,6 @@ def downgrade() -> None:
     op.drop_table("videos")
     op.drop_index("ix_sessions_created_at", table_name="sessions")
     op.drop_index("ix_sessions_status", table_name="sessions")
+    op.drop_index("ix_sessions_latest_analysis_run_id", table_name="sessions")
+    op.drop_index("ix_sessions_source_video_id", table_name="sessions")
     op.drop_table("sessions")

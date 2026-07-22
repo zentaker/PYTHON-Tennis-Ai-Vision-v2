@@ -6,6 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, Body, Depends, Query
 
 from ...schemas.session import SessionCreate, SessionPage, SessionResponse
+from ...domain.enums import SessionStatus
 from ...services.sessions import create_session, get_session, list_sessions
 from ..dependencies import db
 from ..errors import ERROR_RESPONSES, not_found
@@ -111,7 +112,7 @@ def create(
 def list_all(
     limit: int = Query(20, ge=1, le=100),
     cursor: str | None = None,
-    status: str | None = None,
+    status: SessionStatus | None = None,
     order: str = Query("newest", pattern="^(newest|oldest)$"),
     database: Any = Depends(db),
 ):

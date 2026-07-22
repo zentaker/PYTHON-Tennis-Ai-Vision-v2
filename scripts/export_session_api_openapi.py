@@ -5,6 +5,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import re
+import subprocess
+import argparse
 from pathlib import Path
 
 
@@ -19,6 +23,19 @@ def canonical_openapi() -> dict:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-commit", default=os.getenv("TENNISAI_SOURCE_COMMIT"))
+    args = parser.parse_args()
+    if not args.source_commit or not re.fullmatch(r"[0-9a-fA-F]{40}", args.source_commit):
+        parser.error("--source-commit must be a real 40-character commit SHA")
+    ancestor = (
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", args.source_commit, "HEAD"], check=False
+        ).returncode
+        == 0
+    )
+    if not ancestor:
+        parser.error("--source-commit must be an ancestor of HEAD")
     payload = canonical_openapi()
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -26,7 +43,8 @@ def main() -> int:
     source = {
         "api_version": "v1",
         "api_style": "LAYERED_FASTAPI_COMPATIBLE_WITH_EXISTING_EXPRESS_MENTAL_MODEL",
-        "core_commit": "generated-at-build-time",
+        "source_commit": args.source_commit.lower(),
+        "source_commit_is_ancestor_of_head": ancestor,
         "generated_at": "2026-07-22T00:00:00Z",
         "sha256": digest,
         "endpoints": sorted(payload.get("paths", {})),

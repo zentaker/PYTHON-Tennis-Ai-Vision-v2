@@ -5,13 +5,13 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..domain.enums import SessionStatus
+from ..domain.enums import ProcessingProfile, SessionStatus, Surface, VideoContentType
 
 
 class VideoSummary(BaseModel):
     id: UUID
     display_name: str
-    content_type: str
+    content_type: VideoContentType
     size_bytes: int
     sha256: str | None
     integrity_status: str
@@ -19,8 +19,8 @@ class VideoSummary(BaseModel):
 
 class SessionCreate(BaseModel):
     title: str = Field(min_length=1, max_length=200)
-    processing_profile: str = Field(default="STANDARD", min_length=1, max_length=80)
-    surface: str = Field(default="unknown", max_length=20)
+    processing_profile: ProcessingProfile = ProcessingProfile.STANDARD
+    surface: Surface = Surface.UNKNOWN
 
 
 class SessionResponse(BaseModel):
@@ -29,8 +29,8 @@ class SessionResponse(BaseModel):
     id: UUID
     title: str
     status: SessionStatus
-    processing_profile: str
-    surface: str
+    processing_profile: ProcessingProfile
+    surface: Surface
     video: VideoSummary | None = None
     latest_analysis_run: "AnalysisRunSummary | None" = None
     bundle_fingerprint: str | None = None
@@ -46,7 +46,7 @@ class SessionPage(BaseModel):
 class AnalysisRunSummary(BaseModel):
     id: UUID
     status: str
-    processing_profile: str
+    processing_profile: ProcessingProfile
     bundle_fingerprint: str | None = None
 
 

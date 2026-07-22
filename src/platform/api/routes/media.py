@@ -42,10 +42,7 @@ def media(session_id: UUID, database: Any = Depends(db), object_storage=Depends(
     session = get_session(database, session_id)
     if not session:
         raise not_found("session not found")
-    try:
-        video, presigned = create_media_download(database, object_storage, session)
-    except LookupError as exc:
-        raise not_found(str(exc)) from exc
+    video, presigned = create_media_download(database, object_storage, session)
     return {
         "download_url": presigned.url,
         "expires_at": presigned.expires_at,

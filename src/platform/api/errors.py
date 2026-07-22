@@ -11,6 +11,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from ..schemas.errors import ErrorResponse
+from ..domain.errors import PlatformError
 
 logger = logging.getLogger("tennisai.platform.http")
 
@@ -22,12 +23,16 @@ ERROR_RESPONSES = {
 }
 
 
-def not_found(message: str = "not found") -> HTTPException:
-    return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=message)
+def not_found(message: str = "not found") -> PlatformError:
+    return PlatformError(status.HTTP_404_NOT_FOUND, "SESSION_NOT_FOUND", message)
 
 
-def invalid(message: str) -> HTTPException:
-    return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=message)
+def invalid(message: str) -> PlatformError:
+    return PlatformError(status.HTTP_400_BAD_REQUEST, "INVALID_REQUEST", message)
+
+
+async def platform_error_handler(request: Request, exc: PlatformError) -> JSONResponse:
+    return _error_response(request, exc.status_code, exc.code, exc.message, exc.details)
 
 
 def _request_id(request: Request) -> str:

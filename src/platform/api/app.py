@@ -12,7 +12,9 @@ from .errors import (
     request_logging_middleware,
     unhandled_exception_handler,
     validation_exception_handler,
+    platform_error_handler,
 )
+from ..domain.errors import PlatformError
 from .routes import health, media, sessions, uploads
 
 
@@ -37,6 +39,7 @@ def create_app(
         ],
     )
     app.add_exception_handler(HTTPException, http_exception_handler)
+    app.add_exception_handler(PlatformError, platform_error_handler)
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
     app.add_exception_handler(Exception, unhandled_exception_handler)
     app.middleware("http")(request_logging_middleware)

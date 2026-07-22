@@ -149,8 +149,9 @@ def _platform_main(args) -> int:
     if args.platform_command == "doctor":
         from src.platform.services.doctor import doctor
 
-        print(json.dumps(doctor(), sort_keys=True))
-        return 0
+        result = doctor()
+        print(json.dumps(result, sort_keys=True))
+        return 0 if result["status"] == "ready" else 1
     if args.platform_command == "seed-stage1b-reference":
         from src.platform.services.seed import seed_stage1b_reference
 
