@@ -86,10 +86,11 @@ def _item(path: str, method: str, operation: dict[str, Any]) -> dict:
         "initiateVideoUpload": (
             "const payload = pm.response.json();\n"
             "pm.environment.set('videoId', payload.video_id);\n"
-            "pm.environment.set('uploadUrl', payload.upload_url);\n"
-            "pm.environment.set('uploadContentType', payload.required_headers['Content-Type']);\n"
-            "pm.environment.set('uploadSizeBytes', pm.request.body.raw ? JSON.parse(pm.request.body.raw).size_bytes : '');\n"
-            "pm.environment.set('uploadSha256', pm.request.body.raw ? (JSON.parse(pm.request.body.raw).sha256 || '') : '');"
+            "pm.collectionVariables.set('uploadUrl', payload.upload_url);\n"
+            "pm.collectionVariables.set('uploadContentType', payload.required_headers['Content-Type']);\n"
+            "const requested = pm.request.body.raw ? JSON.parse(pm.request.body.raw) : {};\n"
+            "pm.collectionVariables.set('uploadSizeBytes', String(requested.size_bytes || ''));\n"
+            "pm.collectionVariables.set('uploadSha256', requested.sha256 || '');"
         ),
     }
     item = {
@@ -110,6 +111,38 @@ def _item(path: str, method: str, operation: dict[str, Any]) -> dict:
                     "exec": [captures[operation["operationId"]]],
                 },
             }
+        ]
+    if operation["operationId"] == "completeVideoUpload":
+        item["event"] = [
+            {
+                "listen": "prerequest",
+                "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                        "const body = {\n"
+                        "  size_bytes: Number(pm.collectionVariables.get('uploadSizeBytes')),\n"
+                        "  content_type: pm.collectionVariables.get('uploadContentType')\n"
+                        "};\n"
+                        "const sha256 = pm.collectionVariables.get('uploadSha256');\n"
+                        "if (sha256) body.sha256 = sha256;\n"
+                        "pm.request.body.update(JSON.stringify(body, null, 2));"
+                    ],
+                },
+            },
+            {
+                "listen": "test",
+                "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                        "if (pm.response.code >= 200 && pm.response.code < 300) {\n"
+                        "  pm.collectionVariables.unset('uploadUrl');\n"
+                        "  pm.collectionVariables.unset('uploadContentType');\n"
+                        "  pm.collectionVariables.unset('uploadSizeBytes');\n"
+                        "  pm.collectionVariables.unset('uploadSha256');\n"
+                        "}"
+                    ],
+                },
+            },
         ]
     return item
 
@@ -155,14 +188,14 @@ def collection_from_openapi(openapi: dict[str, Any], digest: str) -> dict[str, A
             "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         },
         "variable": [
-            {"key": "baseUrl", "value": "{{baseUrl}}"},
-            {"key": "sessionId", "value": "{{sessionId}}"},
-            {"key": "videoId", "value": "{{videoId}}"},
-            {"key": "analysisRunId", "value": "{{analysisRunId}}"},
-            {"key": "uploadUrl", "value": "{{uploadUrl}}"},
-            {"key": "uploadContentType", "value": "{{uploadContentType}}"},
-            {"key": "uploadSizeBytes", "value": "{{uploadSizeBytes}}"},
-            {"key": "uploadSha256", "value": "{{uploadSha256}}"},
+            {"key": "baseUrl", "value": ""},
+            {"key": "sessionId", "value": ""},
+            {"key": "videoId", "value": ""},
+            {"key": "analysisRunId", "value": ""},
+            {"key": "uploadUrl", "value": ""},
+            {"key": "uploadContentType", "value": ""},
+            {"key": "uploadSizeBytes", "value": ""},
+            {"key": "uploadSha256", "value": ""},
         ],
         "item": items,
         "x-openapi-sha256": digest,

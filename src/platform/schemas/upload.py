@@ -29,7 +29,7 @@ class UploadResponse(BaseModel):
 class UploadComplete(BaseModel):
     size_bytes: int = Field(gt=0)
     content_type: VideoContentType
-    sha256: str | None = Field(default=None, min_length=64, max_length=64)
+    sha256: str | None = Field(default=None, pattern=SHA256_PATTERN)
 
 
 class UploadCompleteResponse(BaseModel):

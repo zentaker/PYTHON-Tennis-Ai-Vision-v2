@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from ..domain.enums import AnalysisRunStatus, IntegrityStatus, ProcessingProfile, SessionStatus, Surface, VideoContentType
 
 SHA256_PATTERN = r"^[0-9a-fA-F]{64}$"
-FINGERPRINT_PATTERN = r"^[0-9a-fA-F]+$"
+FINGERPRINT_PATTERN = r"^[0-9a-fA-F]{64}$"
 
 
 class VideoSummary(BaseModel):

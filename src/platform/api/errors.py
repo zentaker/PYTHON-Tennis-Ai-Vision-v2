@@ -31,7 +31,7 @@ ERROR_DEFINITIONS: dict[str, tuple[int, str, str]] = {
     "INVALID_SHA256": (422, "sha256 must be 64 hexadecimal characters", "The SHA-256 value must contain exactly 64 hexadecimal characters."),
     "UNSUPPORTED_VIDEO_CONTENT_TYPE": (422, "unsupported video content type", "The video content type is not supported."),
     "VIDEO_EXTENSION_MISMATCH": (422, "filename extension does not match content type", "The filename extension does not match the content type."),
-    "STORAGE_SIGNING_FAILED": (503, "storage could not sign the upload", "Object storage could not create a presigned URL."),
+    "STORAGE_SIGNING_FAILED": (503, "storage could not sign the requested URL", "Object storage could not create a presigned URL."),
 }
 
 

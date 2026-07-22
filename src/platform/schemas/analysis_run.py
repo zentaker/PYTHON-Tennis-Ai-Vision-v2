@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 from ..domain.enums import AnalysisRunStatus, ArtifactKind, ProcessingProfile
 
 SHA256_PATTERN = r"^[0-9a-fA-F]{64}$"
-FINGERPRINT_PATTERN = r"^[0-9a-fA-F]+$"
+FINGERPRINT_PATTERN = r"^[0-9a-fA-F]{64}$"
 
 
 class AnalysisRunResponse(BaseModel):
