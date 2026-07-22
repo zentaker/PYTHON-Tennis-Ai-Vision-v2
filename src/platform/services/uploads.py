@@ -64,7 +64,15 @@ def initiate_upload(
     )
     if existing or session.source_video_id is not None:
         raise PlatformError(
-            409, "SOURCE_VIDEO_ALREADY_EXISTS", "session already has a source video"
+            409,
+            "SOURCE_VIDEO_ALREADY_EXISTS",
+            "session already has a source video",
+            {
+                "session_source_video_id": str(session.source_video_id)
+                if session.source_video_id
+                else None,
+                "existing_video_id": str(existing.id) if existing else None,
+            },
         )
     video_id = uuid4()
     object_key = source_video_key(session.id, video_id, display_name)
