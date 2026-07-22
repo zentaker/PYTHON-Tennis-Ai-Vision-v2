@@ -206,6 +206,8 @@ jobs:
       - name: Apply migrations and run storage integration
         env:
           TENNISAI_DATABASE_URL: postgresql+psycopg://tennisai:tennisai@localhost:5432/tennisai
+          S3_ACCESS_KEY: minioadmin
+          S3_SECRET_KEY: minioadmin
           TENNISAI_S3_INTERNAL_ENDPOINT_URL: http://localhost:9000
           TENNISAI_S3_PUBLIC_ENDPOINT_URL: http://localhost:9000
           TENNISAI_S3_ACCESS_KEY: minioadmin
