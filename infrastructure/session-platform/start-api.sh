@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 set -eu
 
-alembic upgrade head
-current="$(alembic current 2>/dev/null || true)"
+uv run --frozen --no-sync alembic upgrade head
+current="$(uv run --frozen --no-sync alembic current 2>/dev/null || true)"
 case "$current" in
   *"0001_session_platform"*"(head)"*) ;;
   *) echo "migration did not reach Alembic head" >&2; exit 1 ;;
