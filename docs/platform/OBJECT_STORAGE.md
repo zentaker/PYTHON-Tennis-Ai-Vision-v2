@@ -17,7 +17,7 @@ Compose uses `http://minio:9000` internally and `http://localhost:9000` for
 browser URLs. The signer uses MinIO-compatible path addressing; the public
 endpoint is validated and never permits the internal `minio` host.
 
-MinIO CORS is versioned at `infrastructure/session-platform/minio/cors.json`:
+MinIO CORS is versioned at `infrastructure/session-platform/minio/cors.xml`:
 only `http://localhost:5173` may issue PUT/GET/HEAD with the documented headers.
 The bucket remains private and the policy is applied idempotently by
 `minio-init`.

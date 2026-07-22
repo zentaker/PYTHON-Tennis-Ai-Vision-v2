@@ -38,13 +38,13 @@ services:
       S3_BUCKET: ${S3_BUCKET:-tennisai-local}
       MINIO_CORS_MAX_AGE: ${MINIO_CORS_MAX_AGE:-3600}
     volumes:
-      - ./minio/cors.json:/config/cors.json:ro
+      - ./minio/cors.xml:/config/cors.xml:ro
     entrypoint: ["/bin/sh", "-c"]
     command: >-
       "until mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD}; do sleep 2; done
       && mc mb --ignore-existing local/$${S3_BUCKET:-tennisai-local}
-      && printf '{\"CORSRules\":[{\"AllowedOrigins\":[\"http://localhost:5173\"],\"AllowedMethods\":[\"PUT\",\"GET\",\"HEAD\"],\"AllowedHeaders\":[\"Content-Type\",\"x-amz-*\",\"origin\",\"accept\"],\"ExposeHeaders\":[\"ETag\",\"Content-Length\",\"Content-Type\"],\"MaxAgeSeconds\":%s}]}' $${MINIO_CORS_MAX_AGE} > /tmp/cors.json
-      && mc cors set local/$${S3_BUCKET:-tennisai-local} /tmp/cors.json"
+      && printf '<CORSConfiguration><CORSRule><AllowedOrigin>http://localhost:5173</AllowedOrigin><AllowedMethod>PUT</AllowedMethod><AllowedMethod>GET</AllowedMethod><AllowedMethod>HEAD</AllowedMethod><AllowedHeader>Content-Type</AllowedHeader><AllowedHeader>x-amz-*</AllowedHeader><AllowedHeader>origin</AllowedHeader><AllowedHeader>accept</AllowedHeader><ExposeHeader>ETag</ExposeHeader><ExposeHeader>Content-Length</ExposeHeader><ExposeHeader>Content-Type</ExposeHeader><MaxAgeSeconds>%s</MaxAgeSeconds></CORSRule></CORSConfiguration>' $${MINIO_CORS_MAX_AGE} > /tmp/cors.xml
+      && mc cors set local/$${S3_BUCKET:-tennisai-local} /tmp/cors.xml"
 
   api:
     build:
