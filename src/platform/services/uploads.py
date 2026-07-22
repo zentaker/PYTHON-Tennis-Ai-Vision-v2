@@ -55,13 +55,20 @@ def initiate_upload(
     size_bytes: int,
     sha256: str | None,
 ) -> tuple[Video, PresignedObject]:
+    existing = db.scalar(
+        select(Video).where(Video.session_id == session.id, Video.role == VideoRole.SOURCE.value)
+    )
+    if (existing or session.source_video_id is not None) and session.status in {
+        SessionStatus.AWAITING_UPLOAD.value,
+        SessionStatus.UPLOADING.value,
+    }:
+        raise PlatformError(
+            409, "SOURCE_VIDEO_ALREADY_EXISTS", "session already has a source video"
+        )
     if session.status not in {SessionStatus.DRAFT.value, SessionStatus.AWAITING_UPLOAD.value}:
         raise PlatformError(409, "INVALID_SESSION_STATE", "session cannot initiate an upload")
     validate_upload(display_name, content_type, size_bytes, settings)
     declared_sha = normalize_sha256(sha256)
-    existing = db.scalar(
-        select(Video).where(Video.session_id == session.id, Video.role == VideoRole.SOURCE.value)
-    )
     if existing or session.source_video_id is not None:
         raise PlatformError(
             409, "SOURCE_VIDEO_ALREADY_EXISTS", "session already has a source video"
