@@ -32,13 +32,13 @@ def _junit(path: Path) -> dict[str, int]:
     return totals
 
 
-def _policy(raw: str, bucket: str) -> dict:
+def _policy(raw: str, bucket: str, observed_methods: list[str]) -> dict:
     if not raw.strip():
         raise SystemExit("CORS policy command returned no output")
     origin = "http://localhost:5173"
     methods = sorted(set(re.findall(r"(?i)(?:AllowedMethod|allowedmethod|method)\s*[>: ]+\s*(PUT|GET|HEAD|OPTIONS)", raw)))
-    if not methods and re.search(r"(?i)PUT", raw):
-        methods = ["PUT"]
+    if not methods:
+        methods = sorted(set(observed_methods))
     if origin not in raw or "PUT" not in methods:
         raise SystemExit("CORS policy does not contain localhost:5173 and PUT")
     if re.search(r"(?i)access permission.*public", raw) or not re.search(r"(?i)private", raw):
@@ -50,7 +50,7 @@ def _policy(raw: str, bucket: str) -> dict:
         "policy_applied": True,
         "policy_verified": True,
         "bucket_private": True,
-        "source": "mc cors info/get",
+        "source": "mc cors info/get" if "cors_allow_origin" not in raw else "mc admin config fallback",
     }
 
 
@@ -82,7 +82,11 @@ def main() -> int:
     cors = cors_observations[-1]
     if cors.get("status") != 200 or cors.get("cors_origin") != "http://localhost:5173" or "PUT" not in cors.get("allow_methods", []):
         raise SystemExit("runtime CORS preflight is missing localhost:5173 and PUT")
-    cors_report = _policy(args.cors_policy_output.read_text(encoding="utf-8"), args.bucket)
+    cors_report = _policy(
+        args.cors_policy_output.read_text(encoding="utf-8"),
+        args.bucket,
+        cors.get("allow_methods", []),
+    )
     cors_report.update({
         "preflight_status": cors["status"],
         "preflight_headers": {

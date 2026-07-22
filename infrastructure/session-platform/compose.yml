@@ -29,7 +29,7 @@ services:
       - session-platform-minio:/data
 
   minio-init:
-    image: minio/mc:RELEASE.2024-05-24T09-08-49Z
+    image: minio/mc:RELEASE.2024-08-26T10-49-58Z
     depends_on:
       minio:
         condition: service_started
@@ -45,8 +45,11 @@ services:
       "set -ex
       && until mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD}; do sleep 2; done
       && mc mb --ignore-existing local/$${S3_BUCKET:-tennisai-local}
-      && mc cors set local/$${S3_BUCKET:-tennisai-local} /config/cors.xml
-      && (mc cors info local/$${S3_BUCKET:-tennisai-local} || mc cors get local/$${S3_BUCKET:-tennisai-local})
+      && (mc cors set local/$${S3_BUCKET:-tennisai-local} /config/cors.xml
+          || mc admin config set local api cors_allow_origin=http://localhost:5173)
+      && (mc cors info local/$${S3_BUCKET:-tennisai-local}
+          || mc cors get local/$${S3_BUCKET:-tennisai-local}
+          || mc admin config get local api)
       && mc anonymous get local/$${S3_BUCKET:-tennisai-local}"
 
   api:
