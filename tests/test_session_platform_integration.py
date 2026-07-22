@@ -45,7 +45,7 @@ def test_complete_session_api_http_lifecycle() -> None:
     request_id = f"integration-{uuid4()}"
     status, headers, health = _call(base, "GET", "/healthz", headers={"X-Request-ID": request_id})
     assert status == 200 and health["status"] == "ok"
-    assert headers["X-Request-ID"] == request_id
+    assert next(value for key, value in headers.items() if key.lower() == "x-request-id") == request_id
 
     status, _, created = _call(
         base,
