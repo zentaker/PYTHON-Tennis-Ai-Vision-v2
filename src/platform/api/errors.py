@@ -127,11 +127,16 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
 async def validation_exception_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
+    code = "VALIDATION_ERROR"
+    if any("sha256" in {str(part) for part in error.get("loc", ())} for error in exc.errors()):
+        code = "INVALID_SHA256"
+    elif any("content_type" in {str(part) for part in error.get("loc", ())} for error in exc.errors()):
+        code = "UNSUPPORTED_VIDEO_CONTENT_TYPE"
     return _error_response(
         request,
         status.HTTP_422_UNPROCESSABLE_ENTITY,
-        "VALIDATION_ERROR",
-        "request validation failed",
+        code,
+        ERROR_DEFINITIONS[code][1],
         {"errors": exc.errors()},
     )
 

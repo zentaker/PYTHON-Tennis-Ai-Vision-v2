@@ -11,7 +11,7 @@
     "/api/v1/sessions/{session_id}/uploads/{video_id}/complete",
     "/healthz"
   ],
-  "gate": "SESSION_PLATFORM_API_V1_CONTRACT_CANDIDATE",
+  "gate": "SESSION_PLATFORM_API_V1_CONTRACT_PENDING_RELEASE_AUDIT",
   "generated_at": "2026-07-22T00:00:00Z",
   "operation_ids": [
     "completeVideoUpload",

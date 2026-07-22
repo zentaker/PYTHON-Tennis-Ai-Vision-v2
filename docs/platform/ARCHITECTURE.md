@@ -17,8 +17,9 @@ provider, tracking, detection, or inference in this stage. The API is suitable
 for a local development stack only; production credentials and networking are
 intentionally not supplied.
 
-The contract candidate is frozen as `SESSION_PLATFORM_API_V1_CONTRACT_CANDIDATE`
-in [session_api_v1.openapi.json](../../config/platform/session_api_v1.openapi.json).
+The contract snapshot is generated and auditable, but remains pending the
+release gate `SESSION_PLATFORM_API_V1_CONTRACT_PENDING_RELEASE_AUDIT`; it is
+stored at [session_api_v1.openapi.json](../../config/platform/session_api_v1.openapi.json).
 
 The registered style is
 `SESSION_PLATFORM_API_STYLE = LAYERED_FASTAPI_COMPATIBLE_WITH_EXISTING_EXPRESS_MENTAL_MODEL`.

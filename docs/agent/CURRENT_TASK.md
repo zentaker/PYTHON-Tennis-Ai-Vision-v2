@@ -18,5 +18,6 @@ against the OpenAPI snapshot in CI.
 
 Runtime patch status: browser-facing public storage URLs, pinned MinIO images,
 build-time dependency installation, migration-gated API startup, real doctor
-checks and HTTP integration coverage are implemented. The API contract remains
-pending final audit.
+checks and HTTP integration coverage are implemented. The public contract and
+derived runtime evidence patch are implemented; the release audit remains
+pending as `SESSION_PLATFORM_API_V1_CONTRACT_PENDING_RELEASE_AUDIT`.

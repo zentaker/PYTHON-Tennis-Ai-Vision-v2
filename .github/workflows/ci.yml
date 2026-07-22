@@ -195,8 +195,9 @@ jobs:
           done
           curl --fail --silent http://localhost:8000/healthz >/dev/null
           docker compose -f infrastructure/session-platform/compose.yml ps
-          printf '{"status":"built","api_image":"session-platform-api","dependencies":"uv sync --frozen --extra platform"}\n' \
-            > .artifacts/stage2a-session-platform/docker-build-report.json
+          docker compose -f infrastructure/session-platform/compose.yml images --format json api \
+            > .artifacts/stage2a-session-platform/docker-images.json
+          uv run python -c 'import json; from pathlib import Path; p=Path(".artifacts/stage2a-session-platform/docker-images.json"); raw=p.read_text().strip(); rows=json.loads(raw) if raw.startswith("[") else [json.loads(line) for line in raw.splitlines() if line.strip()]; Path(".artifacts/stage2a-session-platform/docker-build-report.json").write_text(json.dumps({"status":"built","images":rows}, sort_keys=True)+"\n")'
 
       - name: Apply migrations and run storage integration
         env:
@@ -208,21 +209,26 @@ jobs:
           TENNISAI_S3_BUCKET: tennisai-local
           RUN_SESSION_PLATFORM_HTTP_INTEGRATION: "1"
           SESSION_PLATFORM_API_BASE_URL: http://localhost:8000
+          SESSION_PLATFORM_RUNTIME_RESULTS_PATH: .artifacts/stage2a-session-platform/runtime-results.json
         run: |
           uv run --extra platform tennisai platform migrate
-          printf '{"status":"migrations_applied","service":"postgresql"}\n' \
-            > .artifacts/stage2a-session-platform/migration-report.json
+          uv run --extra platform alembic current > .artifacts/stage2a-session-platform/alembic-current.txt
+          uv run python -c 'import json; from pathlib import Path; p=Path(".artifacts/stage2a-session-platform/alembic-current.txt"); Path(".artifacts/stage2a-session-platform/migration-report.json").write_text(json.dumps({"status":"migrations_applied","service":"postgresql","alembic_current":p.read_text().strip()}, sort_keys=True)+"\n")'
           uv run --extra platform tennisai platform doctor \
             > .artifacts/stage2a-session-platform/doctor-report.json
           uv run --extra platform pytest tests/test_session_platform_integration.py \
             --junitxml=.artifacts/stage2a-session-platform/integration-test-report.xml
           curl --fail --silent http://localhost:8000/api/v1/openapi.json >/dev/null
-          printf '{"cors_origin":"http://localhost:5173","methods":["PUT","GET","HEAD"],"status":"configured-and-tested"}\n' \
-            > .artifacts/stage2a-session-platform/cors-report.json
-          printf '{"upload_host":"localhost","download_host":"localhost","internal_hostname_leaked":false}\n' \
-            > .artifacts/stage2a-session-platform/presigned-endpoint-report.json
-          printf '{"secrets":false,"presigned_urls":false,"videos":false,"database_dumps":false,"status":"clean"}\n' \
-            > .artifacts/stage2a-session-platform/security-summary.json
+          docker compose -f infrastructure/session-platform/compose.yml run --rm --no-deps \
+            --entrypoint /bin/sh minio-init -c \
+            'mc alias set local http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" >/dev/null && (mc cors info "local/$S3_BUCKET" || mc cors get "local/$S3_BUCKET") && mc anonymous get "local/$S3_BUCKET"' \
+            > .artifacts/stage2a-session-platform/cors-policy-output.txt
+          uv run --extra platform python scripts/export_session_platform_runtime_evidence.py \
+            --integration-xml .artifacts/stage2a-session-platform/integration-test-report.xml \
+            --runtime-results .artifacts/stage2a-session-platform/runtime-results.json \
+            --doctor .artifacts/stage2a-session-platform/doctor-report.json \
+            --cors-policy-output .artifacts/stage2a-session-platform/cors-policy-output.txt \
+            --output-dir .artifacts/stage2a-session-platform
 
       - name: Stop local services
         if: always()
@@ -247,6 +253,7 @@ jobs:
             .artifacts/stage2a-session-platform/presigned-endpoint-report.json
             .artifacts/stage2a-session-platform/docker-build-report.json
             .artifacts/stage2a-session-platform/security-summary.json
+            .artifacts/stage2a-session-platform/runtime-test-summary.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 6

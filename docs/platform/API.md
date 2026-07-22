@@ -29,3 +29,16 @@ FastAPI serves the snapshot at `/api/v1/openapi.json`, interactive docs at
 tag, request/response schemas, status-code documentation, examples, and the
 uniform `{ "error": { "code", "message", "details", "request_id" } }`
 error envelope.
+
+Documented domain error codes are status-specific: 400 (`INVALID_CURSOR`,
+`INVALID_REQUEST`), 404 (`SESSION_NOT_FOUND`, `VIDEO_NOT_FOUND`,
+`STORAGE_OBJECT_MISSING`), 409 (`SOURCE_VIDEO_ALREADY_EXISTS`,
+`INVALID_SESSION_STATE`, `UPLOAD_METADATA_MISMATCH`, `UPLOAD_SHA_MISMATCH`,
+`STORAGE_OBJECT_MISMATCH`), 413 (`VIDEO_SIZE_EXCEEDED`), 422
+(`VALIDATION_ERROR`, `INVALID_SHA256`, `UNSUPPORTED_VIDEO_CONTENT_TYPE`,
+`VIDEO_EXTENSION_MISMATCH`) and 503 (`STORAGE_SIGNING_FAILED`). Every response
+uses the `ErrorResponse` envelope and includes a request ID example.
+
+Response DTOs use domain enums for session, media, integrity, analysis-run,
+processing-profile and artifact values. SHA-256 fields are 64 hexadecimal
+characters and are normalized to lowercase internally.

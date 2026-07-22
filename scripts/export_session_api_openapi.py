@@ -55,7 +55,7 @@ def main() -> int:
             if method.lower() in {"get", "post", "put", "patch", "delete"}
         ),
         "schemas": sorted(payload.get("components", {}).get("schemas", {})),
-        "gate": "SESSION_PLATFORM_API_V1_CONTRACT_CANDIDATE",
+        "gate": "SESSION_PLATFORM_API_V1_CONTRACT_PENDING_RELEASE_AUDIT",
     }
     (ROOT / "config/platform/SESSION_API_SOURCE.json").write_text(
         json.dumps(source, indent=2, sort_keys=True) + "\n", encoding="utf-8"

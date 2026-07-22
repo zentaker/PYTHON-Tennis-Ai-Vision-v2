@@ -25,3 +25,9 @@ healthcheck probes `GET /healthz`. MinIO images are pinned to
 On hosts without Docker, report `DOCKER_RUNTIME_MISSING`. Unit tests and static
 validation remain valid, but PostgreSQL/MinIO integration tests must not be
 described as passed.
+
+The CI runtime evidence is generated from the integration JUnit XML, the real
+HTTP observations, the doctor report, the MinIO `mc cors info/get` check and
+the browser preflight. It fails closed on test failures/skips, non-localhost
+presigned endpoints, an unready doctor, a public bucket, missing localhost
+CORS PUT, secrets, full presigned URLs or video bytes.

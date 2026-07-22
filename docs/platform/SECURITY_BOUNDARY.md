@@ -6,7 +6,9 @@ contains development-only MinIO values. No secrets, tokens, videos, models, or
 cache volumes are committed.
 
 The API has CORS configured from `TENNISAI_CORS_ORIGINS` with credentials
-disabled. Presigned URLs expire after the configured interval. Object keys are
+disabled and browser PUT/GET/HEAD/OPTIONS enabled. MinIO applies and verifies
+the versioned localhost:5173 policy while keeping the bucket private.
+Presigned URLs expire after the configured interval. Object keys are
 server-generated and traversal-resistant. Upload completion trusts storage
 metadata only and reports `STORAGE_VERIFIED`; checksum verification is an
 explicit later control.

@@ -17,10 +17,13 @@ Compose uses `http://minio:9000` internally and `http://localhost:9000` for
 browser URLs. The signer uses MinIO-compatible path addressing; the public
 endpoint is validated and never permits the internal `minio` host.
 
-MinIO CORS is versioned at `infrastructure/session-platform/minio/cors.xml` and
-Compose pins the same origin through `MINIO_API_CORS_ALLOW_ORIGIN`; only
-`http://localhost:5173` may issue PUT/GET/HEAD with the documented headers.
-The bucket remains private and creation is idempotent in `minio-init`.
+MinIO CORS is versioned at `infrastructure/session-platform/minio/cors.xml`.
+`minio-init` applies that file with `mc cors set local/$S3_BUCKET
+/config/cors.xml`, verifies it with `mc cors info` (falling back to `mc cors
+get` on older clients), and checks that the bucket remains private. The
+runtime evidence exporter additionally performs a real preflight from
+`http://localhost:5173` and requires PUT. `MINIO_API_CORS_ALLOW_ORIGIN` remains
+configured for compatibility with the pinned MinIO image.
 
 Completion performs an object `HEAD` and compares size and content type with the
 initiation metadata. Success records `STORAGE_VERIFIED`; it does not claim
