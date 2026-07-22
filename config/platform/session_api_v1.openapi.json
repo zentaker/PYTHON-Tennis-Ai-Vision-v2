@@ -48,8 +48,7 @@
             "type": "string"
           },
           "processing_profile": {
-            "title": "Processing Profile",
-            "type": "string"
+            "$ref": "#/components/schemas/ProcessingProfile"
           },
           "session_id": {
             "format": "uuid",
@@ -69,8 +68,7 @@
             "title": "Started At"
           },
           "status": {
-            "title": "Status",
-            "type": "string"
+            "$ref": "#/components/schemas/AnalysisRunStatus"
           }
         },
         "required": [
@@ -82,6 +80,19 @@
         ],
         "title": "AnalysisRunResponse",
         "type": "object"
+      },
+      "AnalysisRunStatus": {
+        "enum": [
+          "PENDING",
+          "QUEUED",
+          "RUNNING",
+          "COMPLETE",
+          "PARTIAL",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "title": "AnalysisRunStatus",
+        "type": "string"
       },
       "AnalysisRunSummary": {
         "properties": {
@@ -102,8 +113,7 @@
             "type": "string"
           },
           "processing_profile": {
-            "title": "Processing Profile",
-            "type": "string"
+            "$ref": "#/components/schemas/ProcessingProfile"
           },
           "status": {
             "title": "Status",
@@ -229,6 +239,16 @@
         "title": "ErrorResponse",
         "type": "object"
       },
+      "IntegrityStatus": {
+        "enum": [
+          "CLIENT_DECLARED",
+          "STORAGE_VERIFIED",
+          "HASH_VERIFIED",
+          "FAILED"
+        ],
+        "title": "IntegrityStatus",
+        "type": "string"
+      },
       "MediaResponse": {
         "properties": {
           "content_type": {
@@ -275,20 +295,24 @@
         "title": "MediaResponse",
         "type": "object"
       },
+      "ProcessingProfile": {
+        "enum": [
+          "FAST",
+          "STANDARD",
+          "TACTICAL"
+        ],
+        "title": "ProcessingProfile",
+        "type": "string"
+      },
       "SessionCreate": {
         "properties": {
           "processing_profile": {
-            "default": "STANDARD",
-            "maxLength": 80,
-            "minLength": 1,
-            "title": "Processing Profile",
-            "type": "string"
+            "$ref": "#/components/schemas/ProcessingProfile",
+            "default": "STANDARD"
           },
           "surface": {
-            "default": "unknown",
-            "maxLength": 20,
-            "title": "Surface",
-            "type": "string"
+            "$ref": "#/components/schemas/Surface",
+            "default": "unknown"
           },
           "title": {
             "maxLength": 200,
@@ -364,15 +388,13 @@
             ]
           },
           "processing_profile": {
-            "title": "Processing Profile",
-            "type": "string"
+            "$ref": "#/components/schemas/ProcessingProfile"
           },
           "status": {
             "$ref": "#/components/schemas/SessionStatus"
           },
           "surface": {
-            "title": "Surface",
-            "type": "string"
+            "$ref": "#/components/schemas/Surface"
           },
           "title": {
             "title": "Title",
@@ -421,11 +443,21 @@
         "title": "SessionStatus",
         "type": "string"
       },
+      "Surface": {
+        "enum": [
+          "clay",
+          "hard",
+          "grass",
+          "carpet",
+          "unknown"
+        ],
+        "title": "Surface",
+        "type": "string"
+      },
       "UploadComplete": {
         "properties": {
           "content_type": {
-            "title": "Content Type",
-            "type": "string"
+            "$ref": "#/components/schemas/VideoContentType"
           },
           "sha256": {
             "anyOf": [
@@ -456,8 +488,7 @@
       "UploadCompleteResponse": {
         "properties": {
           "integrity_status": {
-            "title": "Integrity Status",
-            "type": "string"
+            "$ref": "#/components/schemas/IntegrityStatus"
           },
           "status": {
             "title": "Status",
@@ -480,8 +511,7 @@
       "UploadInitiate": {
         "properties": {
           "content_type": {
-            "title": "Content Type",
-            "type": "string"
+            "$ref": "#/components/schemas/VideoContentType"
           },
           "display_name": {
             "maxLength": 255,
@@ -559,11 +589,18 @@
         "title": "UploadResponse",
         "type": "object"
       },
+      "VideoContentType": {
+        "enum": [
+          "video/mp4",
+          "video/quicktime"
+        ],
+        "title": "VideoContentType",
+        "type": "string"
+      },
       "VideoSummary": {
         "properties": {
           "content_type": {
-            "title": "Content Type",
-            "type": "string"
+            "$ref": "#/components/schemas/VideoContentType"
           },
           "display_name": {
             "title": "Display Name",
@@ -654,7 +691,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "$ref": "#/components/schemas/SessionStatus"
                 },
                 {
                   "type": "null"

@@ -100,5 +100,8 @@
 - Stage gate: `CHATGPT_CORE_STAGE2A_SESSION_PLATFORM_AUDIT`.
 - Unit suite passed; Docker runtime unavailable (`DOCKER_RUNTIME_MISSING`), so integration is pending and not claimed.
 - Cloud calls / GPU calls / inference / videos committed / secrets committed / spend: 0 / 0 / 0 / 0 / 0 / 0.
+- Browser upload runtime patch: internal/public S3 endpoints separated, MinIO CORS pinned and idempotent, API image dependencies installed at build, startup migration-gated, source UUID/DB pointers/keys unified, and source uniqueness/FKs enforced.
+- Real HTTP integration suite covers browser PUT/GET, CORS preflight, complete idempotency, typed errors and negative lifecycle cases in Compose CI.
+- Current gates: `STAGE2A_LAYERED_API_ARCHITECTURE_ACCEPTED`, `STAGE2A_OPENAPI_POSTMAN_GENERATION_ACCEPTED`, `STAGE2A_BROWSER_UPLOAD_RUNTIME_PATCH_IMPLEMENTED`; next `SESSION_PLATFORM_API_V1_CONTRACT_PENDING_FINAL_AUDIT`.
 - API architecture addendum: layered FastAPI with repositories, uniform error envelope, correlation/request logging, configurable CORS, and OpenAPI at `/api/v1/openapi.json`.
 - Postman collection/environment are versioned; collection is generated from OpenAPI and CI validates operation IDs, path scope, derivation, and absence of credentials.

@@ -7,11 +7,16 @@ Core Stage 2A — Session Platform foundation is implemented on
 V1, PostgreSQL/Alembic model, MinIO/S3 adapter, presigned upload lifecycle, CLI,
 OpenAPI candidate, Compose stack, tests and documentation are included. Docker
 was unavailable locally (`DOCKER_RUNTIME_MISSING`), so PostgreSQL/MinIO
-integration is explicitly pending; no inference, GPU, cloud, video or model work
-was performed.
+integration is explicitly pending locally; no inference, GPU, cloud, video or
+model work was performed.
 
 The API architecture addendum is implemented: FastAPI remains the HTTP layer;
 repositories isolate SQLAlchemy queries; routes return DTOs only; errors use a
 uniform request-ID envelope; structured request logging excludes presigned URLs
 and credentials; and the Postman collection/environment are derived and checked
 against the OpenAPI snapshot in CI.
+
+Runtime patch status: browser-facing public storage URLs, pinned MinIO images,
+build-time dependency installation, migration-gated API startup, real doctor
+checks and HTTP integration coverage are implemented. The API contract remains
+pending final audit.

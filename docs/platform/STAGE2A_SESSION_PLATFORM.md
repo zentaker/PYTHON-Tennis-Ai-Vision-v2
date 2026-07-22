@@ -1,8 +1,12 @@
 # Stage 2A Session Platform foundation
 
-Status: `CORE_STAGE2A_SESSION_PLATFORM_READY_FOR_REVIEW`
+Status: `STAGE2A_BROWSER_UPLOAD_RUNTIME_PATCH_IMPLEMENTED`
 
-Gate: `CHATGPT_CORE_STAGE2A_SESSION_PLATFORM_AUDIT`
+Gates: `STAGE2A_LAYERED_API_ARCHITECTURE_ACCEPTED`,
+`STAGE2A_OPENAPI_POSTMAN_GENERATION_ACCEPTED`,
+`STAGE2A_BROWSER_UPLOAD_RUNTIME_PATCH_IMPLEMENTED`
+
+Next gate: `SESSION_PLATFORM_API_V1_CONTRACT_PENDING_FINAL_AUDIT`
 
 This candidate adds the Session API V1, PostgreSQL/Alembic metadata model,
 S3-compatible object-storage adapter, MinIO/PostgreSQL Compose stack, CLI
@@ -21,3 +25,8 @@ the metadata-only Stage 1B seed. Docker was unavailable in the execution
 environment (`DOCKER_RUNTIME_MISSING`), so no PostgreSQL/MinIO integration run
 is claimed. Cloud calls, GPU calls, inference, videos committed, secrets
 committed, and spend are all zero.
+
+The Docker-backed HTTP integration suite exercises health, session creation and
+pagination, public-host presigned PUT/GET, MinIO CORS preflight, upload
+completion, download bytes/metadata, idempotent completion, typed error
+envelopes, and negative lifecycle cases. The API contract is not yet frozen.

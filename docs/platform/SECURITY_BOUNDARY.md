@@ -11,6 +11,11 @@ server-generated and traversal-resistant. Upload completion trusts storage
 metadata only and reports `STORAGE_VERIFIED`; checksum verification is an
 explicit later control.
 
+The request middleware emits only method, path, request ID, status and duration;
+it never logs request bodies, credentials, or complete presigned URLs. The
+public storage endpoint is separated from the internal MinIO endpoint and is
+checked before signing.
+
 Authentication, authorization, tenant isolation, rate limiting, malware/video
 scanning, TLS termination, retention enforcement, and production IAM remain
 outside this gate and must be added before deployment.

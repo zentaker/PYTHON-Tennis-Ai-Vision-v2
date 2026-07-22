@@ -41,7 +41,8 @@ Roadmap completo: [ROADMAP.md](ROADMAP.md).
 The local Session Platform foundation is implemented as a review candidate. It
 provides a FastAPI Session API V1, PostgreSQL/Alembic metadata, MinIO/S3 object
 storage, presigned browser uploads, and a deterministic OpenAPI contract without
-loading the tracking or inference stack. See
+loading the tracking or inference stack. Browser uploads use a public MinIO
+endpoint while API storage operations use an internal endpoint. See
 [docs/platform/STAGE2A_SESSION_PLATFORM.md](docs/platform/STAGE2A_SESSION_PLATFORM.md)
 and [docs/platform/LOCAL_DEVELOPMENT.md](docs/platform/LOCAL_DEVELOPMENT.md).
 
