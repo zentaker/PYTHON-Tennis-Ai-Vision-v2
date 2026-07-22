@@ -50,6 +50,11 @@ class FailingPresignStorage(FakeStorage):
         raise OSError("signing unavailable")
 
 
+class FailingDownloadStorage(FakeStorage):
+    def create_presigned_download(self, key, content_type=None):
+        raise RuntimeError("download signer unavailable")
+
+
 def test_platform_import_does_not_load_heavy_models() -> None:
     result = subprocess.run(
         [
@@ -142,6 +147,132 @@ def test_presign_failure_rolls_back_without_video_or_state_change() -> None:
         assert record.status == "DRAFT" and record.source_video_id is None
 
 
+def test_download_presign_failure_is_safe_domain_error() -> None:
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+
+    from src.platform.db.base import Base
+    from src.platform.config.settings import PlatformSettings
+    from src.platform.services.media import create_media_download
+    from src.platform.services.sessions import create_session
+    from src.platform.services.uploads import initiate_upload
+
+    engine = create_engine("sqlite://")
+    Base.metadata.create_all(engine)
+    with sessionmaker(engine)() as database:
+        record = create_session(database, "download signing", "STANDARD", "unknown")
+        video, _ = initiate_upload(
+            database,
+            FakeStorage(),
+            PlatformSettings(database_url="sqlite://"),
+            record,
+            "clip.mp4",
+            "video/mp4",
+            4,
+            None,
+        )
+        with pytest.raises(PlatformError) as error:
+            create_media_download(database, FailingDownloadStorage(), record, video.id)
+        assert error.value.status_code == 503
+        assert error.value.code == "STORAGE_SIGNING_FAILED"
+        assert error.value.message == "storage could not sign the download"
+        assert error.value.details == {"operation": "download"}
+
+
+def test_download_presign_failure_http_envelope() -> None:
+    pytest.importorskip("fastapi")
+    import asyncio
+    import json
+    from sqlalchemy import create_engine
+    from sqlalchemy.pool import StaticPool
+    from sqlalchemy.orm import sessionmaker
+
+    from src.platform.api.app import create_app
+    from src.platform.config.settings import PlatformSettings
+    from src.platform.db.base import Base
+
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(engine)
+    app = create_app(
+        settings=PlatformSettings(database_url="sqlite://"),
+        db_factory=factory,
+        object_storage=FailingDownloadStorage(),
+    )
+    async def invoke(method: str, path: str, payload: dict | None = None, request_id: str = ""):
+        request_body = json.dumps(payload).encode() if payload is not None else b""
+        request_messages = iter(
+            [{"type": "http.request", "body": request_body, "more_body": False}]
+        )
+        response = {"status": None, "headers": [], "body": b""}
+
+        async def receive():
+            return next(request_messages)
+
+        async def send(message):
+            if message["type"] == "http.response.start":
+                response["status"] = message["status"]
+                response["headers"] = message["headers"]
+            elif message["type"] == "http.response.body":
+                response["body"] += message.get("body", b"")
+
+        headers = [(b"content-type", b"application/json")]
+        if request_id:
+            headers.append((b"x-request-id", request_id.encode()))
+        await app(
+            {
+                "type": "http",
+                "asgi": {"version": "3.0"},
+                "http_version": "1.1",
+                "method": method,
+                "scheme": "http",
+                "path": path,
+                "raw_path": path.encode(),
+                "query_string": b"",
+                "headers": headers,
+                "client": ("testclient", 50000),
+                "server": ("testserver", 80),
+            },
+            receive,
+            send,
+        )
+        return response
+
+    session_response = asyncio.run(invoke("POST", "/api/v1/sessions", {"title": "download HTTP"}))
+    assert session_response["status"] == 201
+    session_id = json.loads(session_response["body"])["id"]
+    upload_response = asyncio.run(
+        invoke(
+            "POST",
+            f"/api/v1/sessions/{session_id}/uploads",
+            {
+                "display_name": "clip.mp4",
+                "content_type": "video/mp4",
+                "size_bytes": 4,
+            },
+        )
+    )
+    assert upload_response["status"] == 201
+    request_id = "download-signing-http"
+    media_response = asyncio.run(
+        invoke("GET", f"/api/v1/sessions/{session_id}/media", request_id=request_id)
+    )
+    assert media_response["status"] == 503
+    assert dict(media_response["headers"])[b"x-request-id"] == request_id.encode()
+    assert json.loads(media_response["body"]) == {
+            "error": {
+                "code": "STORAGE_SIGNING_FAILED",
+                "message": "storage could not sign the download",
+                "details": {"operation": "download"},
+                "request_id": request_id,
+            }
+        }
+
+
 def test_invalid_cursor_is_typed_domain_error() -> None:
     from src.platform.services.sessions import decode_cursor
 
@@ -179,16 +310,39 @@ def test_platform_error_codes_have_documented_openapi_responses() -> None:
                 examples = response.get("content", {}).get("application/json", {}).get("examples", {})
                 for code in examples:
                     documented.setdefault(code, set()).add(int(status_code))
+    documented_codes = {
+        code
+        for path_item in openapi["paths"].values()
+        for operation in path_item.values()
+        if isinstance(operation, dict)
+        for response in operation.get("responses", {}).values()
+        for code in response.get("content", {}).get("application/json", {}).get("examples", {})
+    }
+    assert "INVALID_REQUEST" not in documented_codes
     for code, (status_code, _, _) in ERROR_DEFINITIONS.items():
+        if code == "INVALID_REQUEST":
+            continue
         assert code in documented
         assert status_code in documented[code]
 
 
 def test_public_schemas_use_domain_enums_and_sha_patterns() -> None:
     from src.platform.api.app import create_app
+    from src.platform.schemas.upload import UploadComplete
+    from pydantic import ValidationError
 
     schemas = create_app().openapi()["components"]["schemas"]
-    assert schemas["UploadInitiate"]["properties"]["sha256"]["anyOf"][0]["pattern"] == r"^[0-9a-fA-F]{64}$"
+    sha_pattern = r"^[0-9a-fA-F]{64}$"
+    assert schemas["UploadInitiate"]["properties"]["sha256"]["anyOf"][0]["pattern"] == sha_pattern
+    assert schemas["UploadComplete"]["properties"]["sha256"]["anyOf"][0]["pattern"] == sha_pattern
+    for schema_name in ("SessionResponse", "AnalysisRunSummary", "AnalysisRunResponse"):
+        assert (
+            schemas[schema_name]["properties"]["bundle_fingerprint"]["anyOf"][0]["pattern"]
+            == sha_pattern
+        )
+    assert UploadComplete(size_bytes=1, content_type="video/mp4", sha256="a" * 64).sha256
+    with pytest.raises(ValidationError):
+        UploadComplete(size_bytes=1, content_type="video/mp4", sha256="g" * 64)
     assert schemas["UploadCompleteResponse"]["properties"]["status"]["$ref"].endswith("SessionStatus")
     assert schemas["MediaResponse"]["properties"]["content_type"]["$ref"].endswith("VideoContentType")
     assert schemas["MediaResponse"]["properties"]["integrity_status"]["$ref"].endswith("IntegrityStatus")

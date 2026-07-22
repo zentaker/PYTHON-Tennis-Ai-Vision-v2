@@ -89,6 +89,32 @@ def main() -> int:
         "baseUrl", "sessionId", "videoId", "analysisRunId",
         "uploadUrl", "uploadContentType", "uploadSizeBytes", "uploadSha256",
     ]
+    assert all(entry["value"] == "" for entry in collection["variable"])
+    initiate_items = [
+        item
+        for folder in collection["item"]
+        for item in folder["item"]
+        if item.get("_operationId") == "initiateVideoUpload"
+    ]
+    assert len(initiate_items) == 1
+    initiate_script = json.dumps(initiate_items[0].get("event", []))
+    assert "pm.environment.set('videoId'" in initiate_script
+    assert "pm.collectionVariables.set('uploadUrl'" in initiate_script
+    assert "pm.environment.set('uploadUrl'" not in initiate_script
+    complete_items = [
+        item
+        for folder in collection["item"]
+        for item in folder["item"]
+        if item.get("_operationId") == "completeVideoUpload"
+    ]
+    assert len(complete_items) == 1
+    complete_script = json.dumps(complete_items[0].get("event", []))
+    for variable in ("uploadSizeBytes", "uploadContentType", "uploadSha256"):
+        assert f"pm.collectionVariables.get('{variable}')" in complete_script
+        assert f"pm.collectionVariables.unset('{variable}')" in complete_script
+    assert "pm.collectionVariables.unset('uploadUrl')" in complete_script
+    assert "pm.environment.set('uploadUrl'" not in json.dumps(collection)
+    assert '"value": "{{uploadUrl}}"' not in json.dumps(environment)
     print(json.dumps({"operations": len(operations), "openapi_sha256": digest, "status": "ok"}))
     return 0
 

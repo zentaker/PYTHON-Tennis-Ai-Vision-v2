@@ -15,8 +15,10 @@ pytestmark = pytest.mark.integration
 _OBSERVATIONS: list[dict] = []
 
 
-def _record(operation: str, status: int, code: str | None = None, **details) -> None:
-    observation = {"operation": operation, "status": status}
+def _record(operation: str, status: int | None = None, code: str | None = None, **details) -> None:
+    observation = {"operation": operation}
+    if status is not None:
+        observation["status"] = status
     if code:
         observation["error_code"] = code
     observation.update(details)
@@ -104,6 +106,12 @@ def test_complete_session_api_http_lifecycle() -> None:
     upload_url = upload["upload_url"]
     assert urlparse(upload_url).hostname == "localhost"
     assert urlparse(upload_url).hostname != "minio"
+    _record(
+        "PRESIGNED_UPLOAD_URL",
+        host=urlparse(upload_url).hostname,
+        scheme=urlparse(upload_url).scheme,
+        method="PUT",
+    )
 
     preflight = urllib.request.Request(
         upload_url,
@@ -154,10 +162,45 @@ def test_complete_session_api_http_lifecycle() -> None:
 
     status, _, media = _call(base, "GET", f"/api/v1/sessions/{session_id}/media")
     assert status == 200 and urlparse(media["download_url"]).hostname == "localhost"
-    with urllib.request.urlopen(media["download_url"], timeout=10) as response:
+    download_url = media["download_url"]
+    parsed_download = urlparse(download_url)
+    assert parsed_download.hostname == "localhost"
+    assert parsed_download.hostname != "minio"
+    _record(
+        "PRESIGNED_DOWNLOAD_URL",
+        host=parsed_download.hostname,
+        scheme=parsed_download.scheme,
+        method="GET",
+    )
+    download_request = urllib.request.Request(download_url, headers={"Origin": "http://localhost:5173"})
+    with urllib.request.urlopen(download_request, timeout=10) as response:
+        _record(
+            "GET presigned download",
+            response.status,
+            host=parsed_download.hostname,
+            content_type=response.headers.get("Content-Type", "").split(";", 1)[0],
+            content_length=int(response.headers.get("Content-Length", "0")),
+            cors_origin=response.headers.get("Access-Control-Allow-Origin"),
+        )
         assert response.read() == body
         assert response.headers["Content-Type"].split(";", 1)[0] == "video/mp4"
         assert int(response.headers["Content-Length"]) == len(body)
+    head_request = urllib.request.Request(
+        download_url, headers={"Origin": "http://localhost:5173"}, method="HEAD"
+    )
+    try:
+        with urllib.request.urlopen(head_request, timeout=10) as response:
+            _record(
+                "HEAD presigned download",
+                response.status,
+                host=parsed_download.hostname,
+                content_type=response.headers.get("Content-Type", "").split(";", 1)[0],
+                content_length=int(response.headers.get("Content-Length", "0")),
+                cors_origin=response.headers.get("Access-Control-Allow-Origin"),
+            )
+    except urllib.error.HTTPError as exc:
+        if exc.code not in {405, 501}:
+            raise
 
     _assert_error(_call(base, "GET", f"/api/v1/sessions/{uuid4()}"), 404, "SESSION_NOT_FOUND")
     _assert_error(_call(base, "GET", "/api/v1/sessions?cursor=not-a-cursor"), 400, "INVALID_CURSOR")
