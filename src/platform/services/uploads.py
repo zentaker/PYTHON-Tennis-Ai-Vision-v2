@@ -131,15 +131,17 @@ def complete_upload(
     video = get_video(db, session, video_id)
     if not video:
         raise PlatformError(404, "VIDEO_NOT_FOUND", "video not found")
+    if content_type not in MAX_FILENAME_EXTENSIONS:
+        raise PlatformError(422, "UNSUPPORTED_VIDEO_CONTENT_TYPE", "unsupported video content type")
+    if content_type != video.content_type or size_bytes != video.size_bytes:
+        raise PlatformError(
+            409, "UPLOAD_METADATA_MISMATCH", "upload metadata does not match initiation"
+        )
     validate_upload(video.display_name, content_type, size_bytes, settings)
     declared_sha = normalize_sha256(sha256)
     if video.sha256 and declared_sha and video.sha256 != declared_sha:
         raise PlatformError(
             409, "UPLOAD_SHA_MISMATCH", "initiate and complete sha256 values differ"
-        )
-    if content_type != video.content_type or size_bytes != video.size_bytes:
-        raise PlatformError(
-            409, "UPLOAD_METADATA_MISMATCH", "upload metadata does not match initiation"
         )
     if session.status == SessionStatus.UPLOADED.value:
         if video.integrity_status == IntegrityStatus.STORAGE_VERIFIED.value:
