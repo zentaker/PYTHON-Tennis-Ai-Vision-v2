@@ -185,6 +185,7 @@ jobs:
           S3_SECRET_KEY: minioadmin
         run: |
           docker compose -f infrastructure/session-platform/compose.yml up -d postgres minio minio-init
+          docker compose -f infrastructure/session-platform/compose.yml logs --no-color minio-init || true
           docker compose -f infrastructure/session-platform/compose.yml up -d --build api
           for attempt in $(seq 1 60); do
             if curl --fail --silent http://localhost:8000/healthz >/dev/null; then break; fi
