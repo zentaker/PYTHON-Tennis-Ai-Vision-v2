@@ -42,7 +42,8 @@ services:
       - ./minio/cors.xml:/config/cors.xml:ro
     entrypoint: ["/bin/sh", "-c"]
     command: >-
-      "until mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD}; do sleep 2; done
+      "set -ex
+      && until mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD}; do sleep 2; done
       && mc mb --ignore-existing local/$${S3_BUCKET:-tennisai-local}
       && mc cors set local/$${S3_BUCKET:-tennisai-local} /config/cors.xml
       && (mc cors info local/$${S3_BUCKET:-tennisai-local} || mc cors get local/$${S3_BUCKET:-tennisai-local})
