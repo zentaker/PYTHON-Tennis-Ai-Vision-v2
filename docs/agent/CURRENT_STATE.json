@@ -1,14 +1,20 @@
 {
   "schema_version": 1,
-  "branch": "agent/single-rally-analyzer-stage1",
-  "base_sha": "1684b02a42dc15db357fa2b7d8f1af1e99329332",
-  "task": "Import existing Core outputs as a Single Rally Analysis Bundle",
-  "status": "CORE_STAGE1A_SYNTHETIC_IMPORT_ACCEPTED",
+  "branch": "agent/reference-rally-recovery-stage1b",
+  "base_sha": "9eced85162956646d4e2604dc1b6e5f119e317cb",
+  "task": "Publish the first real Single Rally Analysis Bundle candidate",
+  "status": "CORE_STAGE1B_REAL_SINGLE_RALLY_ACCEPTED",
   "stage1a_importer_implementation_gate": "STAGE1A_IMPORTER_IMPLEMENTATION_ACCEPTED",
   "stage1a_court_contract_gate": "STAGE1A_COURT_CONTRACT_CORRECTED",
   "stage1a_human_gate": "CORE_STAGE1A_SYNTHETIC_IMPORT_GATE_PASSED",
   "stage1a_real_evidence_gate": "REAL_SINGLE_RALLY_EVIDENCE_GATE_BLOCKED",
   "stage1a_real_rally_gate": "STAGE1A_REAL_RALLY_GATE_BLOCKED",
+  "stage1b_asset_alignment_gate": "REAL_REFERENCE_ASSET_ALIGNMENT_PASSED",
+  "stage1b_evidence_audit_gate": "STAGE1B_REAL_EVIDENCE_AUDIT_PASSED",
+  "stage1b_data_gate": "REAL_SINGLE_RALLY_DATA_GATE_PASSED",
+  "stage1b_fixture_safety_gate": "STAGE1B_FIXTURE_PUBLICATION_SAFETY_PATCH_IMPLEMENTED",
+  "stage1b_release_gate": "STAGE1B_RELEASE_AUDIT_PASSED",
+  "real_single_rally_integration_gate": "REAL_SINGLE_RALLY_INTEGRATION_GATE_PASSED",
   "stage0b_implementation_gate": "STAGE0B_IMPLEMENTATION_ACCEPTED",
   "stage0b_human_gate": "STAGE0B_FINAL_HUMAN_GATE_PASSED",
   "analysis_bundle_v1_gate": "ANALYSIS_BUNDLE_V1_TRANSPORT_CONTRACT_FROZEN",
@@ -19,7 +25,8 @@
     "analytics_p1_wiring": "P1_ANALYTICS_FUNCTIONAL_WIRING_PASSED",
     "product_stage_0a": "MERGED_BASELINE",
     "product_stage_0b": "TRANSPORT_CONTRACT_FROZEN",
-    "product_stage_1a": "READY_FOR_REVIEW"
+    "product_stage_1a": "SYNTHETIC_IMPORT_ACCEPTED",
+    "product_stage_1b": "REAL_SINGLE_RALLY_ACCEPTED"
   },
   "result": {
     "contacts": 5,
@@ -35,6 +42,6 @@
     "gpu_calls": 0,
     "spend_generated": 0
   },
-  "blocker": "REAL_REFERENCE_VIDEO_MISSING_AND_REAL_STAGE3_TRACK_MISSING",
-  "next_action": "Reference asset selection audit on recovery branch before any real import."
+  "blocker": "none",
+  "next_action": "TennisWebAI Stage 0B — integrate the approved real Single Rally bundle."
 }

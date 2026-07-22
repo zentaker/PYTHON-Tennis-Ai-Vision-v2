@@ -1,16 +1,9 @@
 # Current task
 
-Core Stage 1A — Single Rally Contract & Existing-Output Import: synthetic gate
-passed.
+Core Stage 1B — real Single Rally bundle accepted and released.
 
-The read-only importer converts supplied existing events, ball observations and
-2D court calibration into one versioned rally record and an Analysis Bundle V1.
-It does not run inference, tracking, segmentation, models or Web code. The local
-release is a synthetic contract fixture because `REAL_REFERENCE_VIDEO_MISSING` and
-`REAL_STAGE3_BALL_TRACK_MISSING` remain blocked. Court semantics now explicitly
-separate image pixels from court meters, and synthetic calibration is never
-reported as approved.
-
-The importer and contracts were accepted against the synthetic fixture only. No
-real bundle exists; detailed record schemas remain candidates until tested with
-real reference assets.
+The accepted `nivel_a2_01` bundle and all selected assets remain unchanged. Fixture
+publication is restricted to the exact Stage 1B path, uses owned staging and an
+atomic rename with rollback. The evidence, data and release gates passed. Session
+and rally remain `partial`, surface remains `unknown`, and calibration is approved
+2D. No 3D claim or inference was made. The next work is TennisWebAI Stage 0B.

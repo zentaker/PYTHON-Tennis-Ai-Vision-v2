@@ -1,0 +1,99 @@
+{
+  "bundle_fingerprint": "1c0bd683ea349b682be852d02fe7917bea181d8daad42aa97737578d8ceb8009",
+  "capabilities": [
+    "single_rally_import"
+  ],
+  "checksums": {
+    "ball_track.jsonl": "f65d2bd5cf1b080580c54a47fee4d6d67bd0bd411f6cf98f509c1f87259e0818",
+    "court_map.json": "e9179297b83831c7a1a2a98923eddfa2c7ef6fe42370eb541cb3f6ea0e14c28f",
+    "events.jsonl": "894cc0a7a077d8a8993646802d2adbb1123fa8fe33b0b13dd11f97427df9b2e8",
+    "metrics.json": "e84292f39eb584db0da55545d2e54670b2c99089aeb624a387eb8b6060753b19",
+    "rallies.json": "467c3ff0783064716ac83ef616e03328293d85de19e2a03dee13474f50247dbb",
+    "session.json": "d2c0e7a38119d3a9412ed904b114f39cae0adcf4bb75a840a5127b676c299484"
+  },
+  "core_version": "0.1.0",
+  "created_at": "2026-07-21T00:00:00Z",
+  "files": {
+    "ball_track": {
+      "allow_empty_jsonl": false,
+      "consumer": "core_bundle_and_web",
+      "media_type": "application/jsonl",
+      "path": "ball_track.jsonl",
+      "producer": "existing_core_output",
+      "required": true,
+      "schema_version": "ball_track.v1",
+      "size_bytes": 141939
+    },
+    "court_map": {
+      "allow_empty_jsonl": false,
+      "consumer": "core_bundle_and_web",
+      "media_type": "application/json",
+      "path": "court_map.json",
+      "producer": "existing_core_output",
+      "required": true,
+      "schema_version": "court_map.v1",
+      "size_bytes": 702
+    },
+    "events": {
+      "allow_empty_jsonl": false,
+      "consumer": "core_bundle_and_web",
+      "media_type": "application/jsonl",
+      "path": "events.jsonl",
+      "producer": "existing_core_output",
+      "required": true,
+      "schema_version": "events.v1",
+      "size_bytes": 4311
+    },
+    "metrics": {
+      "allow_empty_jsonl": false,
+      "consumer": "core_bundle_and_web",
+      "media_type": "application/json",
+      "path": "metrics.json",
+      "producer": "existing_core_output",
+      "required": true,
+      "schema_version": "metrics.v1",
+      "size_bytes": 472
+    },
+    "rallies": {
+      "allow_empty_jsonl": false,
+      "consumer": "core_bundle_and_web",
+      "media_type": "application/json",
+      "path": "rallies.json",
+      "producer": "existing_core_output",
+      "required": true,
+      "schema_version": "rallies.v1",
+      "size_bytes": 693
+    },
+    "session": {
+      "allow_empty_jsonl": false,
+      "consumer": "core_bundle_and_web",
+      "media_type": "application/json",
+      "path": "session.json",
+      "producer": "existing_core_output",
+      "required": true,
+      "schema_version": "session.v1",
+      "size_bytes": 525
+    }
+  },
+  "limitations": [
+    "imported_existing_stage3_track",
+    "imported_manual_stage4_events",
+    "external_source_video",
+    "surface_metadata_unavailable",
+    "single_rally_import_read_only",
+    "no_inference",
+    "stage0b_packages_existing_outputs_only"
+  ],
+  "processing_profile": "STANDARD",
+  "schema_version": "analysis_bundle.v1",
+  "session_id": "nivel_a2_01",
+  "source_video": {
+    "display_name": "source.mp4",
+    "format": "mp4",
+    "sha256": "e2a05a8eda9be4d821ae1acc60355c7c0403e450ac0febd6bb3c6a62e0aa5774",
+    "size_bytes": 24944366,
+    "storage": "external"
+  },
+  "status": "complete",
+  "surface": "unknown"
+}

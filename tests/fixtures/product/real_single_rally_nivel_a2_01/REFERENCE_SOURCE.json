@@ -1,0 +1,47 @@
+{
+  "asset_alignment_gate": "REAL_REFERENCE_ASSET_ALIGNMENT_PASSED",
+  "assets": {
+    "clip_manifest": {
+      "display_name": "clip_manifest.json",
+      "sha256": "ae2abf16e28dd63c80f4f1b25ac0cf5750372165395d30b4525efdc0afb08a67"
+    },
+    "court_calibration": {
+      "display_name": "homography.json",
+      "sha256": "5ad0c3a78e4c90c8ea11045a400aa207df8afc3692a0a0b783220f453bcbfb54"
+    },
+    "frame_timestamps": {
+      "display_name": "frame_timestamps.json",
+      "sha256": "7e34c1891fe45a8f618c9f044d9559b29350313352536c7e3f8f02e5a9bfcda3"
+    },
+    "stage3_track": {
+      "display_name": "smoothed_trajectory.csv",
+      "sha256": "bdca945805c75f282b59b498b046ce9dac643eba4034e9edb15795f1855172fe"
+    },
+    "stage4_events": {
+      "display_name": "manual_annotation.json",
+      "sha256": "9d7668eef478a85f9d8d1146058c19dafe975466119a271e03f9925ae58a7e8b"
+    },
+    "video": {
+      "display_name": "source.mp4",
+      "sha256": "e2a05a8eda9be4d821ae1acc60355c7c0403e450ac0febd6bb3c6a62e0aa5774"
+    }
+  },
+  "canonical_height": 1536,
+  "canonical_transform": "rotate_90_ccw",
+  "canonical_width": 2746,
+  "coordinate_space_used_by_court": "canonical_analysis_pixels",
+  "coordinate_space_used_by_track": "canonical_analysis_pixels",
+  "coordinate_transform_status": "canonical_transform_verified",
+  "court_layout": "doubles",
+  "duration_seconds": 10.488333,
+  "encoded_height": 2746,
+  "encoded_width": 1536,
+  "fps_nominal": "60/1",
+  "frame_count": 527,
+  "provenance": "existing_local_reference_assets",
+  "rally_id": "rally_001",
+  "rotation_degrees": 90.0,
+  "rotation_source": "ffprobe.side_data_list",
+  "session_id": "nivel_a2_01",
+  "surface": "unknown"
+}

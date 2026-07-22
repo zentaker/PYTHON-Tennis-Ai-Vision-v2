@@ -1,0 +1,26 @@
+{
+  "avg_frame_rate": "10200/203",
+  "canonical_height": 1536,
+  "canonical_transform": "rotate_90_ccw",
+  "canonical_width": 2746,
+  "codec": "hevc",
+  "duration_seconds": 10.488333,
+  "encoded_height": 2746,
+  "encoded_width": 1536,
+  "filename": "source.mp4",
+  "format": "mov,mp4,m4a,3gp,3g2,mj2",
+  "nb_frames": 527,
+  "r_frame_rate": "60/1",
+  "rotation_degrees": 90.0,
+  "rotation_source": "ffprobe.side_data_list",
+  "sha256": "e2a05a8eda9be4d821ae1acc60355c7c0403e450ac0febd6bb3c6a62e0aa5774",
+  "side_data_list": [
+    {
+      "rotation": 90,
+      "side_data_type": "Display Matrix"
+    }
+  ],
+  "size_bytes": 24944366,
+  "start_time": "0.000000",
+  "time_base": "1/600"
+}

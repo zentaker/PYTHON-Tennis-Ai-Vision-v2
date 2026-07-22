@@ -1,0 +1,22 @@
+{
+  "display_name": "frame_timestamps.json",
+  "duplicate_frames": 0,
+  "duration_delta_seconds": -0.016666000000000736,
+  "effective_fps": 59.998800023999564,
+  "expected_frame_count": 527,
+  "first_frame": 0,
+  "first_timestamp_seconds": 0.0,
+  "frame_count": 527,
+  "frame_ids_contiguous": true,
+  "frame_ids_unique": true,
+  "last_frame": 526,
+  "last_timestamp_seconds": 10.471667,
+  "median_frame_interval_seconds": 0.016666999999999987,
+  "missing_frames": [],
+  "negative_timestamps": 0,
+  "p95_frame_interval_seconds": 0.033333999999999975,
+  "schema_version": "1.0",
+  "timestamps_finite": true,
+  "timestamps_non_decreasing": true,
+  "timing_mode": "variable_frame_rate"
+}

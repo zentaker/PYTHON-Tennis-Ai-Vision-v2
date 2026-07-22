@@ -58,6 +58,11 @@ jobs:
           test "$(jq -r '.fingerprints_identical' .artifacts/stage1a-single-rally-import/import-report.json)" = "true"
           uv run pytest tests/test_single_rally.py
 
+      - name: Stage 1B real single-rally candidate fixture
+        run: |
+          uv run tennisai rally validate --bundle tests/fixtures/product/real_single_rally_nivel_a2_01 --json
+          uv run pytest tests/test_real_single_rally.py --junitxml=.artifacts/stage1b-real-single-rally-test-report.xml
+
       - name: Ruff
         run: uv run ruff check .
 
@@ -98,6 +103,34 @@ jobs:
             .artifacts/stage1a-single-rally-import/metrics.json
             .artifacts/stage1a-single-rally-import/import-report.json
             .artifacts/stage1a-single-rally-import/validation-report.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+
+      - name: Publish Stage 1B real single-rally candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage1b-real-single-rally-candidate
+          path: |
+            tests/fixtures/product/real_single_rally_nivel_a2_01/manifest.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/session.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/rallies.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/events.jsonl
+            tests/fixtures/product/real_single_rally_nivel_a2_01/ball_track.jsonl
+            tests/fixtures/product/real_single_rally_nivel_a2_01/court_map.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/metrics.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/REFERENCE_SOURCE.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/alignment-report.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/video-metadata.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/timestamp-audit.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/track-audit.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/event-track-alignment.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/calibration-audit.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/asset-hashes.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/validation-report.json
+            tests/fixtures/product/real_single_rally_nivel_a2_01/track-court-preview.svg
+            tests/fixtures/product/real_single_rally_nivel_a2_01/event-timeline.svg
+            .artifacts/stage1b-real-single-rally-test-report.xml
           if-no-files-found: error
           retention-days: 30
           compression-level: 6
