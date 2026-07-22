@@ -162,7 +162,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
 
 async def request_logging_middleware(request: Request, call_next):
     incoming = request.headers.get("X-Request-ID", "")
-    request_id = incoming if len(incoming) <= 128 and incoming.isprintable() else str(uuid4())
+    request_id = incoming if incoming and len(incoming) <= 128 and incoming.isprintable() else str(uuid4())
     request.state.request_id = request_id
     started = time.perf_counter()
     response = None
