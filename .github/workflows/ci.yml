@@ -227,7 +227,7 @@ jobs:
           curl --fail --silent http://localhost:8000/api/v1/openapi.json >/dev/null
           docker compose -f infrastructure/session-platform/compose.yml run --rm --no-deps \
             --entrypoint /bin/sh minio-init -c \
-            'mc alias set local http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" >/dev/null && (mc cors info "local/$S3_BUCKET" || mc cors get "local/$S3_BUCKET" || mc admin config get local api) && mc anonymous get "local/$S3_BUCKET"' \
+            'mc alias set local http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" >/dev/null && (mc cors info "local/$S3_BUCKET" || mc cors get "local/$S3_BUCKET" || true) && mc admin config get local api && mc anonymous get "local/$S3_BUCKET"' \
             > .artifacts/stage2a-session-platform/cors-policy-output.txt
           uv run --extra platform python scripts/export_session_platform_runtime_evidence.py \
             --integration-xml .artifacts/stage2a-session-platform/integration-test-report.xml \

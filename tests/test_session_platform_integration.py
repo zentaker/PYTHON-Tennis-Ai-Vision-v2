@@ -122,8 +122,16 @@ def test_complete_session_api_http_lifecycle() -> None:
             "OPTIONS presigned upload",
             response.status,
             cors_origin=cors_headers.get("access-control-allow-origin"),
-            allow_methods=cors_headers.get("access-control-allow-methods", "").split(", "),
-            allow_headers=cors_headers.get("access-control-allow-headers", "").split(", "),
+            allow_methods=[
+                value.strip()
+                for value in cors_headers.get("access-control-allow-methods", "").split(",")
+                if value.strip()
+            ],
+            allow_headers=[
+                value.strip()
+                for value in cors_headers.get("access-control-allow-headers", "").split(",")
+                if value.strip()
+            ],
         )
 
     assert _upload(upload_url, body, "video/mp4")[0] == 200
