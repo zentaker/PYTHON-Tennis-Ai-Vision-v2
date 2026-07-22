@@ -41,19 +41,19 @@ services:
     volumes:
       - ./minio/cors.xml:/config/cors.xml:ro
     entrypoint: ["/bin/sh", "-c"]
-    command: >-
-      "set -ex
-      && until mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD}; do sleep 2; done
-      && mc mb --ignore-existing local/$${S3_BUCKET:-tennisai-local}
-      && if mc cors set local/$${S3_BUCKET:-tennisai-local} /config/cors.xml; then
-           echo cors_mode=bucket_policy
-           mc cors get local/$${S3_BUCKET:-tennisai-local}
-         else
-           echo cors_mode=global_api_local_development
-           mc admin config set local api cors_allow_origin=http://localhost:5173
-           mc admin config get local api
-         fi
-      && mc anonymous get local/$${S3_BUCKET:-tennisai-local}"
+    command: |
+      set -ex
+      until mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD}; do sleep 2; done
+      mc mb --ignore-existing local/$${S3_BUCKET:-tennisai-local}
+      if mc cors set local/$${S3_BUCKET:-tennisai-local} /config/cors.xml; then
+        echo cors_mode=bucket_policy
+        mc cors get local/$${S3_BUCKET:-tennisai-local}
+      else
+        echo cors_mode=global_api_local_development
+        mc admin config set local api cors_allow_origin=http://localhost:5173
+        mc admin config get local api
+      fi
+      mc anonymous get local/$${S3_BUCKET:-tennisai-local}
 
   api:
     build:
