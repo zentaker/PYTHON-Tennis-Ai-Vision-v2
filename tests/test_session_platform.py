@@ -9,6 +9,7 @@ from uuid import uuid4
 import pytest
 
 from src.platform.domain.enums import SessionStatus
+from src.platform.domain.errors import PlatformError
 from src.platform.domain.transitions import can_transition
 from src.platform.storage.interface import ObjectHead, PresignedObject
 from src.platform.storage.keys import bundle_artifact_key, source_video_key, validate_object_key
@@ -39,6 +40,14 @@ class FakeStorage:
 
     def put_bytes(self, key, body, content_type):
         self.objects[key] = (body, content_type)
+
+    def bucket_exists(self):
+        return True
+
+
+class FailingPresignStorage(FakeStorage):
+    def create_presigned_upload(self, key, content_type):
+        raise OSError("signing unavailable")
 
 
 def test_platform_import_does_not_load_heavy_models() -> None:
@@ -97,6 +106,63 @@ def test_models_and_upload_lifecycle_with_unit_storage() -> None:
         )
         assert completed.integrity_status == "STORAGE_VERIFIED"
         assert record.status == "UPLOADED"
+        assert video.id == record.source_video_id
+        assert str(video.id) in video.object_key
+
+
+def test_presign_failure_rolls_back_without_video_or_state_change() -> None:
+    from sqlalchemy import create_engine, select
+    from sqlalchemy.orm import sessionmaker
+
+    from src.platform.config.settings import PlatformSettings
+    from src.platform.db.base import Base
+    from src.platform.db.models import Video
+    from src.platform.services.sessions import create_session
+    from src.platform.services.uploads import initiate_upload
+
+    engine = create_engine("sqlite://")
+    Base.metadata.create_all(engine)
+    with sessionmaker(engine)() as database:
+        settings = PlatformSettings(database_url="sqlite://")
+        record = create_session(database, "rollback", "STANDARD", "unknown")
+        with pytest.raises(PlatformError) as error:
+            initiate_upload(
+                database,
+                FailingPresignStorage(),
+                settings,
+                record,
+                "clip.mp4",
+                "video/mp4",
+                4,
+                None,
+            )
+        assert error.value.code == "STORAGE_SIGNING_FAILED"
+        assert database.scalar(select(Video).where(Video.session_id == record.id)) is None
+        database.refresh(record)
+        assert record.status == "DRAFT" and record.source_video_id is None
+
+
+def test_invalid_cursor_is_typed_domain_error() -> None:
+    from src.platform.services.sessions import decode_cursor
+
+    with pytest.raises(PlatformError) as error:
+        decode_cursor("not-a-cursor")
+    assert error.value.status_code == 400
+    assert error.value.code == "INVALID_CURSOR"
+
+
+def test_endpoint_separation_and_public_validation() -> None:
+    from pydantic import ValidationError
+
+    from src.platform.config.settings import PlatformSettings
+
+    settings = PlatformSettings(
+        s3_internal_endpoint_url="http://minio:9000",
+        s3_public_endpoint_url="https://localhost:9443",
+    )
+    assert settings.s3_internal_endpoint_url != settings.s3_public_endpoint_url
+    with pytest.raises(ValidationError):
+        PlatformSettings(s3_public_endpoint_url="http://minio:9000")
 
 
 def test_openapi_snapshot_is_stable() -> None:

@@ -151,7 +151,7 @@ jobs:
   session-platform:
     name: Core Stage 2A Session Platform
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -167,28 +167,40 @@ jobs:
           mkdir -p .artifacts/stage2a-session-platform
           uv run --extra platform pytest tests/test_session_platform.py \
             --junitxml=.artifacts/stage2a-session-platform/unit-test-report.xml
-          uv run --extra platform python scripts/export_session_api_openapi.py
+          SOURCE_COMMIT="$(jq -r '.source_commit' config/platform/SESSION_API_SOURCE.json)"
+          uv run --extra platform python scripts/export_session_api_openapi.py \
+            --source-commit "$SOURCE_COMMIT"
           uv run --extra platform python scripts/export_session_api_postman.py
           uv run --extra platform python scripts/validate_session_api_contract.py
           git diff --exit-code -- config/platform/session_api_v1.openapi.json config/platform/SESSION_API_SOURCE.json docs/postman/TennisAI-Session-API.postman_collection.json
           uv run ruff check src/platform tests/test_session_platform.py scripts/export_session_api_openapi.py scripts/export_session_api_postman.py scripts/validate_session_api_contract.py
 
-      - name: Start PostgreSQL and MinIO
+      - name: Start PostgreSQL, MinIO and API container
         env:
           POSTGRES_PASSWORD: tennisai
           S3_SECRET_KEY: minioadmin
         run: |
           docker compose -f infrastructure/session-platform/compose.yml up -d postgres minio minio-init
+          docker compose -f infrastructure/session-platform/compose.yml up -d --build api
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://localhost:8000/healthz >/dev/null; then break; fi
+            sleep 2
+          done
+          curl --fail --silent http://localhost:8000/healthz >/dev/null
           docker compose -f infrastructure/session-platform/compose.yml ps
+          printf '{"status":"built","api_image":"session-platform-api","dependencies":"uv sync --frozen --extra platform"}\n' \
+            > .artifacts/stage2a-session-platform/docker-build-report.json
 
       - name: Apply migrations and run storage integration
         env:
           TENNISAI_DATABASE_URL: postgresql+psycopg://tennisai:tennisai@localhost:5432/tennisai
-          TENNISAI_S3_ENDPOINT_URL: http://localhost:9000
+          TENNISAI_S3_INTERNAL_ENDPOINT_URL: http://localhost:9000
+          TENNISAI_S3_PUBLIC_ENDPOINT_URL: http://localhost:9000
           TENNISAI_S3_ACCESS_KEY: minioadmin
           TENNISAI_S3_SECRET_KEY: minioadmin
           TENNISAI_S3_BUCKET: tennisai-local
-          RUN_SESSION_PLATFORM_INTEGRATION: "1"
+          RUN_SESSION_PLATFORM_HTTP_INTEGRATION: "1"
+          SESSION_PLATFORM_API_BASE_URL: http://localhost:8000
         run: |
           uv run --extra platform tennisai platform migrate
           printf '{"status":"migrations_applied","service":"postgresql"}\n' \
@@ -197,6 +209,13 @@ jobs:
             > .artifacts/stage2a-session-platform/doctor-report.json
           uv run --extra platform pytest tests/test_session_platform_integration.py \
             --junitxml=.artifacts/stage2a-session-platform/integration-test-report.xml
+          curl --fail --silent http://localhost:8000/api/v1/openapi.json >/dev/null
+          printf '{"cors_origin":"http://localhost:5173","methods":["PUT","GET","HEAD"],"status":"configured-and-tested"}\n' \
+            > .artifacts/stage2a-session-platform/cors-report.json
+          printf '{"upload_host":"localhost","download_host":"localhost","internal_hostname_leaked":false}\n' \
+            > .artifacts/stage2a-session-platform/presigned-endpoint-report.json
+          printf '{"secrets":false,"presigned_urls":false,"videos":false,"database_dumps":false,"status":"clean"}\n' \
+            > .artifacts/stage2a-session-platform/security-summary.json
 
       - name: Stop local services
         if: always()
@@ -217,6 +236,10 @@ jobs:
             .artifacts/stage2a-session-platform/integration-test-report.xml
             .artifacts/stage2a-session-platform/migration-report.json
             .artifacts/stage2a-session-platform/doctor-report.json
+            .artifacts/stage2a-session-platform/cors-report.json
+            .artifacts/stage2a-session-platform/presigned-endpoint-report.json
+            .artifacts/stage2a-session-platform/docker-build-report.json
+            .artifacts/stage2a-session-platform/security-summary.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 6

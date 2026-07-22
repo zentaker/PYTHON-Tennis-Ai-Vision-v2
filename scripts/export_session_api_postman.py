@@ -81,7 +81,11 @@ def _item(path: str, method: str, operation: dict[str, Any]) -> dict:
     body = _body(operation)
     if body:
         request["body"] = body
-    return {
+    captures = {
+        "createSession": "pm.environment.set('sessionId', pm.response.json().id);",
+        "initiateVideoUpload": "pm.environment.set('videoId', pm.response.json().video_id);",
+    }
+    item = {
         "name": operation.get("summary") or operation["operationId"],
         "request": request,
         "response": [],
@@ -90,6 +94,17 @@ def _item(path: str, method: str, operation: dict[str, Any]) -> dict:
         "_openapiPath": path,
         "_openapiMethod": method.upper(),
     }
+    if operation["operationId"] in captures:
+        item["event"] = [
+            {
+                "listen": "test",
+                "script": {
+                    "type": "text/javascript",
+                    "exec": [captures[operation["operationId"]]],
+                },
+            }
+        ]
+    return item
 
 
 def collection_from_openapi(openapi: dict[str, Any], digest: str) -> dict[str, Any]:

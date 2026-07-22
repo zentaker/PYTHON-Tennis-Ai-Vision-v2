@@ -6,6 +6,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import subprocess
 from pathlib import Path
 
 from scripts.export_session_api_postman import collection_from_openapi
@@ -36,6 +37,25 @@ def main() -> int:
     assert len(operation_ids) == len(set(operation_ids)), "operation IDs must be unique"
     assert all(path == "/healthz" or path.startswith("/api/v1/") for path, _, _ in operations)
     digest = hashlib.sha256(OPENAPI.read_bytes()).hexdigest()
+    source = json.loads(
+        (ROOT / "config/platform/SESSION_API_SOURCE.json").read_text(encoding="utf-8")
+    )
+    source_commit = source.get("source_commit", "")
+    assert re.fullmatch(r"[0-9a-f]{40}", source_commit)
+    assert source.get("source_commit_is_ancestor_of_head") is True
+    assert (
+        subprocess.run(
+            ["git", "cat-file", "-e", f"{source_commit}^{{commit}}"], check=False
+        ).returncode
+        == 0
+    )
+    assert (
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"], check=False
+        ).returncode
+        == 0
+    )
+    assert source.get("sha256") == digest
     assert collection == collection_from_openapi(openapi, digest), "Postman is stale"
     collection_operations = [
         (item["_openapiPath"], item["_openapiMethod"])
