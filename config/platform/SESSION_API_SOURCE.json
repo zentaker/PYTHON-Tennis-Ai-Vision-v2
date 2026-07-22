@@ -1,0 +1,33 @@
+{
+  "api_version": "v1",
+  "core_commit": "generated-at-build-time",
+  "endpoints": [
+    "/api/v1/sessions",
+    "/api/v1/sessions/{session_id}",
+    "/api/v1/sessions/{session_id}/analysis-runs",
+    "/api/v1/sessions/{session_id}/artifacts",
+    "/api/v1/sessions/{session_id}/media",
+    "/api/v1/sessions/{session_id}/uploads",
+    "/api/v1/sessions/{session_id}/uploads/{video_id}/complete",
+    "/healthz"
+  ],
+  "gate": "SESSION_PLATFORM_API_V1_CONTRACT_CANDIDATE",
+  "generated_at": "2026-07-22T00:00:00Z",
+  "schemas": [
+    "AnalysisRunResponse",
+    "AnalysisRunSummary",
+    "ArtifactResponse",
+    "HTTPValidationError",
+    "MediaResponse",
+    "SessionCreate",
+    "SessionPage",
+    "SessionResponse",
+    "SessionStatus",
+    "UploadComplete",
+    "UploadInitiate",
+    "UploadResponse",
+    "ValidationError",
+    "VideoSummary"
+  ],
+  "sha256": "0486e53abc94b8ded5352b1ed21f1721856fa5fd05a7859759f4f7238914b6ec"
+}
