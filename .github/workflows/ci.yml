@@ -210,6 +210,9 @@ jobs:
           path: |
             config/platform/session_api_v1.openapi.json
             config/platform/SESSION_API_SOURCE.json
+            docs/postman/TennisAI-Session-API.postman_collection.json
+            docs/postman/TennisAI-Local.postman_environment.json
+            docs/postman/README.md
             .artifacts/stage2a-session-platform/unit-test-report.xml
             .artifacts/stage2a-session-platform/integration-test-report.xml
             .artifacts/stage2a-session-platform/migration-report.json
