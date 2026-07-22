@@ -83,7 +83,14 @@ def _item(path: str, method: str, operation: dict[str, Any]) -> dict:
         request["body"] = body
     captures = {
         "createSession": "pm.environment.set('sessionId', pm.response.json().id);",
-        "initiateVideoUpload": "pm.environment.set('videoId', pm.response.json().video_id);",
+        "initiateVideoUpload": (
+            "const payload = pm.response.json();\n"
+            "pm.environment.set('videoId', payload.video_id);\n"
+            "pm.environment.set('uploadUrl', payload.upload_url);\n"
+            "pm.environment.set('uploadContentType', payload.required_headers['Content-Type']);\n"
+            "pm.environment.set('uploadSizeBytes', pm.request.body.raw ? JSON.parse(pm.request.body.raw).size_bytes : '');\n"
+            "pm.environment.set('uploadSha256', pm.request.body.raw ? (JSON.parse(pm.request.body.raw).sha256 || '') : '');"
+        ),
     }
     item = {
         "name": operation.get("summary") or operation["operationId"],
@@ -107,6 +114,25 @@ def _item(path: str, method: str, operation: dict[str, Any]) -> dict:
     return item
 
 
+def _presigned_upload_item() -> dict[str, Any]:
+    return {
+        "name": "Upload bytes to presigned URL",
+        "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "{{uploadContentType}}"}],
+            "body": {"mode": "file", "file": {"src": ""}},
+            "url": {"raw": "{{uploadUrl}}"},
+            "description": (
+                "Generated workflow step. Select the local source file in Postman; "
+                "the collection intentionally contains no video bytes."
+            ),
+        },
+        "response": [],
+        "protocolProfileBehavior": {},
+        "_generatedWorkflow": "presignedUpload",
+    }
+
+
 def collection_from_openapi(openapi: dict[str, Any], digest: str) -> dict[str, Any]:
     folders: dict[str, list[dict]] = {}
     for path in sorted(openapi.get("paths", {})):
@@ -116,6 +142,12 @@ def collection_from_openapi(openapi: dict[str, Any], digest: str) -> dict[str, A
             tag = (operation.get("tags") or ["Session API"])[0]
             folders.setdefault(tag, []).append(_item(path, method, operation))
     items = [{"name": tag, "item": folders[tag]} for tag in sorted(folders)]
+    upload_folder = next((folder for folder in items if folder["name"] == "Uploads"), None)
+    if upload_folder is None:
+        upload_folder = {"name": "Uploads", "item": []}
+        items.append(upload_folder)
+    upload_folder["item"].insert(1, _presigned_upload_item())
+    items.sort(key=lambda folder: folder["name"])
     return {
         "info": {
             "name": "TennisAI Session API",
@@ -127,6 +159,10 @@ def collection_from_openapi(openapi: dict[str, Any], digest: str) -> dict[str, A
             {"key": "sessionId", "value": "{{sessionId}}"},
             {"key": "videoId", "value": "{{videoId}}"},
             {"key": "analysisRunId", "value": "{{analysisRunId}}"},
+            {"key": "uploadUrl", "value": "{{uploadUrl}}"},
+            {"key": "uploadContentType", "value": "{{uploadContentType}}"},
+            {"key": "uploadSizeBytes", "value": "{{uploadSizeBytes}}"},
+            {"key": "uploadSha256", "value": "{{uploadSha256}}"},
         ],
         "item": items,
         "x-openapi-sha256": digest,

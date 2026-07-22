@@ -6,6 +6,7 @@
           "bundle_fingerprint": {
             "anyOf": [
               {
+                "pattern": "^[0-9a-fA-F]+$",
                 "type": "string"
               },
               {
@@ -99,6 +100,7 @@
           "bundle_fingerprint": {
             "anyOf": [
               {
+                "pattern": "^[0-9a-fA-F]+$",
                 "type": "string"
               },
               {
@@ -116,8 +118,7 @@
             "$ref": "#/components/schemas/ProcessingProfile"
           },
           "status": {
-            "title": "Status",
-            "type": "string"
+            "$ref": "#/components/schemas/AnalysisRunStatus"
           }
         },
         "required": [
@@ -127,6 +128,24 @@
         ],
         "title": "AnalysisRunSummary",
         "type": "object"
+      },
+      "ArtifactKind": {
+        "enum": [
+          "SOURCE_VIDEO",
+          "ANALYSIS_BUNDLE",
+          "MANIFEST",
+          "SESSION",
+          "RALLIES",
+          "EVENTS",
+          "BALL_TRACK",
+          "COURT_MAP",
+          "METRICS",
+          "CLIP",
+          "THUMBNAIL",
+          "REPORT"
+        ],
+        "title": "ArtifactKind",
+        "type": "string"
       },
       "ArtifactResponse": {
         "properties": {
@@ -146,14 +165,15 @@
             "type": "string"
           },
           "kind": {
-            "title": "Kind",
-            "type": "string"
+            "$ref": "#/components/schemas/ArtifactKind"
           },
           "media_type": {
+            "minLength": 1,
             "title": "Media Type",
             "type": "string"
           },
           "object_key": {
+            "minLength": 1,
             "title": "Object Key",
             "type": "string"
           },
@@ -169,10 +189,12 @@
             "title": "Schema Version"
           },
           "sha256": {
+            "pattern": "^[0-9a-fA-F]{64}$",
             "title": "Sha256",
             "type": "string"
           },
           "size_bytes": {
+            "exclusiveMinimum": 0.0,
             "title": "Size Bytes",
             "type": "integer"
           }
@@ -252,8 +274,7 @@
       "MediaResponse": {
         "properties": {
           "content_type": {
-            "title": "Content Type",
-            "type": "string"
+            "$ref": "#/components/schemas/VideoContentType"
           },
           "download_url": {
             "title": "Download Url",
@@ -265,12 +286,12 @@
             "type": "string"
           },
           "integrity_status": {
-            "title": "Integrity Status",
-            "type": "string"
+            "$ref": "#/components/schemas/IntegrityStatus"
           },
           "sha256": {
             "anyOf": [
               {
+                "pattern": "^[0-9a-fA-F]{64}$",
                 "type": "string"
               },
               {
@@ -289,7 +310,6 @@
           "expires_at",
           "content_type",
           "size_bytes",
-          "sha256",
           "integrity_status"
         ],
         "title": "MediaResponse",
@@ -359,6 +379,7 @@
           "bundle_fingerprint": {
             "anyOf": [
               {
+                "pattern": "^[0-9a-fA-F]+$",
                 "type": "string"
               },
               {
@@ -491,8 +512,7 @@
             "$ref": "#/components/schemas/IntegrityStatus"
           },
           "status": {
-            "title": "Status",
-            "type": "string"
+            "$ref": "#/components/schemas/SessionStatus"
           },
           "video_id": {
             "format": "uuid",
@@ -522,8 +542,7 @@
           "sha256": {
             "anyOf": [
               {
-                "maxLength": 64,
-                "minLength": 64,
+                "pattern": "^[0-9a-fA-F]{64}$",
                 "type": "string"
               },
               {
@@ -612,12 +631,12 @@
             "type": "string"
           },
           "integrity_status": {
-            "title": "Integrity Status",
-            "type": "string"
+            "$ref": "#/components/schemas/IntegrityStatus"
           },
           "sha256": {
             "anyOf": [
               {
+                "pattern": "^[0-9a-fA-F]{64}$",
                 "type": "string"
               },
               {
@@ -636,7 +655,6 @@
           "display_name",
           "content_type",
           "size_bytes",
-          "sha256",
           "integrity_status"
         ],
         "title": "VideoSummary",
@@ -729,42 +747,59 @@
           "400": {
             "content": {
               "application/json": {
+                "examples": {
+                  "INVALID_CURSOR": {
+                    "summary": "INVALID_CURSOR",
+                    "value": {
+                      "error": {
+                        "code": "INVALID_CURSOR",
+                        "details": {},
+                        "message": "cursor is invalid",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "INVALID_REQUEST": {
+                    "summary": "INVALID_REQUEST",
+                    "value": {
+                      "error": {
+                        "code": "INVALID_REQUEST",
+                        "details": {},
+                        "message": "request is invalid",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Invalid request"
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Resource not found"
+            "description": "INVALID_CURSOR: The pagination cursor cannot be decoded.; INVALID_REQUEST: The request is syntactically invalid."
           },
           "422": {
             "content": {
               "application/json": {
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Request validation failed"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Internal server error"
+            "description": "VALIDATION_ERROR: One or more request fields failed validation."
           }
         },
         "summary": "List sessions",
@@ -812,42 +847,48 @@
           "400": {
             "content": {
               "application/json": {
+                "examples": {
+                  "INVALID_REQUEST": {
+                    "summary": "INVALID_REQUEST",
+                    "value": {
+                      "error": {
+                        "code": "INVALID_REQUEST",
+                        "details": {},
+                        "message": "request is invalid",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Invalid request"
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Resource not found"
+            "description": "INVALID_REQUEST: The request is syntactically invalid."
           },
           "422": {
             "content": {
               "application/json": {
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Request validation failed"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Internal server error"
+            "description": "VALIDATION_ERROR: One or more request fields failed validation."
           }
         },
         "summary": "Create a session",
@@ -886,45 +927,51 @@
             },
             "description": "Session metadata"
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Invalid request"
-          },
           "404": {
             "content": {
               "application/json": {
+                "examples": {
+                  "SESSION_NOT_FOUND": {
+                    "summary": "SESSION_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "SESSION_NOT_FOUND",
+                        "details": {},
+                        "message": "session not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Resource not found"
+            "description": "SESSION_NOT_FOUND: The requested session does not exist."
           },
           "422": {
             "content": {
               "application/json": {
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Request validation failed"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Internal server error"
+            "description": "VALIDATION_ERROR: One or more request fields failed validation."
           }
         },
         "summary": "Get a session",
@@ -965,45 +1012,51 @@
             },
             "description": "Analysis runs"
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Invalid request"
-          },
           "404": {
             "content": {
               "application/json": {
+                "examples": {
+                  "SESSION_NOT_FOUND": {
+                    "summary": "SESSION_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "SESSION_NOT_FOUND",
+                        "details": {},
+                        "message": "session not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Resource not found"
+            "description": "SESSION_NOT_FOUND: The requested session does not exist."
           },
           "422": {
             "content": {
               "application/json": {
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Request validation failed"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Internal server error"
+            "description": "VALIDATION_ERROR: One or more request fields failed validation."
           }
         },
         "summary": "List analysis runs",
@@ -1044,45 +1097,51 @@
             },
             "description": "Artifacts"
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Invalid request"
-          },
           "404": {
             "content": {
               "application/json": {
+                "examples": {
+                  "SESSION_NOT_FOUND": {
+                    "summary": "SESSION_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "SESSION_NOT_FOUND",
+                        "details": {},
+                        "message": "session not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Resource not found"
+            "description": "SESSION_NOT_FOUND: The requested session does not exist."
           },
           "422": {
             "content": {
               "application/json": {
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Request validation failed"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Internal server error"
+            "description": "VALIDATION_ERROR: One or more request fields failed validation."
           }
         },
         "summary": "List session artifacts",
@@ -1122,45 +1181,85 @@
             },
             "description": "Presigned media URL"
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Invalid request"
-          },
           "404": {
             "content": {
               "application/json": {
+                "examples": {
+                  "SESSION_NOT_FOUND": {
+                    "summary": "SESSION_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "SESSION_NOT_FOUND",
+                        "details": {},
+                        "message": "session not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "VIDEO_NOT_FOUND": {
+                    "summary": "VIDEO_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "VIDEO_NOT_FOUND",
+                        "details": {},
+                        "message": "video not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Resource not found"
+            "description": "SESSION_NOT_FOUND: The requested session does not exist.; VIDEO_NOT_FOUND: The requested video does not exist in the session."
           },
           "422": {
             "content": {
               "application/json": {
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Request validation failed"
+            "description": "VALIDATION_ERROR: One or more request fields failed validation."
           },
-          "500": {
+          "503": {
             "content": {
               "application/json": {
+                "examples": {
+                  "STORAGE_SIGNING_FAILED": {
+                    "summary": "STORAGE_SIGNING_FAILED",
+                    "value": {
+                      "error": {
+                        "code": "STORAGE_SIGNING_FAILED",
+                        "details": {},
+                        "message": "storage could not sign the upload",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Internal server error"
+            "description": "STORAGE_SIGNING_FAILED: Object storage could not create a presigned URL."
           }
         },
         "summary": "Get session media",
@@ -1220,45 +1319,164 @@
             },
             "description": "Presigned upload URL"
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Invalid request"
-          },
           "404": {
             "content": {
               "application/json": {
+                "examples": {
+                  "SESSION_NOT_FOUND": {
+                    "summary": "SESSION_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "SESSION_NOT_FOUND",
+                        "details": {},
+                        "message": "session not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Resource not found"
+            "description": "SESSION_NOT_FOUND: The requested session does not exist."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_SESSION_STATE": {
+                    "summary": "INVALID_SESSION_STATE",
+                    "value": {
+                      "error": {
+                        "code": "INVALID_SESSION_STATE",
+                        "details": {},
+                        "message": "session state does not allow this operation",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "SOURCE_VIDEO_ALREADY_EXISTS": {
+                    "summary": "SOURCE_VIDEO_ALREADY_EXISTS",
+                    "value": {
+                      "error": {
+                        "code": "SOURCE_VIDEO_ALREADY_EXISTS",
+                        "details": {},
+                        "message": "session already has a source video",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "INVALID_SESSION_STATE: The session is not in a state that permits this operation.; SOURCE_VIDEO_ALREADY_EXISTS: A source video has already been initiated for the session."
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VIDEO_SIZE_EXCEEDED": {
+                    "summary": "VIDEO_SIZE_EXCEEDED",
+                    "value": {
+                      "error": {
+                        "code": "VIDEO_SIZE_EXCEEDED",
+                        "details": {},
+                        "message": "video size exceeds configured limit",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "VIDEO_SIZE_EXCEEDED: The requested video exceeds the configured maximum size."
           },
           "422": {
             "content": {
               "application/json": {
+                "examples": {
+                  "INVALID_SHA256": {
+                    "summary": "INVALID_SHA256",
+                    "value": {
+                      "error": {
+                        "code": "INVALID_SHA256",
+                        "details": {},
+                        "message": "sha256 must be 64 hexadecimal characters",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "UNSUPPORTED_VIDEO_CONTENT_TYPE": {
+                    "summary": "UNSUPPORTED_VIDEO_CONTENT_TYPE",
+                    "value": {
+                      "error": {
+                        "code": "UNSUPPORTED_VIDEO_CONTENT_TYPE",
+                        "details": {},
+                        "message": "unsupported video content type",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "VIDEO_EXTENSION_MISMATCH": {
+                    "summary": "VIDEO_EXTENSION_MISMATCH",
+                    "value": {
+                      "error": {
+                        "code": "VIDEO_EXTENSION_MISMATCH",
+                        "details": {},
+                        "message": "filename extension does not match content type",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Request validation failed"
+            "description": "INVALID_SHA256: The SHA-256 value must contain exactly 64 hexadecimal characters.; UNSUPPORTED_VIDEO_CONTENT_TYPE: The video content type is not supported.; VIDEO_EXTENSION_MISMATCH: The filename extension does not match the content type.; VALIDATION_ERROR: One or more request fields failed validation."
           },
-          "500": {
+          "503": {
             "content": {
               "application/json": {
+                "examples": {
+                  "STORAGE_SIGNING_FAILED": {
+                    "summary": "STORAGE_SIGNING_FAILED",
+                    "value": {
+                      "error": {
+                        "code": "STORAGE_SIGNING_FAILED",
+                        "details": {},
+                        "message": "storage could not sign the upload",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Internal server error"
+            "description": "STORAGE_SIGNING_FAILED: Object storage could not create a presigned URL."
           }
         },
         "summary": "Initiate a video upload",
@@ -1327,45 +1545,185 @@
             },
             "description": "Upload verified"
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Invalid request"
-          },
           "404": {
             "content": {
               "application/json": {
+                "examples": {
+                  "SESSION_NOT_FOUND": {
+                    "summary": "SESSION_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "SESSION_NOT_FOUND",
+                        "details": {},
+                        "message": "session not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "STORAGE_OBJECT_MISSING": {
+                    "summary": "STORAGE_OBJECT_MISSING",
+                    "value": {
+                      "error": {
+                        "code": "STORAGE_OBJECT_MISSING",
+                        "details": {},
+                        "message": "storage object is not present",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "VIDEO_NOT_FOUND": {
+                    "summary": "VIDEO_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "VIDEO_NOT_FOUND",
+                        "details": {},
+                        "message": "video not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Resource not found"
+            "description": "SESSION_NOT_FOUND: The requested session does not exist.; VIDEO_NOT_FOUND: The requested video does not exist in the session.; STORAGE_OBJECT_MISSING: The uploaded object is missing from object storage."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_SESSION_STATE": {
+                    "summary": "INVALID_SESSION_STATE",
+                    "value": {
+                      "error": {
+                        "code": "INVALID_SESSION_STATE",
+                        "details": {},
+                        "message": "session state does not allow this operation",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "STORAGE_OBJECT_MISMATCH": {
+                    "summary": "STORAGE_OBJECT_MISMATCH",
+                    "value": {
+                      "error": {
+                        "code": "STORAGE_OBJECT_MISMATCH",
+                        "details": {},
+                        "message": "storage object does not match declared upload",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "UPLOAD_METADATA_MISMATCH": {
+                    "summary": "UPLOAD_METADATA_MISMATCH",
+                    "value": {
+                      "error": {
+                        "code": "UPLOAD_METADATA_MISMATCH",
+                        "details": {},
+                        "message": "upload metadata does not match initiation",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "UPLOAD_SHA_MISMATCH": {
+                    "summary": "UPLOAD_SHA_MISMATCH",
+                    "value": {
+                      "error": {
+                        "code": "UPLOAD_SHA_MISMATCH",
+                        "details": {},
+                        "message": "initiate and complete sha256 values differ",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "INVALID_SESSION_STATE: The session is not in a state that permits this operation.; UPLOAD_METADATA_MISMATCH: Completion metadata differs from the initiated upload.; UPLOAD_SHA_MISMATCH: The SHA-256 declarations do not match.; STORAGE_OBJECT_MISMATCH: Object storage metadata differs from the declared upload."
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VIDEO_SIZE_EXCEEDED": {
+                    "summary": "VIDEO_SIZE_EXCEEDED",
+                    "value": {
+                      "error": {
+                        "code": "VIDEO_SIZE_EXCEEDED",
+                        "details": {},
+                        "message": "video size exceeds configured limit",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "VIDEO_SIZE_EXCEEDED: The requested video exceeds the configured maximum size."
           },
           "422": {
             "content": {
               "application/json": {
+                "examples": {
+                  "INVALID_SHA256": {
+                    "summary": "INVALID_SHA256",
+                    "value": {
+                      "error": {
+                        "code": "INVALID_SHA256",
+                        "details": {},
+                        "message": "sha256 must be 64 hexadecimal characters",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "UNSUPPORTED_VIDEO_CONTENT_TYPE": {
+                    "summary": "UNSUPPORTED_VIDEO_CONTENT_TYPE",
+                    "value": {
+                      "error": {
+                        "code": "UNSUPPORTED_VIDEO_CONTENT_TYPE",
+                        "details": {},
+                        "message": "unsupported video content type",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "VIDEO_EXTENSION_MISMATCH": {
+                    "summary": "VIDEO_EXTENSION_MISMATCH",
+                    "value": {
+                      "error": {
+                        "code": "VIDEO_EXTENSION_MISMATCH",
+                        "details": {},
+                        "message": "filename extension does not match content type",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Request validation failed"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "Internal server error"
+            "description": "INVALID_SHA256: The SHA-256 value must contain exactly 64 hexadecimal characters.; UNSUPPORTED_VIDEO_CONTENT_TYPE: The video content type is not supported.; VIDEO_EXTENSION_MISMATCH: The filename extension does not match the content type.; VALIDATION_ERROR: One or more request fields failed validation."
           }
         },
         "summary": "Complete a video upload",

@@ -61,6 +61,7 @@ def main() -> int:
         (item["_openapiPath"], item["_openapiMethod"])
         for folder in collection["item"]
         for item in folder["item"]
+        if "_openapiPath" in item
     ]
     assert sorted(collection_operations) == sorted((path, method) for path, method, _ in operations)
     environment_keys = [entry["key"] for entry in environment["values"]]
@@ -72,6 +73,22 @@ def main() -> int:
         assert "sqlalchemy" not in source, f"router imports SQLAlchemy: {route.name}"
         assert "boto3" not in source, f"router imports boto3: {route.name}"
         assert "select(" not in source, f"router executes SQL: {route.name}"
+    workflow_items = [
+        item
+        for folder in collection["item"]
+        for item in folder["item"]
+        if item.get("_generatedWorkflow") == "presignedUpload"
+    ]
+    assert len(workflow_items) == 1
+    upload_request = workflow_items[0]["request"]
+    assert upload_request["method"] == "PUT"
+    assert upload_request["url"]["raw"] == "{{uploadUrl}}"
+    assert upload_request["body"]["mode"] == "file"
+    assert upload_request["body"]["file"]["src"] == ""
+    assert [entry["key"] for entry in collection["variable"]] == [
+        "baseUrl", "sessionId", "videoId", "analysisRunId",
+        "uploadUrl", "uploadContentType", "uploadSizeBytes", "uploadSha256",
+    ]
     print(json.dumps({"operations": len(operations), "openapi_sha256": digest, "status": "ok"}))
     return 0
 

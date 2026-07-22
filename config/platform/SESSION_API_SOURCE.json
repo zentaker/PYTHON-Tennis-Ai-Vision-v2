@@ -28,6 +28,7 @@
     "AnalysisRunResponse",
     "AnalysisRunStatus",
     "AnalysisRunSummary",
+    "ArtifactKind",
     "ArtifactResponse",
     "ErrorPayload",
     "ErrorResponse",
@@ -46,7 +47,7 @@
     "VideoContentType",
     "VideoSummary"
   ],
-  "sha256": "547f6e6092791f5231052689074fd57a29d901116a15f8e3307ea9fb24702163",
-  "source_commit": "1d6d497f61b646653ab895a9bdcd2d696948b3ec",
+  "sha256": "589e4fbb043cf249a519e43afc550a9a564a571b8cfd262def89bb7882b30f45",
+  "source_commit": "263b6cc5f15ab13ccf69d77b01aec1d204acb8c8",
   "source_commit_is_ancestor_of_head": true
 }

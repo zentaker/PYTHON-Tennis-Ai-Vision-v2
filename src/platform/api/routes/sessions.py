@@ -66,7 +66,7 @@ def _response(record):
     summary="Create a session",
     description="Create metadata for a new analysis session before uploading its source video.",
     responses={
-        **error_responses("VALIDATION_ERROR"),
+        **error_responses("INVALID_REQUEST", "VALIDATION_ERROR"),
         201: {
             "description": "Session created",
             "content": {"application/json": {"example": {"status": "DRAFT"}}},
@@ -102,7 +102,7 @@ def create(
     summary="List sessions",
     description="List sessions in creation order with an opaque cursor for pagination.",
     responses={
-        **error_responses("INVALID_CURSOR", "VALIDATION_ERROR"),
+        **error_responses("INVALID_CURSOR", "INVALID_REQUEST", "VALIDATION_ERROR"),
         200: {
             "description": "Session page",
             "content": {"application/json": {"example": {"items": [], "next_cursor": None}}},

@@ -165,6 +165,36 @@ def test_endpoint_separation_and_public_validation() -> None:
         PlatformSettings(s3_public_endpoint_url="http://minio:9000")
 
 
+def test_platform_error_codes_have_documented_openapi_responses() -> None:
+    from src.platform.api.app import create_app
+    from src.platform.api.errors import ERROR_DEFINITIONS
+
+    openapi = create_app().openapi()
+    documented: dict[str, set[int]] = {}
+    for path_item in openapi["paths"].values():
+        for operation in path_item.values():
+            if not isinstance(operation, dict):
+                continue
+            for status_code, response in operation.get("responses", {}).items():
+                examples = response.get("content", {}).get("application/json", {}).get("examples", {})
+                for code in examples:
+                    documented.setdefault(code, set()).add(int(status_code))
+    for code, (status_code, _, _) in ERROR_DEFINITIONS.items():
+        assert code in documented
+        assert status_code in documented[code]
+
+
+def test_public_schemas_use_domain_enums_and_sha_patterns() -> None:
+    from src.platform.api.app import create_app
+
+    schemas = create_app().openapi()["components"]["schemas"]
+    assert schemas["UploadInitiate"]["properties"]["sha256"]["anyOf"][0]["pattern"] == r"^[0-9a-fA-F]{64}$"
+    assert schemas["UploadCompleteResponse"]["properties"]["status"]["$ref"].endswith("SessionStatus")
+    assert schemas["MediaResponse"]["properties"]["content_type"]["$ref"].endswith("VideoContentType")
+    assert schemas["MediaResponse"]["properties"]["integrity_status"]["$ref"].endswith("IntegrityStatus")
+    assert schemas["ArtifactResponse"]["properties"]["kind"]["$ref"].endswith("ArtifactKind")
+
+
 def test_openapi_snapshot_is_stable() -> None:
     from scripts.export_session_api_openapi import canonical_openapi
 
