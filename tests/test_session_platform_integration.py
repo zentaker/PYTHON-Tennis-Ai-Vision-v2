@@ -53,7 +53,7 @@ def test_complete_session_api_http_lifecycle() -> None:
         "/api/v1/sessions",
         {"title": "HTTP integration", "processing_profile": "STANDARD", "surface": "unknown"},
     )
-        assert status == 201, upload
+    assert status == 201
     session_id = created["id"]
     assert _call(base, "GET", "/api/v1/sessions")[0] == 200
     assert _call(base, "GET", f"/api/v1/sessions/{session_id}")[1] is not None
@@ -71,7 +71,7 @@ def test_complete_session_api_http_lifecycle() -> None:
             "sha256": sha,
         },
     )
-    assert status == 201
+    assert status == 201, upload
     upload_url = upload["upload_url"]
     assert urlparse(upload_url).hostname == "localhost"
     assert urlparse(upload_url).hostname != "minio"
