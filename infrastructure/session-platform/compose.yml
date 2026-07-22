@@ -52,6 +52,7 @@ services:
            echo cors_mode=global_api_local_development;
            mc admin config set local api cors_allow_origin=http://localhost:5173;
            mc admin config get local api;
+           until mc ready local; do sleep 2; done;
          fi
       mc anonymous get local/$${S3_BUCKET:-tennisai-local}
 
