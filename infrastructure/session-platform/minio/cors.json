@@ -5,7 +5,7 @@
       "AllowedMethods": ["PUT", "GET", "HEAD"],
       "AllowedHeaders": ["Content-Type", "x-amz-*", "origin", "accept"],
       "ExposeHeaders": ["ETag", "Content-Length", "Content-Type"],
-      "MaxAgeSeconds": __MAX_AGE__
+      "MaxAgeSeconds": 3600
     }
   ]
 }
