@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "branch": "agent/reference-rally-recovery-stage1b",
-  "base_sha": "9eced85162956646d4e2604dc1b6e5f119e317cb",
-  "task": "Publish the first real Single Rally Analysis Bundle candidate",
-  "status": "CORE_STAGE1B_REAL_SINGLE_RALLY_ACCEPTED",
+  "branch": "agent/session-platform-stage2a",
+  "base_sha": "ad06b3bc77734c234012fd4990f17383ef0fc029",
+  "task": "Build Core Stage 2A Session Platform foundation",
+  "status": "CORE_STAGE2A_SESSION_PLATFORM_READY_FOR_REVIEW",
   "stage1a_importer_implementation_gate": "STAGE1A_IMPORTER_IMPLEMENTATION_ACCEPTED",
   "stage1a_court_contract_gate": "STAGE1A_COURT_CONTRACT_CORRECTED",
   "stage1a_human_gate": "CORE_STAGE1A_SYNTHETIC_IMPORT_GATE_PASSED",
@@ -42,6 +42,7 @@
     "gpu_calls": 0,
     "spend_generated": 0
   },
-  "blocker": "none",
-  "next_action": "TennisWebAI Stage 0B — integrate the approved real Single Rally bundle."
+  "core_stage2a_gate": "CHATGPT_CORE_STAGE2A_SESSION_PLATFORM_AUDIT",
+  "blocker": "DOCKER_RUNTIME_MISSING",
+  "next_action": "Run PostgreSQL/MinIO integration validation when Docker is available; then review Stage 2A gate."
 }

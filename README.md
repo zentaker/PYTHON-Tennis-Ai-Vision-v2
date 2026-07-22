@@ -36,6 +36,17 @@ Su ejecución real requiere pasar primero el [GPU provider acceptance gate](docs
 
 Roadmap completo: [ROADMAP.md](ROADMAP.md).
 
+## Core Stage 2A — Session Platform
+
+The local Session Platform foundation is implemented as a review candidate. It
+provides a FastAPI Session API V1, PostgreSQL/Alembic metadata, MinIO/S3 object
+storage, presigned browser uploads, and a deterministic OpenAPI contract without
+loading the tracking or inference stack. See
+[docs/platform/STAGE2A_SESSION_PLATFORM.md](docs/platform/STAGE2A_SESSION_PLATFORM.md)
+and [docs/platform/LOCAL_DEVELOPMENT.md](docs/platform/LOCAL_DEVELOPMENT.md).
+
+Install the optional platform dependencies with `uv sync --extra platform`.
+
 ## Setup ligero en macOS
 
 El desarrollo de Stage 4, la documentacion y los tests no requieren tracker, PyTorch ni

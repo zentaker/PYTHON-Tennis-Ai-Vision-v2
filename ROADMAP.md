@@ -8,6 +8,11 @@
 The experimental Stage 5B branch is archived research. The official product path is
 the TennisAI Training Session Analyzer and its versioned Analysis Bundle.
 
+Core Stage 2A Session Platform is implemented as
+`CORE_STAGE2A_SESSION_PLATFORM_READY_FOR_REVIEW`; its review gate is
+`CHATGPT_CORE_STAGE2A_SESSION_PLATFORM_AUDIT`. Docker-backed PostgreSQL/MinIO
+integration remains pending when a Docker runtime is available.
+
 La pasada de datos activa es Nivel A2. Stage 1–4 están cerradas con gates aprobados y la
 la auditoría de cámara Stage 5A terminó con `READY_FOR_STAGE_5B` tras evaluar Stage 5A.1.
 La pasada Madrid R1
@@ -34,6 +39,7 @@ Construir un sistema que, dado un video de broadcast de tenis con camara fija, g
 - [ ] Stage 6 - Vista lateral derivada de distancia,Z. No iniciada.
 - [ ] Stage 7 - Metricas y validacion final. No iniciada.
 - [x] P1 → Analytics - Cinco contactos aceptados producen cinco registros schema-valid.
+- [ ] Core Stage 2A - Session Platform foundation (review candidate; Docker runtime pending).
 
 Stage 0 se considera funcionalmente cerrada. Su cierre documental fue reconciliado
 retrospectivamente despues de confirmar en Git el avance y los gates posteriores.

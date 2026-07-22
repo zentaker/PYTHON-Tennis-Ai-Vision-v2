@@ -90,3 +90,13 @@
   the approved fixture through Stage 0B.
 - The five local asset-dependent tests remain separate debt and are not Stage 1B
   failures.
+
+## Core Stage 2A Session Platform
+
+- Session API V1 candidate, PostgreSQL/Alembic model, MinIO/S3 adapter and local Compose stack implemented.
+- Optional `platform` dependencies are isolated from the Core/tracker extras; `src.platform` import is heavy-model safe.
+- Browser upload completion verifies object HEAD metadata and records `STORAGE_VERIFIED`, never an unearned hash claim.
+- OpenAPI gate: `SESSION_PLATFORM_API_V1_CONTRACT_CANDIDATE`.
+- Stage gate: `CHATGPT_CORE_STAGE2A_SESSION_PLATFORM_AUDIT`.
+- Unit suite passed; Docker runtime unavailable (`DOCKER_RUNTIME_MISSING`), so integration is pending and not claimed.
+- Cloud calls / GPU calls / inference / videos committed / secrets committed / spend: 0 / 0 / 0 / 0 / 0 / 0.
