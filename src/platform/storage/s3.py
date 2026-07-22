@@ -59,7 +59,16 @@ class S3ObjectStorage:
 
     def head_object(self, key: str) -> ObjectHead:
         key = self._key(key)
-        response = self.internal_client.head_object(Bucket=self.settings.s3_bucket, Key=key)
+        try:
+            response = self.internal_client.head_object(Bucket=self.settings.s3_bucket, Key=key)
+        except self.internal_client.exceptions.ClientError as exc:
+            # boto3 surfaces a missing HEAD target as ClientError rather than
+            # KeyError.  Normalize the storage adapter's public behavior so
+            # upload completion can map it to STORAGE_OBJECT_MISSING.
+            error = exc.response.get("Error", {})
+            if error.get("Code") in {"404", "NoSuchKey", "NotFound"}:
+                raise KeyError(key) from exc
+            raise
         return ObjectHead(
             key, int(response["ContentLength"]), response.get("ContentType"), response.get("ETag")
         )

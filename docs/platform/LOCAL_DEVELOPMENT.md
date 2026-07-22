@@ -20,7 +20,7 @@ The API image installs locked dependencies during build with
 verifies the database is at head, and only then `exec`s Uvicorn. The Compose API
 healthcheck probes `GET /healthz`. MinIO images are pinned to
 `minio/minio:RELEASE.2024-01-16T16-07-38Z` and
-`minio/mc:RELEASE.2024-05-24T09-08-49Z`.
+`minio/mc:RELEASE.2024-08-26T10-49-58Z`.
 
 On hosts without Docker, report `DOCKER_RUNTIME_MISSING`. Unit tests and static
 validation remain valid, but PostgreSQL/MinIO integration tests must not be
