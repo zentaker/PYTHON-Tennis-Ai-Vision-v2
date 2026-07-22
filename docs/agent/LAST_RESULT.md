@@ -81,3 +81,12 @@
   `REAL_SINGLE_RALLY_DATA_GATE_PASSED`,
   `STAGE1B_FIXTURE_PUBLICATION_SAFETY_PATCH_IMPLEMENTED`, and
   `REAL_SINGLE_RALLY_MERGE_GATE_PENDING_FINAL_RELEASE_AUDIT`.
+- Stage 1B release accepted: `STAGE1B_RELEASE_AUDIT_PASSED` and
+  `REAL_SINGLE_RALLY_INTEGRATION_GATE_PASSED`. The first bundle derived from
+  real assets is accepted; source video remains external, the track is from the
+  existing Stage 3 output, and events are from existing Stage 4 annotations.
+  Session/rally remain `partial`, surface remains `unknown`, calibration remains
+  approved 2D, and no 3D claim or inference was made. TennisWebAI can consume
+  the approved fixture through Stage 0B.
+- The five local asset-dependent tests remain separate debt and are not Stage 1B
+  failures.
