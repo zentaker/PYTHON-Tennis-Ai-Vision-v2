@@ -9,7 +9,7 @@ from ...schemas.upload import UploadComplete, UploadCompleteResponse, UploadInit
 from ...services.sessions import get_session
 from ...services.uploads import complete_upload, initiate_upload
 from ..dependencies import db, settings, storage
-from ..errors import ERROR_RESPONSES, not_found
+from ..errors import error_responses, not_found
 
 router = APIRouter(prefix="/api/v1/sessions/{session_id}/uploads")
 
@@ -23,7 +23,17 @@ router = APIRouter(prefix="/api/v1/sessions/{session_id}/uploads")
     summary="Initiate a video upload",
     description="Validate source-video metadata and return a short-lived presigned PUT URL.",
     responses={
-        **ERROR_RESPONSES,
+        **error_responses(
+            "SESSION_NOT_FOUND",
+            "INVALID_SESSION_STATE",
+            "SOURCE_VIDEO_ALREADY_EXISTS",
+            "VIDEO_SIZE_EXCEEDED",
+            "INVALID_SHA256",
+            "UNSUPPORTED_VIDEO_CONTENT_TYPE",
+            "VIDEO_EXTENSION_MISMATCH",
+            "STORAGE_SIGNING_FAILED",
+            "VALIDATION_ERROR",
+        ),
         201: {
             "description": "Presigned upload URL",
             "content": {
@@ -82,7 +92,20 @@ def initiate(
     summary="Complete a video upload",
     description="HEAD the object in MinIO/S3 and mark it STORAGE_VERIFIED when metadata matches.",
     responses={
-        **ERROR_RESPONSES,
+        **error_responses(
+            "SESSION_NOT_FOUND",
+            "VIDEO_NOT_FOUND",
+            "STORAGE_OBJECT_MISSING",
+            "INVALID_SESSION_STATE",
+            "UPLOAD_METADATA_MISMATCH",
+            "UPLOAD_SHA_MISMATCH",
+            "STORAGE_OBJECT_MISMATCH",
+            "VIDEO_SIZE_EXCEEDED",
+            "INVALID_SHA256",
+            "UNSUPPORTED_VIDEO_CONTENT_TYPE",
+            "VIDEO_EXTENSION_MISMATCH",
+            "VALIDATION_ERROR",
+        ),
         200: {
             "description": "Upload verified",
             "content": {

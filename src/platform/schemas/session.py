@@ -5,7 +5,10 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..domain.enums import ProcessingProfile, SessionStatus, Surface, VideoContentType
+from ..domain.enums import AnalysisRunStatus, IntegrityStatus, ProcessingProfile, SessionStatus, Surface, VideoContentType
+
+SHA256_PATTERN = r"^[0-9a-fA-F]{64}$"
+FINGERPRINT_PATTERN = r"^[0-9a-fA-F]+$"
 
 
 class VideoSummary(BaseModel):
@@ -13,8 +16,8 @@ class VideoSummary(BaseModel):
     display_name: str
     content_type: VideoContentType
     size_bytes: int
-    sha256: str | None
-    integrity_status: str
+    sha256: str | None = Field(default=None, pattern=SHA256_PATTERN)
+    integrity_status: IntegrityStatus
 
 
 class SessionCreate(BaseModel):
@@ -33,7 +36,7 @@ class SessionResponse(BaseModel):
     surface: Surface
     video: VideoSummary | None = None
     latest_analysis_run: "AnalysisRunSummary | None" = None
-    bundle_fingerprint: str | None = None
+    bundle_fingerprint: str | None = Field(default=None, pattern=FINGERPRINT_PATTERN)
     created_at: datetime
     updated_at: datetime
 
@@ -45,9 +48,9 @@ class SessionPage(BaseModel):
 
 class AnalysisRunSummary(BaseModel):
     id: UUID
-    status: str
+    status: AnalysisRunStatus
     processing_profile: ProcessingProfile
-    bundle_fingerprint: str | None = None
+    bundle_fingerprint: str | None = Field(default=None, pattern=FINGERPRINT_PATTERN)
 
 
 SessionResponse.model_rebuild()

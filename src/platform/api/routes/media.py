@@ -11,7 +11,7 @@ from ...services.media import create_media_download
 from ...services.runs import get_analysis_runs, get_artifacts
 from ...services.sessions import get_session
 from ..dependencies import db, storage
-from ..errors import ERROR_RESPONSES, not_found
+from ..errors import error_responses, not_found
 
 router = APIRouter(prefix="/api/v1/sessions/{session_id}")
 
@@ -24,7 +24,9 @@ router = APIRouter(prefix="/api/v1/sessions/{session_id}")
     summary="Get session media",
     description="Return a short-lived presigned download URL for the session source video.",
     responses={
-        **ERROR_RESPONSES,
+        **error_responses(
+            "SESSION_NOT_FOUND", "VIDEO_NOT_FOUND", "STORAGE_SIGNING_FAILED", "VALIDATION_ERROR"
+        ),
         200: {
             "description": "Presigned media URL",
             "content": {
@@ -61,7 +63,7 @@ def media(session_id: UUID, database: Any = Depends(db), object_storage=Depends(
     summary="List analysis runs",
     description="List analysis-run metadata for a session.",
     responses={
-        **ERROR_RESPONSES,
+        **error_responses("SESSION_NOT_FOUND", "VALIDATION_ERROR"),
         200: {"description": "Analysis runs", "content": {"application/json": {"example": []}}},
     },
 )
@@ -93,7 +95,7 @@ def analysis_runs(session_id: UUID, database: Any = Depends(db)):
     summary="List session artifacts",
     description="List analysis bundle artifacts linked to the session's analysis runs.",
     responses={
-        **ERROR_RESPONSES,
+        **error_responses("SESSION_NOT_FOUND", "VALIDATION_ERROR"),
         200: {"description": "Artifacts", "content": {"application/json": {"example": []}}},
     },
 )

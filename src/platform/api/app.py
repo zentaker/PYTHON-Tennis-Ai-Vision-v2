@@ -47,7 +47,7 @@ def create_app(
         CORSMiddleware,
         allow_origins=settings.cors_origin_list,
         allow_credentials=False,
-        allow_methods=["GET", "POST"],
+        allow_methods=["GET", "POST", "PUT", "HEAD", "OPTIONS"],
         allow_headers=["*"],
     )
     app.state.settings = settings

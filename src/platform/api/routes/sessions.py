@@ -9,7 +9,7 @@ from ...schemas.session import SessionCreate, SessionPage, SessionResponse
 from ...domain.enums import SessionStatus
 from ...services.sessions import create_session, get_session, list_sessions
 from ..dependencies import db
-from ..errors import ERROR_RESPONSES, not_found
+from ..errors import error_responses, not_found
 
 router = APIRouter(prefix="/api/v1/sessions")
 
@@ -66,7 +66,7 @@ def _response(record):
     summary="Create a session",
     description="Create metadata for a new analysis session before uploading its source video.",
     responses={
-        **ERROR_RESPONSES,
+        **error_responses("VALIDATION_ERROR"),
         201: {
             "description": "Session created",
             "content": {"application/json": {"example": {"status": "DRAFT"}}},
@@ -102,7 +102,7 @@ def create(
     summary="List sessions",
     description="List sessions in creation order with an opaque cursor for pagination.",
     responses={
-        **ERROR_RESPONSES,
+        **error_responses("INVALID_CURSOR", "VALIDATION_ERROR"),
         200: {
             "description": "Session page",
             "content": {"application/json": {"example": {"items": [], "next_cursor": None}}},
@@ -128,7 +128,7 @@ def list_all(
     summary="Get a session",
     description="Return session metadata and the source-video summary when available.",
     responses={
-        **ERROR_RESPONSES,
+        **error_responses("SESSION_NOT_FOUND", "VALIDATION_ERROR"),
         200: {
             "description": "Session metadata",
             "content": {"application/json": {"example": {"status": "DRAFT"}}},

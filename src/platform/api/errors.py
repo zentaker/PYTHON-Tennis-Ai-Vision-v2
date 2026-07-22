@@ -15,12 +15,67 @@ from ..domain.errors import PlatformError
 
 logger = logging.getLogger("tennisai.platform.http")
 
-ERROR_RESPONSES = {
-    400: {"model": ErrorResponse, "description": "Invalid request"},
-    404: {"model": ErrorResponse, "description": "Resource not found"},
-    422: {"model": ErrorResponse, "description": "Request validation failed"},
-    500: {"model": ErrorResponse, "description": "Internal server error"},
+ERROR_DEFINITIONS: dict[str, tuple[int, str, str]] = {
+    "INVALID_CURSOR": (400, "cursor is invalid", "The pagination cursor cannot be decoded."),
+    "INVALID_REQUEST": (400, "request is invalid", "The request is syntactically invalid."),
+    "SESSION_NOT_FOUND": (404, "session not found", "The requested session does not exist."),
+    "VIDEO_NOT_FOUND": (404, "video not found", "The requested video does not exist in the session."),
+    "STORAGE_OBJECT_MISSING": (404, "storage object is not present", "The uploaded object is missing from object storage."),
+    "SOURCE_VIDEO_ALREADY_EXISTS": (409, "session already has a source video", "A source video has already been initiated for the session."),
+    "INVALID_SESSION_STATE": (409, "session state does not allow this operation", "The session is not in a state that permits this operation."),
+    "UPLOAD_METADATA_MISMATCH": (409, "upload metadata does not match initiation", "Completion metadata differs from the initiated upload."),
+    "UPLOAD_SHA_MISMATCH": (409, "initiate and complete sha256 values differ", "The SHA-256 declarations do not match."),
+    "STORAGE_OBJECT_MISMATCH": (409, "storage object does not match declared upload", "Object storage metadata differs from the declared upload."),
+    "VIDEO_SIZE_EXCEEDED": (413, "video size exceeds configured limit", "The requested video exceeds the configured maximum size."),
+    "VALIDATION_ERROR": (422, "request validation failed", "One or more request fields failed validation."),
+    "INVALID_SHA256": (422, "sha256 must be 64 hexadecimal characters", "The SHA-256 value must contain exactly 64 hexadecimal characters."),
+    "UNSUPPORTED_VIDEO_CONTENT_TYPE": (422, "unsupported video content type", "The video content type is not supported."),
+    "VIDEO_EXTENSION_MISMATCH": (422, "filename extension does not match content type", "The filename extension does not match the content type."),
+    "STORAGE_SIGNING_FAILED": (503, "storage could not sign the upload", "Object storage could not create a presigned URL."),
 }
+
+
+def error_response(code: str) -> dict:
+    """Build a reusable OpenAPI response for one documented domain error."""
+    status_code, message, description = ERROR_DEFINITIONS[code]
+    return {
+        "status_code": status_code,
+        "model": ErrorResponse,
+        "description": f"{code}: {description}",
+        "content": {
+            "application/json": {
+                "examples": {
+                    code: {
+                        "summary": code,
+                        "value": {
+                            "error": {
+                                "code": code,
+                                "message": message,
+                                "details": {},
+                                "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310",
+                            }
+                        },
+                    }
+                }
+            }
+        },
+    }
+
+
+def error_responses(*codes: str) -> dict[int, dict]:
+    """Return status-keyed responses while preserving each code as an example."""
+    grouped: dict[int, dict] = {}
+    for code in codes:
+        response = error_response(code)
+        status_code = response.pop("status_code")
+        existing = grouped.get(status_code)
+        if existing is None:
+            grouped[status_code] = response
+            continue
+        existing["description"] += f"; {response['description']}"
+        examples = response["content"]["application/json"]["examples"]
+        existing["content"]["application/json"]["examples"].update(examples)
+    return grouped
 
 
 def not_found(message: str = "not found") -> PlatformError:
