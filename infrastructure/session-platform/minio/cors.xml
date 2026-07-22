@@ -4,10 +4,7 @@
     <AllowedMethod>PUT</AllowedMethod>
     <AllowedMethod>GET</AllowedMethod>
     <AllowedMethod>HEAD</AllowedMethod>
-    <AllowedHeader>Content-Type</AllowedHeader>
-    <AllowedHeader>x-amz-*</AllowedHeader>
-    <AllowedHeader>origin</AllowedHeader>
-    <AllowedHeader>accept</AllowedHeader>
+    <AllowedHeader>*</AllowedHeader>
     <ExposeHeader>ETag</ExposeHeader>
     <ExposeHeader>Content-Length</ExposeHeader>
     <ExposeHeader>Content-Type</ExposeHeader>
