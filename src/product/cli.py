@@ -61,12 +61,22 @@ def _build_parser() -> argparse.ArgumentParser:
     rally_validate = rally_sub.add_parser("validate")
     rally_validate.add_argument("--bundle", type=Path, required=True)
     rally_validate.add_argument("--json", action="store_true")
+    platform = sub.add_parser("platform", help="local Session Platform commands")
+    platform_sub = platform.add_subparsers(dest="platform_command", required=True)
+    platform_sub.add_parser("migrate")
+    platform_sub.add_parser("doctor")
+    platform_sub.add_parser("seed-stage1b-reference")
+    api = platform_sub.add_parser("api")
+    api.add_argument("--host")
+    api.add_argument("--port", type=int)
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     try:
+        if args.command == "platform":
+            return _platform_main(args)
         if args.command == "profile":
             result = resolve_profile(args.name)
         elif args.command == "rally":
@@ -116,6 +126,37 @@ def main(argv: list[str] | None = None) -> int:
     except BundleBuildError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 4
+
+
+def _platform_main(args) -> int:
+    """Lazy platform entrypoint so core CLI imports remain infrastructure-free."""
+    if args.platform_command == "api":
+        import uvicorn
+
+        from src.platform.api.app import create_app
+        from src.platform.config.settings import get_settings
+
+        settings = get_settings()
+        uvicorn.run(
+            create_app(), host=args.host or settings.api_host, port=args.port or settings.api_port
+        )
+        return 0
+    if args.platform_command == "migrate":
+        import subprocess
+
+        completed = subprocess.run(["alembic", "upgrade", "head"], check=False)
+        return completed.returncode
+    if args.platform_command == "doctor":
+        from src.platform.services.doctor import doctor
+
+        print(json.dumps(doctor(), sort_keys=True))
+        return 0
+    if args.platform_command == "seed-stage1b-reference":
+        from src.platform.services.seed import seed_stage1b_reference
+
+        print(json.dumps(seed_stage1b_reference(), sort_keys=True))
+        return 0
+    raise ValueError(f"unknown platform command: {args.platform_command}")
 
 
 def _human(result: dict, args) -> str:
