@@ -90,6 +90,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 6
+          include-hidden-files: true
 
       - name: Publish Stage 1A single-rally import fixture
         uses: actions/upload-artifact@v4
