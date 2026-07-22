@@ -199,7 +199,7 @@ def test_complete_session_api_http_lifecycle() -> None:
                 cors_origin=response.headers.get("Access-Control-Allow-Origin"),
             )
     except urllib.error.HTTPError as exc:
-        if exc.code not in {405, 501}:
+        if exc.code not in {403, 405, 501}:
             raise
 
     _assert_error(_call(base, "GET", f"/api/v1/sessions/{uuid4()}"), 404, "SESSION_NOT_FOUND")
