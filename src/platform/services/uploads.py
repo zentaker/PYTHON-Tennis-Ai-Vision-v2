@@ -95,6 +95,15 @@ def initiate_upload(
         integrity_status=IntegrityStatus.CLIENT_DECLARED.value,
     )
     db.add(video)
+    try:
+        # Materialize the video row before assigning the session pointer so the
+        # non-deferrable foreign key remains valid within this one transaction.
+        db.flush()
+    except IntegrityError as exc:
+        db.rollback()
+        raise PlatformError(
+            409, "SOURCE_VIDEO_ALREADY_EXISTS", "session already has a source video"
+        ) from exc
     if session.status == SessionStatus.DRAFT.value:
         transition_session(db, session, SessionStatus.AWAITING_UPLOAD, commit=False)
     transition_session(db, session, SessionStatus.UPLOADING, commit=False)
