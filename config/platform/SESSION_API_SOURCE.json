@@ -47,7 +47,7 @@
     "VideoContentType",
     "VideoSummary"
   ],
-  "sha256": "589e4fbb043cf249a519e43afc550a9a564a571b8cfd262def89bb7882b30f45",
-  "source_commit": "263b6cc5f15ab13ccf69d77b01aec1d204acb8c8",
+  "sha256": "1747670500014598e6d18f5130e8c7f341323f4fe15f96559d9c5da0550f346b",
+  "source_commit": "d599e468f618d798916432b0f68ddb527969c80a",
   "source_commit_is_ancestor_of_head": true
 }

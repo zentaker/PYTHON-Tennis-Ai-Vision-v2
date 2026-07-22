@@ -10,11 +10,11 @@ uv run --extra platform python scripts/export_session_api_postman.py
 ```
 
 Import the collection and `TennisAI-Local.postman_environment.json` into
-Postman. The environment intentionally contains only `baseUrl`, `sessionId`,
-`videoId`, and `analysisRunId`; it contains no credentials or secrets. The
-collection variables `uploadUrl`, `uploadContentType`, `uploadSizeBytes`, and
-`uploadSha256` are populated by the initiate request and are not environment
-secrets.
+Postman. The environment intentionally contains exactly `baseUrl`, `sessionId`,
+`videoId`, and `analysisRunId`; it contains no credentials, secrets, or
+presigned URLs. The collection-only variables `uploadUrl`,
+`uploadContentType`, `uploadSizeBytes`, and `uploadSha256` start empty, are
+populated by the initiate request, and are never copied to the environment.
 
 Executable workflow:
 
@@ -25,7 +25,9 @@ Executable workflow:
    binary file picker, and send the PUT with `{{uploadContentType}}`. No bytes
    or video files are embedded in this collection.
 4. Complete the upload with the same content type, byte size and SHA-256 used
-   during initiation. The API verifies object HEAD metadata before marking it
-   `STORAGE_VERIFIED`.
+   during initiation. The generated pre-request script omits `sha256` when its
+   captured value is empty; a successful completion unsets all four temporary
+   collection variables while preserving `sessionId` and `videoId`. The API
+   verifies object HEAD metadata before marking it `STORAGE_VERIFIED`.
 5. List session media, analysis runs and artifacts. The generated collection
    keeps these requests derived from the same OpenAPI snapshot.

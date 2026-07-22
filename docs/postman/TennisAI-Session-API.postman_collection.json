@@ -261,7 +261,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const payload = pm.response.json();\npm.environment.set('videoId', payload.video_id);\npm.environment.set('uploadUrl', payload.upload_url);\npm.environment.set('uploadContentType', payload.required_headers['Content-Type']);\npm.environment.set('uploadSizeBytes', pm.request.body.raw ? JSON.parse(pm.request.body.raw).size_bytes : '');\npm.environment.set('uploadSha256', pm.request.body.raw ? (JSON.parse(pm.request.body.raw).sha256 || '') : '');"
+                  "const payload = pm.response.json();\npm.environment.set('videoId', payload.video_id);\npm.collectionVariables.set('uploadUrl', payload.upload_url);\npm.collectionVariables.set('uploadContentType', payload.required_headers['Content-Type']);\nconst requested = pm.request.body.raw ? JSON.parse(pm.request.body.raw) : {};\npm.collectionVariables.set('uploadSizeBytes', String(requested.size_bytes || ''));\npm.collectionVariables.set('uploadSha256', requested.sha256 || '');"
                 ],
                 "type": "text/javascript"
               }
@@ -332,6 +332,26 @@
           "_openapiMethod": "POST",
           "_openapiPath": "/api/v1/sessions/{session_id}/uploads/{video_id}/complete",
           "_operationId": "completeVideoUpload",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const body = {\n  size_bytes: Number(pm.collectionVariables.get('uploadSizeBytes')),\n  content_type: pm.collectionVariables.get('uploadContentType')\n};\nconst sha256 = pm.collectionVariables.get('uploadSha256');\nif (sha256) body.sha256 = sha256;\npm.request.body.update(JSON.stringify(body, null, 2));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code >= 200 && pm.response.code < 300) {\n  pm.collectionVariables.unset('uploadUrl');\n  pm.collectionVariables.unset('uploadContentType');\n  pm.collectionVariables.unset('uploadSizeBytes');\n  pm.collectionVariables.unset('uploadSha256');\n}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "name": "Complete a video upload",
           "protocolProfileBehavior": {},
           "request": {
@@ -377,36 +397,36 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "{{baseUrl}}"
+      "value": ""
     },
     {
       "key": "sessionId",
-      "value": "{{sessionId}}"
+      "value": ""
     },
     {
       "key": "videoId",
-      "value": "{{videoId}}"
+      "value": ""
     },
     {
       "key": "analysisRunId",
-      "value": "{{analysisRunId}}"
+      "value": ""
     },
     {
       "key": "uploadUrl",
-      "value": "{{uploadUrl}}"
+      "value": ""
     },
     {
       "key": "uploadContentType",
-      "value": "{{uploadContentType}}"
+      "value": ""
     },
     {
       "key": "uploadSizeBytes",
-      "value": "{{uploadSizeBytes}}"
+      "value": ""
     },
     {
       "key": "uploadSha256",
-      "value": "{{uploadSha256}}"
+      "value": ""
     }
   ],
-  "x-openapi-sha256": "589e4fbb043cf249a519e43afc550a9a564a571b8cfd262def89bb7882b30f45"
+  "x-openapi-sha256": "1747670500014598e6d18f5130e8c7f341323f4fe15f96559d9c5da0550f346b"
 }

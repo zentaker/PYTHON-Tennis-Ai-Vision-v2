@@ -30,8 +30,8 @@ tag, request/response schemas, status-code documentation, examples, and the
 uniform `{ "error": { "code", "message", "details", "request_id" } }`
 error envelope.
 
-Documented domain error codes are status-specific: 400 (`INVALID_CURSOR`,
-`INVALID_REQUEST`), 404 (`SESSION_NOT_FOUND`, `VIDEO_NOT_FOUND`,
+Documented domain error codes are status-specific: 400 (`INVALID_CURSOR`),
+404 (`SESSION_NOT_FOUND`, `VIDEO_NOT_FOUND`,
 `STORAGE_OBJECT_MISSING`), 409 (`SOURCE_VIDEO_ALREADY_EXISTS`,
 `INVALID_SESSION_STATE`, `UPLOAD_METADATA_MISMATCH`, `UPLOAD_SHA_MISMATCH`,
 `STORAGE_OBJECT_MISMATCH`), 413 (`VIDEO_SIZE_EXCEEDED`), 422
@@ -39,6 +39,13 @@ Documented domain error codes are status-specific: 400 (`INVALID_CURSOR`,
 `VIDEO_EXTENSION_MISMATCH`) and 503 (`STORAGE_SIGNING_FAILED`). Every response
 uses the `ErrorResponse` envelope and includes a request ID example.
 
+`STORAGE_SIGNING_FAILED` is returned as HTTP 503 when either signer fails. The
+download path uses the exact message `storage could not sign the download` and
+`details.operation = "download"`; upload failures use the corresponding upload
+operation detail. No storage exception is exposed.
+
 Response DTOs use domain enums for session, media, integrity, analysis-run,
 processing-profile and artifact values. SHA-256 fields are 64 hexadecimal
-characters and are normalized to lowercase internally.
+characters (`^[0-9a-fA-F]{64}$`) and are normalized to lowercase internally.
+The same exact constraint applies to `bundle_fingerprint` in session and run
+responses.

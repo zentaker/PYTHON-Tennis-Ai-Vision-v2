@@ -17,13 +17,16 @@ Compose uses `http://minio:9000` internally and `http://localhost:9000` for
 browser URLs. The signer uses MinIO-compatible path addressing; the public
 endpoint is validated and never permits the internal `minio` host.
 
-MinIO CORS is versioned at `infrastructure/session-platform/minio/cors.xml`.
-`minio-init` applies that file with `mc cors set local/$S3_BUCKET
-/config/cors.xml`, verifies it with `mc cors info` (falling back to `mc cors
-get` on older clients), and checks that the bucket remains private. The
-runtime evidence exporter additionally performs a real preflight from
-`http://localhost:5173` and requires PUT. `MINIO_API_CORS_ALLOW_ORIGIN` remains
-configured for compatibility with the pinned MinIO image.
+The local runtime selects and records one explicit CORS mode. The preferred
+mode is `bucket_policy`: `minio-init` applies
+`infrastructure/session-platform/minio/cors.xml`, verifies it with `mc cors
+info/get`, and checks that the bucket remains private. If the pinned client
+cannot apply a bucket policy, the explicit fallback is
+`global_api_local_development`, which sets the MinIO API CORS origin only to
+`http://localhost:5173`; it never marks `bucket_policy_applied` true and the
+bucket remains private. Production S3 configuration must define its own CORS
+policy. The runtime evidence exporter publishes the observed mode and only
+publishes GET/HEAD when an Origin request actually returns CORS headers.
 
 Completion performs an object `HEAD` and compares size and content type with the
 initiation metadata. Success records `STORAGE_VERIFIED`; it does not claim

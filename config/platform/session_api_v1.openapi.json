@@ -6,7 +6,7 @@
           "bundle_fingerprint": {
             "anyOf": [
               {
-                "pattern": "^[0-9a-fA-F]+$",
+                "pattern": "^[0-9a-fA-F]{64}$",
                 "type": "string"
               },
               {
@@ -100,7 +100,7 @@
           "bundle_fingerprint": {
             "anyOf": [
               {
-                "pattern": "^[0-9a-fA-F]+$",
+                "pattern": "^[0-9a-fA-F]{64}$",
                 "type": "string"
               },
               {
@@ -379,7 +379,7 @@
           "bundle_fingerprint": {
             "anyOf": [
               {
-                "pattern": "^[0-9a-fA-F]+$",
+                "pattern": "^[0-9a-fA-F]{64}$",
                 "type": "string"
               },
               {
@@ -483,8 +483,7 @@
           "sha256": {
             "anyOf": [
               {
-                "maxLength": 64,
-                "minLength": 64,
+                "pattern": "^[0-9a-fA-F]{64}$",
                 "type": "string"
               },
               {
@@ -758,17 +757,6 @@
                         "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
                       }
                     }
-                  },
-                  "INVALID_REQUEST": {
-                    "summary": "INVALID_REQUEST",
-                    "value": {
-                      "error": {
-                        "code": "INVALID_REQUEST",
-                        "details": {},
-                        "message": "request is invalid",
-                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
-                      }
-                    }
                   }
                 },
                 "schema": {
@@ -776,7 +764,7 @@
                 }
               }
             },
-            "description": "INVALID_CURSOR: The pagination cursor cannot be decoded.; INVALID_REQUEST: The request is syntactically invalid."
+            "description": "INVALID_CURSOR: The pagination cursor cannot be decoded."
           },
           "422": {
             "content": {
@@ -843,29 +831,6 @@
               }
             },
             "description": "Session created"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "examples": {
-                  "INVALID_REQUEST": {
-                    "summary": "INVALID_REQUEST",
-                    "value": {
-                      "error": {
-                        "code": "INVALID_REQUEST",
-                        "details": {},
-                        "message": "request is invalid",
-                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
-                      }
-                    }
-                  }
-                },
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "INVALID_REQUEST: The request is syntactically invalid."
           },
           "422": {
             "content": {
@@ -1248,7 +1213,7 @@
                       "error": {
                         "code": "STORAGE_SIGNING_FAILED",
                         "details": {},
-                        "message": "storage could not sign the upload",
+                        "message": "storage could not sign the requested URL",
                         "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
                       }
                     }
@@ -1465,7 +1430,7 @@
                       "error": {
                         "code": "STORAGE_SIGNING_FAILED",
                         "details": {},
-                        "message": "storage could not sign the upload",
+                        "message": "storage could not sign the requested URL",
                         "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
                       }
                     }

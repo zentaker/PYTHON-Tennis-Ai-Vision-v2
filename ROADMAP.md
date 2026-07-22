@@ -8,11 +8,11 @@
 The experimental Stage 5B branch is archived research. The official product path is
 the TennisAI Training Session Analyzer and its versioned Analysis Bundle.
 
-Core Stage 2A Session Platform browser upload runtime and public evidence patch
-are implemented with gates `STAGE2A_LAYERED_API_ARCHITECTURE_PASSED`,
+Core Stage 2A Session Platform browser upload runtime and final contract
+precision patch are implemented with gates `STAGE2A_LAYERED_API_ARCHITECTURE_PASSED`,
 `STAGE2A_BROWSER_UPLOAD_RUNTIME_AUDIT_PASSED`,
 `STAGE2A_PERSISTENCE_FOUNDATION_PASSED`, and
-`STAGE2A_PUBLIC_CONTRACT_EVIDENCE_PATCH_IMPLEMENTED`. The API contract remains
+`STAGE2A_FINAL_CONTRACT_PRECISION_PATCH_IMPLEMENTED`. The API contract remains
 pending `SESSION_PLATFORM_API_V1_CONTRACT_PENDING_RELEASE_AUDIT`.
 
 La pasada de datos activa es Nivel A2. Stage 1–4 están cerradas con gates aprobados y la

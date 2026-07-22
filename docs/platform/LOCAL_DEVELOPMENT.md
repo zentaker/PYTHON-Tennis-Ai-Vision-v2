@@ -30,4 +30,8 @@ The CI runtime evidence is generated from the integration JUnit XML, the real
 HTTP observations, the doctor report, the MinIO `mc cors info/get` check and
 the browser preflight. It fails closed on test failures/skips, non-localhost
 presigned endpoints, an unready doctor, a public bucket, missing localhost
-CORS PUT, secrets, full presigned URLs or video bytes.
+CORS PUT, secrets, full presigned URLs or video bytes. The four derived reports
+are `cors-report.json`, `presigned-endpoint-report.json`, `security-summary.json`
+and `runtime-test-summary.json`. The summary distinguishes the two pytest
+integration functions from positive and negative HTTP observations; an
+observation is never relabeled as a test.
