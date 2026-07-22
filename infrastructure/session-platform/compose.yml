@@ -29,7 +29,7 @@ services:
       - session-platform-minio:/data
 
   minio-init:
-    image: minio/mc:RELEASE.2024-01-13T08-44-48Z
+    image: minio/mc:RELEASE.2024-05-24T09-08-49Z
     depends_on:
       minio:
         condition: service_started
