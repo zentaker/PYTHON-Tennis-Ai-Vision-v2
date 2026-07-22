@@ -1,4 +1,5 @@
 {
+  "api_style": "LAYERED_FASTAPI_COMPATIBLE_WITH_EXISTING_EXPRESS_MENTAL_MODEL",
   "api_version": "v1",
   "core_commit": "generated-at-build-time",
   "endpoints": [
@@ -13,21 +14,33 @@
   ],
   "gate": "SESSION_PLATFORM_API_V1_CONTRACT_CANDIDATE",
   "generated_at": "2026-07-22T00:00:00Z",
+  "operation_ids": [
+    "completeVideoUpload",
+    "createSession",
+    "getSession",
+    "getSessionMedia",
+    "healthCheck",
+    "initiateVideoUpload",
+    "listAnalysisRuns",
+    "listArtifacts",
+    "listSessions"
+  ],
   "schemas": [
     "AnalysisRunResponse",
     "AnalysisRunSummary",
     "ArtifactResponse",
-    "HTTPValidationError",
+    "ErrorPayload",
+    "ErrorResponse",
     "MediaResponse",
     "SessionCreate",
     "SessionPage",
     "SessionResponse",
     "SessionStatus",
     "UploadComplete",
+    "UploadCompleteResponse",
     "UploadInitiate",
     "UploadResponse",
-    "ValidationError",
     "VideoSummary"
   ],
-  "sha256": "0486e53abc94b8ded5352b1ed21f1721856fa5fd05a7859759f4f7238914b6ec"
+  "sha256": "e8f7321ece96d71ff56838198c8a4983b745ff365b285a0b74b68fa79fbe3798"
 }

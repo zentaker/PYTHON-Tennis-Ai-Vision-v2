@@ -4,10 +4,12 @@ import base64
 from datetime import datetime, timezone
 from uuid import UUID
 
-from sqlalchemy import Select, select
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from ..db.models import SessionRecord
+from ..db.repositories.sessions import get_session as repository_get_session
+from ..db.repositories.sessions import list_sessions as repository_list_sessions
 from ..domain.enums import SessionStatus
 from ..domain.transitions import require_transition
 
@@ -40,12 +42,7 @@ def create_session(db: Session, title: str, processing_profile: str, surface: st
 
 
 def get_session(db: Session, session_id: UUID) -> SessionRecord | None:
-    statement: Select = (
-        select(SessionRecord)
-        .options(selectinload(SessionRecord.videos), selectinload(SessionRecord.analysis_runs))
-        .where(SessionRecord.id == session_id)
-    )
-    return db.scalar(statement)
+    return repository_get_session(db, session_id)
 
 
 def list_sessions(
@@ -72,7 +69,7 @@ def list_sessions(
         statement = statement.order_by(SessionRecord.created_at.desc(), SessionRecord.id.desc())
     else:
         statement = statement.order_by(SessionRecord.created_at.asc(), SessionRecord.id.asc())
-    records = list(db.scalars(statement.limit(limit + 1)).all())
+    records = repository_list_sessions(db, statement, limit)
     next_cursor = (
         encode_cursor(records[limit - 1].created_at, records[limit - 1].id)
         if len(records) > limit

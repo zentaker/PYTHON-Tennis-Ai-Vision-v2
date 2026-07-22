@@ -10,6 +10,11 @@ doctor/migration/seed commands, deterministic OpenAPI evidence, and isolated
 `platform` dependencies. `src.platform` imports do not load torch, torchvision,
 ultralytics, OpenCV, models, tracking, or inference code.
 
+API style registration:
+`SESSION_PLATFORM_API_STYLE = LAYERED_FASTAPI_COMPATIBLE_WITH_EXISTING_EXPRESS_MENTAL_MODEL`.
+The Postman collection is generated from the OpenAPI snapshot and validated in
+CI; its environment contains no credentials.
+
 The local unit suite covers transition rules, object-key safety, SQLite model
 behaviour, upload HEAD verification, import isolation, OpenAPI stability, and
 the metadata-only Stage 1B seed. Docker was unavailable in the execution

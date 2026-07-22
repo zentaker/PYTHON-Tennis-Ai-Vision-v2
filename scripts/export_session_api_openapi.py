@@ -25,10 +25,17 @@ def main() -> int:
     digest = hashlib.sha256(OUTPUT.read_bytes()).hexdigest()
     source = {
         "api_version": "v1",
+        "api_style": "LAYERED_FASTAPI_COMPATIBLE_WITH_EXISTING_EXPRESS_MENTAL_MODEL",
         "core_commit": "generated-at-build-time",
         "generated_at": "2026-07-22T00:00:00Z",
         "sha256": digest,
         "endpoints": sorted(payload.get("paths", {})),
+        "operation_ids": sorted(
+            operation.get("operationId")
+            for path_item in payload.get("paths", {}).values()
+            for method, operation in path_item.items()
+            if method.lower() in {"get", "post", "put", "patch", "delete"}
+        ),
         "schemas": sorted(payload.get("components", {}).get("schemas", {})),
         "gate": "SESSION_PLATFORM_API_V1_CONTRACT_CANDIDATE",
     }

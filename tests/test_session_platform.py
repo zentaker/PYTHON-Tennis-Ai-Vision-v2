@@ -107,6 +107,15 @@ def test_openapi_snapshot_is_stable() -> None:
     assert "/api/v1/sessions" in snapshot["paths"]
     assert "/api/v1/sessions/{session_id}/uploads/{video_id}/complete" in snapshot["paths"]
     assert "password" not in json.dumps(snapshot).lower()
+    assert snapshot["paths"]["/api/v1/sessions"]["post"]["operationId"] == "createSession"
+    assert {tag["name"] for tag in snapshot["tags"]} == {
+        "Health",
+        "Sessions",
+        "Uploads",
+        "Media",
+        "Analysis Runs",
+        "Artifacts",
+    }
 
 
 def test_stage1b_seed_constants_are_metadata_only() -> None:

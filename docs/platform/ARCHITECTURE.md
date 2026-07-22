@@ -19,3 +19,14 @@ intentionally not supplied.
 
 The contract candidate is frozen as `SESSION_PLATFORM_API_V1_CONTRACT_CANDIDATE`
 in [session_api_v1.openapi.json](../../config/platform/session_api_v1.openapi.json).
+
+The registered style is
+`SESSION_PLATFORM_API_STYLE = LAYERED_FASTAPI_COMPATIBLE_WITH_EXISTING_EXPRESS_MENTAL_MODEL`.
+The layers remain recognizable and intentionally one-directional:
+
+`api/app.py` (bootstrap, CORS, handlers, routers) → `api/routes` (HTTP only) →
+`api/dependencies` (DB/storage/config/auth seam) → `services` (use cases) →
+`db/repositories` (SQLAlchemy queries) → `db/models` (persistence), with
+`schemas`, `storage`, and `domain` providing DTOs, MinIO/S3, and invariants.
+
+Routes do not execute SQL, call boto3, or expose ORM objects as public DTOs.

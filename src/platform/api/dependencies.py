@@ -24,6 +24,11 @@ def storage(request: Request):
     return request.app.state.storage
 
 
+def auth_context(request: Request) -> None:
+    """Future authentication seam; Stage 2A intentionally has no auth provider."""
+    return None
+
+
 def default_storage(settings: PlatformSettings):
     return S3ObjectStorage(settings)
 

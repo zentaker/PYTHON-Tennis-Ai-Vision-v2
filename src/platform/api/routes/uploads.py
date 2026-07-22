@@ -1,24 +1,53 @@
 from __future__ import annotations
 
+from typing import Any
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Body, Depends
 
-from ...schemas.upload import UploadComplete, UploadInitiate, UploadResponse
+from ...schemas.upload import UploadComplete, UploadCompleteResponse, UploadInitiate, UploadResponse
 from ...services.sessions import get_session
 from ...services.uploads import complete_upload, initiate_upload
 from ..dependencies import db, settings, storage
-from ..errors import invalid, not_found
+from ..errors import ERROR_RESPONSES, invalid, not_found
 
-router = APIRouter(prefix="/api/v1/sessions/{session_id}/uploads", tags=["uploads"])
+router = APIRouter(prefix="/api/v1/sessions/{session_id}/uploads")
 
 
-@router.post("", response_model=UploadResponse, status_code=201)
+@router.post(
+    "",
+    response_model=UploadResponse,
+    status_code=201,
+    tags=["Uploads"],
+    operation_id="initiateVideoUpload",
+    summary="Initiate a video upload",
+    description="Validate source-video metadata and return a short-lived presigned PUT URL.",
+    responses={
+        **ERROR_RESPONSES,
+        201: {
+            "description": "Presigned upload URL",
+            "content": {
+                "application/json": {"example": {"method": "PUT", "object_key": "sessions/..."}}
+            },
+        },
+    },
+)
 def initiate(
     session_id: UUID,
-    payload: UploadInitiate,
-    database: Session = Depends(db),
+    payload: UploadInitiate = Body(
+        ...,
+        openapi_examples={
+            "mp4": {
+                "summary": "MP4 source video",
+                "value": {
+                    "display_name": "rally.mp4",
+                    "content_type": "video/mp4",
+                    "size_bytes": 1048576,
+                },
+            }
+        },
+    ),
+    database: Any = Depends(db),
     platform_settings=Depends(settings),
     object_storage=Depends(storage),
 ):
@@ -48,12 +77,38 @@ def initiate(
     }
 
 
-@router.post("/{video_id}/complete")
+@router.post(
+    "/{video_id}/complete",
+    response_model=UploadCompleteResponse,
+    tags=["Uploads"],
+    operation_id="completeVideoUpload",
+    summary="Complete a video upload",
+    description="HEAD the object in MinIO/S3 and mark it STORAGE_VERIFIED when metadata matches.",
+    responses={
+        **ERROR_RESPONSES,
+        200: {
+            "description": "Upload verified",
+            "content": {
+                "application/json": {
+                    "example": {"status": "UPLOADED", "integrity_status": "STORAGE_VERIFIED"}
+                }
+            },
+        },
+    },
+)
 def complete(
     session_id: UUID,
     video_id: UUID,
-    payload: UploadComplete,
-    database: Session = Depends(db),
+    payload: UploadComplete = Body(
+        ...,
+        openapi_examples={
+            "uploaded": {
+                "summary": "Uploaded object metadata",
+                "value": {"size_bytes": 1048576, "content_type": "video/mp4"},
+            }
+        },
+    ),
+    database: Any = Depends(db),
     platform_settings=Depends(settings),
     object_storage=Depends(storage),
 ):

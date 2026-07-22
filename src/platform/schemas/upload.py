@@ -28,6 +28,12 @@ class UploadComplete(BaseModel):
     sha256: str | None = Field(default=None, min_length=64, max_length=64)
 
 
+class UploadCompleteResponse(BaseModel):
+    video_id: UUID
+    status: str
+    integrity_status: str
+
+
 class MediaResponse(BaseModel):
     download_url: str
     expires_at: datetime

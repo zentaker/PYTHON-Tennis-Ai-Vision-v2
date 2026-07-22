@@ -180,17 +180,53 @@
         "title": "ArtifactResponse",
         "type": "object"
       },
-      "HTTPValidationError": {
+      "ErrorPayload": {
         "properties": {
-          "detail": {
-            "items": {
-              "$ref": "#/components/schemas/ValidationError"
-            },
-            "title": "Detail",
-            "type": "array"
+          "code": {
+            "examples": [
+              "SESSION_NOT_FOUND"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "details": {
+            "additionalProperties": true,
+            "title": "Details",
+            "type": "object"
+          },
+          "message": {
+            "examples": [
+              "session not found"
+            ],
+            "title": "Message",
+            "type": "string"
+          },
+          "request_id": {
+            "examples": [
+              "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+            ],
+            "title": "Request Id",
+            "type": "string"
           }
         },
-        "title": "HTTPValidationError",
+        "required": [
+          "code",
+          "message",
+          "request_id"
+        ],
+        "title": "ErrorPayload",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorPayload"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse",
         "type": "object"
       },
       "MediaResponse": {
@@ -417,6 +453,30 @@
         "title": "UploadComplete",
         "type": "object"
       },
+      "UploadCompleteResponse": {
+        "properties": {
+          "integrity_status": {
+            "title": "Integrity Status",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "video_id": {
+            "format": "uuid",
+            "title": "Video Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "video_id",
+          "status",
+          "integrity_status"
+        ],
+        "title": "UploadCompleteResponse",
+        "type": "object"
+      },
       "UploadInitiate": {
         "properties": {
           "content_type": {
@@ -499,46 +559,6 @@
         "title": "UploadResponse",
         "type": "object"
       },
-      "ValidationError": {
-        "properties": {
-          "ctx": {
-            "title": "Context",
-            "type": "object"
-          },
-          "input": {
-            "title": "Input"
-          },
-          "loc": {
-            "items": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "integer"
-                }
-              ]
-            },
-            "title": "Location",
-            "type": "array"
-          },
-          "msg": {
-            "title": "Message",
-            "type": "string"
-          },
-          "type": {
-            "title": "Error Type",
-            "type": "string"
-          }
-        },
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
-        "title": "ValidationError",
-        "type": "object"
-      },
       "VideoSummary": {
         "properties": {
           "content_type": {
@@ -596,7 +616,8 @@
   "paths": {
     "/api/v1/sessions": {
       "get": {
-        "operationId": "list_all_api_v1_sessions_get",
+        "description": "List sessions in creation order with an opaque cursor for pagination.",
+        "operationId": "listSessions",
         "parameters": [
           {
             "in": "query",
@@ -658,34 +679,78 @@
           "200": {
             "content": {
               "application/json": {
+                "example": {
+                  "items": []
+                },
                 "schema": {
                   "$ref": "#/components/schemas/SessionPage"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Session page"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Resource not found"
           },
           "422": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Validation Error"
+            "description": "Request validation failed"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
           }
         },
-        "summary": "List All",
+        "summary": "List sessions",
         "tags": [
-          "sessions"
+          "Sessions"
         ]
       },
       "post": {
-        "operationId": "create_api_v1_sessions_post",
+        "description": "Create metadata for a new analysis session before uploading its source video.",
+        "operationId": "createSession",
         "requestBody": {
           "content": {
             "application/json": {
+              "examples": {
+                "standard": {
+                  "summary": "Standard session",
+                  "value": {
+                    "processing_profile": "STANDARD",
+                    "surface": "unknown",
+                    "title": "Madrid practice"
+                  }
+                }
+              },
               "schema": {
                 "$ref": "#/components/schemas/SessionCreate"
               }
@@ -697,33 +762,67 @@
           "201": {
             "content": {
               "application/json": {
+                "example": {
+                  "status": "DRAFT"
+                },
                 "schema": {
                   "$ref": "#/components/schemas/SessionResponse"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Session created"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Resource not found"
           },
           "422": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Validation Error"
+            "description": "Request validation failed"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
           }
         },
-        "summary": "Create",
+        "summary": "Create a session",
         "tags": [
-          "sessions"
+          "Sessions"
         ]
       }
     },
     "/api/v1/sessions/{session_id}": {
       "get": {
-        "operationId": "get_api_v1_sessions__session_id__get",
+        "description": "Return session metadata and the source-video summary when available.",
+        "operationId": "getSession",
         "parameters": [
           {
             "in": "path",
@@ -740,33 +839,67 @@
           "200": {
             "content": {
               "application/json": {
+                "example": {
+                  "status": "DRAFT"
+                },
                 "schema": {
                   "$ref": "#/components/schemas/SessionResponse"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Session metadata"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Resource not found"
           },
           "422": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Validation Error"
+            "description": "Request validation failed"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
           }
         },
-        "summary": "Get",
+        "summary": "Get a session",
         "tags": [
-          "sessions"
+          "Sessions"
         ]
       }
     },
     "/api/v1/sessions/{session_id}/analysis-runs": {
       "get": {
-        "operationId": "analysis_runs_api_v1_sessions__session_id__analysis_runs_get",
+        "description": "List analysis-run metadata for a session.",
+        "operationId": "listAnalysisRuns",
         "parameters": [
           {
             "in": "path",
@@ -783,37 +916,69 @@
           "200": {
             "content": {
               "application/json": {
+                "example": [],
                 "schema": {
                   "items": {
                     "$ref": "#/components/schemas/AnalysisRunResponse"
                   },
-                  "title": "Response Analysis Runs Api V1 Sessions  Session Id  Analysis Runs Get",
+                  "title": "Response Listanalysisruns",
                   "type": "array"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Analysis runs"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Resource not found"
           },
           "422": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Validation Error"
+            "description": "Request validation failed"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
           }
         },
-        "summary": "Analysis Runs",
+        "summary": "List analysis runs",
         "tags": [
-          "media"
+          "Analysis Runs"
         ]
       }
     },
     "/api/v1/sessions/{session_id}/artifacts": {
       "get": {
-        "operationId": "artifacts_api_v1_sessions__session_id__artifacts_get",
+        "description": "List analysis bundle artifacts linked to the session's analysis runs.",
+        "operationId": "listArtifacts",
         "parameters": [
           {
             "in": "path",
@@ -830,37 +995,69 @@
           "200": {
             "content": {
               "application/json": {
+                "example": [],
                 "schema": {
                   "items": {
                     "$ref": "#/components/schemas/ArtifactResponse"
                   },
-                  "title": "Response Artifacts Api V1 Sessions  Session Id  Artifacts Get",
+                  "title": "Response Listartifacts",
                   "type": "array"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Artifacts"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Resource not found"
           },
           "422": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Validation Error"
+            "description": "Request validation failed"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
           }
         },
-        "summary": "Artifacts",
+        "summary": "List session artifacts",
         "tags": [
-          "media"
+          "Artifacts"
         ]
       }
     },
     "/api/v1/sessions/{session_id}/media": {
       "get": {
-        "operationId": "media_api_v1_sessions__session_id__media_get",
+        "description": "Return a short-lived presigned download URL for the session source video.",
+        "operationId": "getSessionMedia",
         "parameters": [
           {
             "in": "path",
@@ -877,33 +1074,68 @@
           "200": {
             "content": {
               "application/json": {
+                "example": {
+                  "download_url": "https://storage.example/object",
+                  "integrity_status": "STORAGE_VERIFIED"
+                },
                 "schema": {
                   "$ref": "#/components/schemas/MediaResponse"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Presigned media URL"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Resource not found"
           },
           "422": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Validation Error"
+            "description": "Request validation failed"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
           }
         },
-        "summary": "Media",
+        "summary": "Get session media",
         "tags": [
-          "media"
+          "Media"
         ]
       }
     },
     "/api/v1/sessions/{session_id}/uploads": {
       "post": {
-        "operationId": "initiate_api_v1_sessions__session_id__uploads_post",
+        "description": "Validate source-video metadata and return a short-lived presigned PUT URL.",
+        "operationId": "initiateVideoUpload",
         "parameters": [
           {
             "in": "path",
@@ -919,6 +1151,16 @@
         "requestBody": {
           "content": {
             "application/json": {
+              "examples": {
+                "mp4": {
+                  "summary": "MP4 source video",
+                  "value": {
+                    "content_type": "video/mp4",
+                    "display_name": "rally.mp4",
+                    "size_bytes": 1048576
+                  }
+                }
+              },
               "schema": {
                 "$ref": "#/components/schemas/UploadInitiate"
               }
@@ -930,33 +1172,68 @@
           "201": {
             "content": {
               "application/json": {
+                "example": {
+                  "method": "PUT",
+                  "object_key": "sessions/..."
+                },
                 "schema": {
                   "$ref": "#/components/schemas/UploadResponse"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Presigned upload URL"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Resource not found"
           },
           "422": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Validation Error"
+            "description": "Request validation failed"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
           }
         },
-        "summary": "Initiate",
+        "summary": "Initiate a video upload",
         "tags": [
-          "uploads"
+          "Uploads"
         ]
       }
     },
     "/api/v1/sessions/{session_id}/uploads/{video_id}/complete": {
       "post": {
-        "operationId": "complete_api_v1_sessions__session_id__uploads__video_id__complete_post",
+        "description": "HEAD the object in MinIO/S3 and mark it STORAGE_VERIFIED when metadata matches.",
+        "operationId": "completeVideoUpload",
         "parameters": [
           {
             "in": "path",
@@ -982,6 +1259,15 @@
         "requestBody": {
           "content": {
             "application/json": {
+              "examples": {
+                "uploaded": {
+                  "summary": "Uploaded object metadata",
+                  "value": {
+                    "content_type": "video/mp4",
+                    "size_bytes": 1048576
+                  }
+                }
+              },
               "schema": {
                 "$ref": "#/components/schemas/UploadComplete"
               }
@@ -993,52 +1279,119 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
+                "example": {
+                  "integrity_status": "STORAGE_VERIFIED",
+                  "status": "UPLOADED"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/UploadCompleteResponse"
+                }
               }
             },
-            "description": "Successful Response"
+            "description": "Upload verified"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Resource not found"
           },
           "422": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             },
-            "description": "Validation Error"
+            "description": "Request validation failed"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal server error"
           }
         },
-        "summary": "Complete",
+        "summary": "Complete a video upload",
         "tags": [
-          "uploads"
+          "Uploads"
         ]
       }
     },
     "/healthz": {
       "get": {
-        "operationId": "healthz_healthz_get",
+        "description": "Return a process-level health response without probing external services.",
+        "operationId": "healthCheck",
         "responses": {
           "200": {
             "content": {
               "application/json": {
+                "example": {
+                  "service": "session-platform",
+                  "status": "ok"
+                },
                 "schema": {
                   "additionalProperties": {
                     "type": "string"
                   },
-                  "title": "Response Healthz Healthz Get",
+                  "title": "Response Healthcheck",
                   "type": "object"
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Healthy"
           }
         },
-        "summary": "Healthz",
+        "summary": "Check service health",
         "tags": [
-          "health"
+          "Health"
         ]
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "description": "Process health.",
+      "name": "Health"
+    },
+    {
+      "description": "Session metadata and lifecycle.",
+      "name": "Sessions"
+    },
+    {
+      "description": "Presigned source-video uploads.",
+      "name": "Uploads"
+    },
+    {
+      "description": "Presigned media downloads.",
+      "name": "Media"
+    },
+    {
+      "description": "Analysis run metadata.",
+      "name": "Analysis Runs"
+    },
+    {
+      "description": "Analysis bundle artifacts.",
+      "name": "Artifacts"
+    }
+  ]
 }

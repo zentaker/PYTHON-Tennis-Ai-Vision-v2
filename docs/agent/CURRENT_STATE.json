@@ -43,6 +43,8 @@
     "spend_generated": 0
   },
   "core_stage2a_gate": "CHATGPT_CORE_STAGE2A_SESSION_PLATFORM_AUDIT",
+  "session_platform_api_style": "LAYERED_FASTAPI_COMPATIBLE_WITH_EXISTING_EXPRESS_MENTAL_MODEL",
+  "session_platform_postman_contract": "DERIVED_FROM_OPENAPI_AND_CI_VALIDATED",
   "blocker": "DOCKER_RUNTIME_MISSING",
   "next_action": "Run PostgreSQL/MinIO integration validation when Docker is available; then review Stage 2A gate."
 }

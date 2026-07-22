@@ -168,8 +168,10 @@ jobs:
           uv run --extra platform pytest tests/test_session_platform.py \
             --junitxml=.artifacts/stage2a-session-platform/unit-test-report.xml
           uv run --extra platform python scripts/export_session_api_openapi.py
-          git diff --exit-code -- config/platform/session_api_v1.openapi.json config/platform/SESSION_API_SOURCE.json
-          uv run ruff check src/platform tests/test_session_platform.py scripts/export_session_api_openapi.py
+          uv run --extra platform python scripts/export_session_api_postman.py
+          uv run --extra platform python scripts/validate_session_api_contract.py
+          git diff --exit-code -- config/platform/session_api_v1.openapi.json config/platform/SESSION_API_SOURCE.json docs/postman/TennisAI-Session-API.postman_collection.json
+          uv run ruff check src/platform tests/test_session_platform.py scripts/export_session_api_openapi.py scripts/export_session_api_postman.py scripts/validate_session_api_contract.py
 
       - name: Start PostgreSQL and MinIO
         env:

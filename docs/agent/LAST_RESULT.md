@@ -100,3 +100,5 @@
 - Stage gate: `CHATGPT_CORE_STAGE2A_SESSION_PLATFORM_AUDIT`.
 - Unit suite passed; Docker runtime unavailable (`DOCKER_RUNTIME_MISSING`), so integration is pending and not claimed.
 - Cloud calls / GPU calls / inference / videos committed / secrets committed / spend: 0 / 0 / 0 / 0 / 0 / 0.
+- API architecture addendum: layered FastAPI with repositories, uniform error envelope, correlation/request logging, configurable CORS, and OpenAPI at `/api/v1/openapi.json`.
+- Postman collection/environment are versioned; collection is generated from OpenAPI and CI validates operation IDs, path scope, derivation, and absence of credentials.

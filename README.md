@@ -46,6 +46,9 @@ loading the tracking or inference stack. See
 and [docs/platform/LOCAL_DEVELOPMENT.md](docs/platform/LOCAL_DEVELOPMENT.md).
 
 Install the optional platform dependencies with `uv sync --extra platform`.
+The generated Postman client and local environment live in
+[docs/postman](docs/postman/README.md); OpenAPI remains their single source of
+truth.
 
 ## Setup ligero en macOS
 

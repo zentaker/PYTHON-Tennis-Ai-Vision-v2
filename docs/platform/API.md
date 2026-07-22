@@ -23,3 +23,9 @@ uv run --extra platform python scripts/export_session_api_openapi.py
 
 It must remain deterministic. The API deliberately has no auth claims and no
 passwords or secrets in its schema.
+
+FastAPI serves the snapshot at `/api/v1/openapi.json`, interactive docs at
+`/docs`, and ReDoc at `/redoc`. Every operation has a stable `operationId`, a
+tag, request/response schemas, status-code documentation, examples, and the
+uniform `{ "error": { "code", "message", "details", "request_id" } }`
+error envelope.

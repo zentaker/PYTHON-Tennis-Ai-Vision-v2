@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from ..config.settings import PlatformSettings
 from ..db.models import SessionRecord, Video
+from ..db.repositories.videos import get_video
 from ..domain.enums import IntegrityStatus, SessionStatus, VideoRole
 from ..storage.interface import ObjectStorage, PresignedObject
 from ..storage.keys import source_video_key
@@ -73,7 +74,7 @@ def complete_upload(
     content_type: str,
     sha256: str | None,
 ) -> Video:
-    video = db.scalar(select(Video).where(Video.id == video_id, Video.session_id == session.id))
+    video = get_video(db, session, video_id)
     if not video:
         raise LookupError("video not found")
     validate_upload(video.display_name, content_type, size_bytes, settings)
