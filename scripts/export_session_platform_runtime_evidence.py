@@ -80,18 +80,21 @@ def main() -> int:
     if not cors_observations:
         raise SystemExit("runtime results do not contain a CORS preflight")
     cors = cors_observations[-1]
-    if cors.get("status") != 200 or cors.get("cors_origin") != "http://localhost:5173" or "PUT" not in cors.get("allow_methods", []):
+    observed_methods = []
+    for value in cors.get("allow_methods", []):
+        observed_methods.extend(part.strip().upper() for part in str(value).split(",") if part.strip())
+    if cors.get("status") != 200 or cors.get("cors_origin") != "http://localhost:5173" or "PUT" not in observed_methods:
         raise SystemExit("runtime CORS preflight is missing localhost:5173 and PUT")
     cors_report = _policy(
         args.cors_policy_output.read_text(encoding="utf-8"),
         args.bucket,
-        cors.get("allow_methods", []),
+        observed_methods,
     )
     cors_report.update({
         "preflight_status": cors["status"],
         "preflight_headers": {
             "access-control-allow-origin": cors.get("cors_origin"),
-            "access-control-allow-methods": cors.get("allow_methods", []),
+            "access-control-allow-methods": observed_methods,
             "access-control-allow-headers": cors.get("allow_headers", []),
         },
     })
