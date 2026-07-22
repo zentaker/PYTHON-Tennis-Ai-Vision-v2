@@ -84,7 +84,10 @@ def main() -> int:
     for value in cors.get("allow_methods", []):
         observed_methods.extend(part.strip().upper() for part in str(value).split(",") if part.strip())
     if cors.get("status") != 200 or cors.get("cors_origin") != "http://localhost:5173" or "PUT" not in observed_methods:
-        raise SystemExit("runtime CORS preflight is missing localhost:5173 and PUT")
+        raise SystemExit(
+            "runtime CORS preflight is missing localhost:5173 and PUT: "
+            f"status={cors.get('status')!r} origin={cors.get('cors_origin')!r} methods={observed_methods!r}"
+        )
     cors_report = _policy(
         args.cors_policy_output.read_text(encoding="utf-8"),
         args.bucket,
