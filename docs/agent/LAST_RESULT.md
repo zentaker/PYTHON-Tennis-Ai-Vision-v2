@@ -127,5 +127,14 @@
   `329ad9092a1dbf115fe1722f06ea7141b787e454c96f43ec05e7149051087647`.
 - Candidate gates are registered but not passed or frozen pending re-audit;
   internal worker operations remain non-public.
+- Remediation CI run `30037922133` passed at head
+  `ba0770243c85c741494998bf7702bb8b10ec2e63`. Artifact
+  `stage2b-analysis-orchestration-evidence` (ID `8576052058`, 5,942 bytes,
+  expires 2026-08-22) contains the OpenAPI snapshot, migration report, unit
+  and Compose JUnit reports, runtime evidence and security summary. Runtime
+  evidence records 17 unit tests, 2 Compose tests, real HTTP/persistence and
+  concurrent lease/cancellation observations, with zero video/GPU/cloud work
+  and zero spend. This is remediation evidence only; the next release audit
+  remains required.
 - Cloud calls / GPU calls / inference / videos processed / spend: 0 / 0 / 0 / 0 / 0.
-- Next action: complete remediation evidence and request a new release audit; no merge, freeze or worker implementation.
+- Next action: request a new release audit; no merge, freeze or worker implementation.

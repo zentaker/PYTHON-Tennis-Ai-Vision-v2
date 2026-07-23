@@ -38,5 +38,6 @@ inference, GPU, cloud, video or secret work was performed. The initial release
 audit was blocked at the previous head; remediation now covers real Compose
 HTTP/persistence evidence, row-locked lease reclaim and heartbeat semantics,
 strict artifact-key validation, sanitized worker failures, and atomic
-cancellation linearization. Candidate gates remain registered but not passed
-or frozen; do not merge or create a release tag before the next release audit.
+cancellation linearization. Remediation CI evidence is ready at the current
+head, but candidate gates remain registered and not passed or frozen; request
+the next release audit and do not merge or create a release tag beforehand.
