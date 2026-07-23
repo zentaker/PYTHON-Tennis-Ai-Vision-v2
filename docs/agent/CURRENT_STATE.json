@@ -61,10 +61,6 @@
   "stage2b_release_audit_gate": "CORE_STAGE2B_RELEASE_AUDIT_REMEDIATION_READY_FOR_REAUDIT",
   "analysis_job_openapi_sha256": "329ad9092a1dbf115fe1722f06ea7141b787e454c96f43ec05e7149051087647",
   "blocker": "CORE_STAGE2B_RELEASE_AUDIT_BLOCKED at prior head; remediation evidence ready for re-audit",
-  "head_sha": "94f13dc9a106ace1b19fc05bf2d2dcb7b609452d",
-  "workflow_run_id": "30038107369",
-  "evidence_artifact": "stage2b-analysis-orchestration-evidence",
-  "evidence_artifact_id": "8576117977",
   "pr": "11 OPEN NOT_MERGED",
   "worker": "PRODUCTION_WORKER_NOT_IMPLEMENTED",
   "next_action": "Complete blocker remediation validation and resubmit PR #11 for release audit; no merge, freeze or worker implementation."
