@@ -108,3 +108,25 @@
 - Postman collection/environment are versioned; collection is generated from OpenAPI, includes a manual-binary presigned PUT workflow, and CI validates operation IDs, path scope, derivation, and absence of credentials.
 - Final contract precision: all public SHA-256 and bundle fingerprints require exactly 64 hex characters; impossible session `INVALID_REQUEST` responses are absent from OpenAPI; download signing failures return HTTP 503 `STORAGE_SIGNING_FAILED` with `operation: download`; Postman temporary upload variables never enter the four-key environment and are cleaned after completion.
 - Approved runtime mode: `global_api_local_development`; MinIO bucket private; local-only, no authentication, no worker, no inference, no videos committed, and GPU/cloud/spend all zero. Next action: TennisWebAI Stage 0C — Session Library and managed uploads.
+
+## Core Stage 2B Analysis Job Orchestration
+
+- Branch: `agent/analysis-jobs-stage2b`; base: `b3703003fe2aa23f8703097b0dc155c7825f5363`.
+- Migration: `0002_analysis_job_orchestration` adds queue, attempt, lease,
+  cancellation and result-manifest persistence with active-run uniqueness.
+- Public candidate operations: `requestAnalysisRun`, `getAnalysisRun`,
+  `listSessionAnalysisRuns`, `cancelAnalysisRun`. Internal operations are
+  claim, heartbeat, complete, partial, fail and acknowledge cancellation.
+- Unit/HTTP contract result: 22 passed; Docker integration is an explicit
+  CI-only check and is skipped when no Compose runtime is available locally.
+- Analysis OpenAPI snapshot SHA-256:
+  `2998bccd54e8101cc7a072bdb1397846fb11b48046c9c3fe61890865c44ab6a5`.
+- Candidate gates registered: `STAGE2B_ANALYSIS_RUN_STATE_MACHINE_PASSED`,
+  `STAGE2B_IDEMPOTENT_JOB_ORCHESTRATION_PASSED`,
+  `STAGE2B_ATOMIC_WORKER_LEASE_PASSED`,
+  `STAGE2B_ARTIFACT_FINALIZATION_CONTRACT_PASSED`,
+  `STAGE2B_RUNTIME_SECURITY_AUDIT_PASSED`,
+  `ANALYSIS_JOB_API_V1_CONTRACT_PENDING_RELEASE_AUDIT`, and
+  `CORE_STAGE2B_ANALYSIS_ORCHESTRATION_CANDIDATE_READY_FOR_REVIEW`.
+- Cloud calls / GPU calls / inference / videos processed / spend: 0 / 0 / 0 / 0 / 0.
+- Next action: release audit and reviewer decision; no merge and no worker implementation.

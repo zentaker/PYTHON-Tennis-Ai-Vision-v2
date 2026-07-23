@@ -1,7 +1,8 @@
 # Local development
 
 Requirements: Python 3.11, `uv`, and Docker Engine with Compose. The checked-in
-stack has PostgreSQL, MinIO, a one-shot bucket initializer, and the API:
+stack has PostgreSQL, MinIO, a one-shot bucket initializer, the frozen Session
+API, and the additive analysis API:
 
 ```bash
 cp infrastructure/session-platform/.env.example .env
@@ -38,5 +39,5 @@ integration functions from positive and negative HTTP observations; an
 observation is never relabeled as a test.
 
 The release is local-only and not exposed to the public Internet. Authentication
-and an analysis worker are intentionally absent; no inference is run and no
-video is versioned.
+and an analysis worker are intentionally absent; the `analysis-api` service is
+only the orchestration contract. No inference is run and no video is versioned.

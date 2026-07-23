@@ -15,8 +15,9 @@ frozen with gates `STAGE2A_LAYERED_API_ARCHITECTURE_PASSED`,
 `STAGE2A_FINAL_CONTRACT_PRECISION_PATCH_IMPLEMENTED`.
 Release gates are `CHATGPT_CORE_STAGE2A_RELEASE_AUDIT_PASSED`,
 `SESSION_PLATFORM_API_V1_FROZEN`, and `CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED`.
-The next product step is TennisWebAI Stage 0C — Session Library and managed
-uploads; no Stage 2B worker branch is created.
+The additive Core Stage 2B analysis-job orchestration candidate is implemented
+on `agent/analysis-jobs-stage2b`; it is pending release audit and review. It
+does not implement a worker or inference.
 
 La pasada de datos activa es Nivel A2. Stage 1–4 están cerradas con gates aprobados y la
 la auditoría de cámara Stage 5A terminó con `READY_FOR_STAGE_5B` tras evaluar Stage 5A.1.
@@ -44,7 +45,8 @@ Construir un sistema que, dado un video de broadcast de tenis con camara fija, g
 - [ ] Stage 6 - Vista lateral derivada de distancia,Z. No iniciada.
 - [ ] Stage 7 - Metricas y validacion final. No iniciada.
 - [x] P1 → Analytics - Cinco contactos aceptados producen cinco registros schema-valid.
-- [ ] Core Stage 2A - Session Platform foundation (review candidate; Docker runtime pending).
+- [x] Core Stage 2A - Session Platform foundation (`CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED`).
+- [ ] Core Stage 2B - Analysis job orchestration (candidate ready for review; release audit pending).
 
 Stage 0 se considera funcionalmente cerrada. Su cierre documental fue reconciliado
 retrospectivamente despues de confirmar en Git el avance y los gates posteriores.

@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "branch": "agent/session-platform-stage2a",
-  "base_sha": "7e03550c5dfe37448cee58e285e0cbece08ae8da",
-  "task": "Build Core Stage 2A Session Platform foundation",
-  "status": "CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED",
+  "branch": "agent/analysis-jobs-stage2b",
+  "base_sha": "b3703003fe2aa23f8703097b0dc155c7825f5363",
+  "task": "Build Core Stage 2B analysis job orchestration and worker contract",
+  "status": "CORE_STAGE2B_ANALYSIS_ORCHESTRATION_CANDIDATE_READY_FOR_REVIEW",
   "stage1a_importer_implementation_gate": "STAGE1A_IMPORTER_IMPLEMENTATION_ACCEPTED",
   "stage1a_court_contract_gate": "STAGE1A_COURT_CONTRACT_CORRECTED",
   "stage1a_human_gate": "CORE_STAGE1A_SYNTHETIC_IMPORT_GATE_PASSED",
@@ -52,6 +52,13 @@
   "stage2a_release_gate": "CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED",
   "session_platform_api_style": "LAYERED_FASTAPI_COMPATIBLE_WITH_EXISTING_EXPRESS_MENTAL_MODEL",
   "session_platform_postman_contract": "DERIVED_FROM_OPENAPI_AND_CI_VALIDATED",
+  "analysis_job_api_contract_gate": "ANALYSIS_JOB_API_V1_CONTRACT_PENDING_RELEASE_AUDIT",
+  "stage2b_analysis_run_state_machine_gate": "STAGE2B_ANALYSIS_RUN_STATE_MACHINE_PASSED",
+  "stage2b_idempotent_job_orchestration_gate": "STAGE2B_IDEMPOTENT_JOB_ORCHESTRATION_PASSED",
+  "stage2b_atomic_worker_lease_gate": "STAGE2B_ATOMIC_WORKER_LEASE_PASSED",
+  "stage2b_artifact_finalization_gate": "STAGE2B_ARTIFACT_FINALIZATION_CONTRACT_PASSED",
+  "stage2b_runtime_security_gate": "STAGE2B_RUNTIME_SECURITY_AUDIT_PASSED",
+  "analysis_job_openapi_sha256": "2998bccd54e8101cc7a072bdb1397846fb11b48046c9c3fe61890865c44ab6a5",
   "blocker": "none",
-  "next_action": "TennisWebAI Stage 0C — Session Library and managed uploads."
+  "next_action": "Stage 2B release audit and reviewer decision; no merge or worker implementation."
 }
