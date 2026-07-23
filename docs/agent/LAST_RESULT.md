@@ -127,9 +127,9 @@
   `329ad9092a1dbf115fe1722f06ea7141b787e454c96f43ec05e7149051087647`.
 - Candidate gates are registered but not passed or frozen pending re-audit;
   internal worker operations remain non-public.
-- Remediation CI run `30037922133` passed at head
-  `ba0770243c85c741494998bf7702bb8b10ec2e63`. Artifact
-  `stage2b-analysis-orchestration-evidence` (ID `8576052058`, 5,942 bytes,
+- Remediation CI run `30038107369` passed at head
+  `94f13dc9a106ace1b19fc05bf2d2dcb7b609452d`. Artifact
+  `stage2b-analysis-orchestration-evidence` (ID `8576117977`, 5,947 bytes,
   expires 2026-08-22) contains the OpenAPI snapshot, migration report, unit
   and Compose JUnit reports, runtime evidence and security summary. Runtime
   evidence records 17 unit tests, 2 Compose tests, real HTTP/persistence and
