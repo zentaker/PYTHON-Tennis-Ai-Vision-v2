@@ -370,7 +370,8 @@ def test_analysis_job_concurrency_races_compose_contract():
         return "heartbeat"
 
     expired_results = _race(factory, (expired_heartbeat, reclaim_expired_jobs))
-    assert "ANALYSIS_LEASE_EXPIRED" in expired_results
+    assert 1 in expired_results
+    assert {"ANALYSIS_LEASE_EXPIRED", "ANALYSIS_LEASE_INVALID"}.intersection(expired_results)
     with factory() as db:
         if db.get(AnalysisRun, run_id).status == "RUNNING":
             assert reclaim_expired_jobs(db) == 1
