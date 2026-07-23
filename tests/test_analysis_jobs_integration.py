@@ -310,6 +310,7 @@ def test_analysis_job_concurrency_races_compose_contract():
         stale.run_id, stale.lease_token = run_id, token
         with pytest.raises(PlatformError):
             stale.complete([_artifact(run_id)])
+        assert request_cancellation(db, run_id).status == "CANCELLED"
 
     # Heartbeat and reclaim race with a live lease: heartbeat wins and reclaim is a no-op.
     session_id = _new_uploaded_session(session_base, "race-heartbeat")
