@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import re
+from hashlib import sha256
 from datetime import datetime, timedelta, timezone
-from urllib.parse import urlparse
 from uuid import UUID, uuid4
 
 from sqlalchemy.exc import IntegrityError
@@ -12,6 +12,8 @@ from ..db.models import AnalysisRun, Artifact, SessionRecord
 from ..db.repositories.analysis_jobs import (
     get_active_run,
     get_expired_running,
+    get_idempotent_run,
+    has_active_run,
     get_next_queued,
     get_run,
     get_session,
@@ -21,6 +23,7 @@ from ..domain.analysis_errors import analysis_error
 from ..domain.analysis_transitions import require_analysis_transition
 from ..domain.enums import AnalysisRunStatus, ArtifactKind, SessionStatus
 from ..domain.errors import PlatformError
+from ..storage.keys import validate_object_key
 from .sessions import transition_session
 
 
@@ -28,6 +31,13 @@ LEASE_SECONDS = 60
 DEFAULT_MAX_ATTEMPTS = 3
 SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 WORKER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+IDEMPOTENCY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+PUBLIC_FAILURE_CODES = {
+    "WORKER_FAILED": "analysis worker failed",
+    "ANALYSIS_INPUT_INVALID": "analysis input was invalid",
+    "ANALYSIS_OUTPUT_INVALID": "analysis output was invalid",
+    "ANALYSIS_CANCELLED": "analysis was cancelled",
+}
 
 
 def _now() -> datetime:
@@ -46,6 +56,19 @@ def _worker(worker_id: str) -> str:
     return worker_id
 
 
+def _idempotency_key(value: str | None, processing_profile: str) -> str | None:
+    del processing_profile
+    if value is None:
+        return None
+    if not IDEMPOTENCY_RE.fullmatch(value):
+        raise analysis_error("IDEMPOTENCY_KEY_REUSED")
+    return value
+
+
+def _request_fingerprint(processing_profile: str, max_attempts: int) -> str:
+    return sha256(f"{processing_profile}|{max_attempts}".encode()).hexdigest()
+
+
 def _session_for_run(db: Session, run: AnalysisRun) -> SessionRecord:
     session = get_session(db, run.session_id)
     if session is None:
@@ -58,14 +81,31 @@ def create_and_queue_run(
     session_id: UUID,
     processing_profile: str,
     max_attempts: int = DEFAULT_MAX_ATTEMPTS,
+    idempotency_key: str | None = None,
 ) -> AnalysisRun:
     session = get_session(db, session_id)
     if session is None:
         raise analysis_error("SESSION_NOT_READY_FOR_ANALYSIS")
+    key = _idempotency_key(idempotency_key, processing_profile)
+    fingerprint = _request_fingerprint(processing_profile, max_attempts)
+    existing_key = get_idempotent_run(db, session_id, key) if key is not None else None
+    if existing_key is not None:
+        if existing_key.request_fingerprint != fingerprint:
+            raise analysis_error("IDEMPOTENCY_KEY_REUSED")
+        return existing_key
     active = get_active_run(db, session_id, processing_profile)
     if active is not None:
         return active
-    if session.status != SessionStatus.UPLOADED.value:
+    if has_active_run(db, session_id):
+        raise analysis_error("SESSION_NOT_READY_FOR_ANALYSIS")
+    if session.status not in {
+        SessionStatus.UPLOADED.value,
+        SessionStatus.QUEUED.value,
+        SessionStatus.PROCESSING.value,
+        SessionStatus.COMPLETE.value,
+        SessionStatus.PARTIAL.value,
+        SessionStatus.FAILED.value,
+    }:
         raise analysis_error("SESSION_NOT_READY_FOR_ANALYSIS")
     if session.source_video_id is None:
         raise analysis_error("SESSION_NOT_READY_FOR_ANALYSIS")
@@ -74,6 +114,8 @@ def create_and_queue_run(
         session_id=session.id,
         input_video_id=session.source_video_id,
         processing_profile=processing_profile,
+        idempotency_key=key,
+        request_fingerprint=fingerprint,
         status=AnalysisRunStatus.PENDING.value,
         max_attempts=max_attempts,
         created_at=now,
@@ -86,7 +128,8 @@ def create_and_queue_run(
         run.status = AnalysisRunStatus.QUEUED.value
         run.queued_at = now
         session.latest_analysis_run_id = run.id
-        transition_session(db, session, SessionStatus.QUEUED, commit=False)
+        if session.status != SessionStatus.QUEUED.value:
+            transition_session(db, session, SessionStatus.QUEUED, commit=False)
         db.commit()
         db.refresh(run)
         return run
@@ -95,6 +138,11 @@ def create_and_queue_run(
         active = get_active_run(db, session_id, processing_profile)
         if active is not None:
             return active
+        existing_key = get_idempotent_run(db, session_id, key) if key is not None else None
+        if existing_key is not None:
+            if existing_key.request_fingerprint != fingerprint:
+                raise analysis_error("IDEMPOTENCY_KEY_REUSED")
+            return existing_key
         raise analysis_error("ACTIVE_ANALYSIS_RUN_EXISTS")
 
 
@@ -120,6 +168,12 @@ def _clear_lease(run: AnalysisRun) -> None:
 
 
 def _expire_or_requeue(db: Session, run: AnalysisRun, now: datetime) -> bool:
+    if (
+        run.status != AnalysisRunStatus.RUNNING.value
+        or _aware(run.lease_expires_at) is None
+        or _aware(run.lease_expires_at) > now
+    ):
+        return False
     if run.attempt >= run.max_attempts:
         require_analysis_transition(AnalysisRunStatus.RUNNING, AnalysisRunStatus.FAILED)
         run.status = AnalysisRunStatus.FAILED.value
@@ -144,8 +198,6 @@ def reclaim_expired_jobs(db: Session) -> int:
     changed = 0
     for run in get_expired_running(db, now):
         if _expire_or_requeue(db, run, now):
-            changed += 1
-        else:
             changed += 1
     db.commit()
     return changed
@@ -183,10 +235,16 @@ def claim_next_job(
     return run, token
 
 
-def _require_lease(db: Session, run_id: UUID, worker_id: str, token: str) -> AnalysisRun:
-    run = get_analysis_run(db, run_id)
+def _require_lease(
+    db: Session, run_id: UUID, worker_id: str, token: str, *, allow_cancel: bool = False
+) -> AnalysisRun:
+    run = get_run(db, run_id, for_update=True)
+    if run is None:
+        raise PlatformError(404, "ANALYSIS_RUN_NOT_FOUND", "analysis run not found")
     if run.status != AnalysisRunStatus.RUNNING.value:
         raise analysis_error("ANALYSIS_LEASE_INVALID")
+    if run.cancel_requested_at is not None and not allow_cancel:
+        raise analysis_error("ANALYSIS_CANCELLATION_INVALID")
     if run.lease_owner != _worker(worker_id) or not token or run.lease_token != token:
         raise analysis_error("ANALYSIS_LEASE_INVALID")
     if _aware(run.lease_expires_at) is not None and _aware(run.lease_expires_at) <= _now():
@@ -204,12 +262,16 @@ def heartbeat(db: Session, run_id: UUID, worker_id: str, token: str) -> Analysis
     return run
 
 
-def _safe_manifest(value: str | None) -> str | None:
+def _safe_manifest(value: str | None, prefix: str) -> str | None:
     if value is None:
         return None
-    if len(value) > 2048 or "?" in value or urlparse(value).scheme:
+    if len(value) > 2048:
         raise analysis_error("ARTIFACT_METADATA_INVALID")
-    return value
+    candidate = value if value.startswith(prefix) else f"{prefix}{value}"
+    try:
+        return validate_object_key(candidate, prefix)
+    except ValueError as exc:
+        raise analysis_error("ARTIFACT_METADATA_INVALID") from exc
 
 
 def _validate_artifacts(run: AnalysisRun, artifacts: list[dict]) -> list[Artifact]:
@@ -225,9 +287,12 @@ def _validate_artifacts(run: AnalysisRun, artifacts: list[dict]) -> list[Artifac
             sha256 = str(item["sha256"])
         except (KeyError, TypeError, ValueError) as exc:
             raise analysis_error("ARTIFACT_METADATA_INVALID") from exc
+        try:
+            canonical_key = validate_object_key(key, prefix)
+        except ValueError as exc:
+            raise analysis_error("ARTIFACT_METADATA_INVALID") from exc
         if (
-            not key.startswith(prefix)
-            or "?" in key
+            key != canonical_key
             or key in keys
             or size <= 0
             or not SHA256_RE.fullmatch(sha256)
@@ -240,7 +305,7 @@ def _validate_artifacts(run: AnalysisRun, artifacts: list[dict]) -> list[Artifac
             Artifact(
                 analysis_run_id=run.id,
                 kind=kind.value,
-                object_key=key,
+                object_key=canonical_key,
                 media_type=media_type,
                 schema_version=item.get("schema_version"),
                 size_bytes=size,
@@ -261,11 +326,13 @@ def _finalize(
     result_manifest: str | None = None,
 ) -> AnalysisRun:
     run = _require_lease(db, run_id, worker_id, token)
+    if run.cancel_requested_at is not None:
+        raise analysis_error("ANALYSIS_CANCELLATION_INVALID")
     if target in {AnalysisRunStatus.COMPLETE, AnalysisRunStatus.PARTIAL}:
         if bundle_fingerprint is not None and not SHA256_RE.fullmatch(bundle_fingerprint):
             raise analysis_error("ARTIFACT_METADATA_INVALID")
         run.artifacts.extend(_validate_artifacts(run, artifacts))
-        run.result_manifest = _safe_manifest(result_manifest)
+        run.result_manifest = _safe_manifest(result_manifest, f"runs/{run.id}/bundle/")
         run.bundle_fingerprint = bundle_fingerprint.lower() if bundle_fingerprint else None
     require_analysis_transition(AnalysisRunStatus.RUNNING, target)
     now = _now()
@@ -321,11 +388,14 @@ def fail_run(
     run = _require_lease(db, run_id, worker_id, token)
     now = _now()
     require_analysis_transition(AnalysisRunStatus.RUNNING, AnalysisRunStatus.FAILED)
+    if run.cancel_requested_at is not None:
+        raise analysis_error("ANALYSIS_CANCELLATION_INVALID")
     run.status = AnalysisRunStatus.FAILED.value
     run.completed_at = now
     run.terminal_at = now
-    run.error_code = re.sub(r"[^A-Z0-9_:-]", "_", error_code.upper())[:80] or "WORKER_FAILED"
-    run.error_message = re.sub(r"[\r\n\t]", " ", error_message)[:500] or "analysis worker failed"
+    normalized_code = re.sub(r"[^A-Z0-9_:-]", "_", error_code.upper())[:80]
+    run.error_code = normalized_code if normalized_code in PUBLIC_FAILURE_CODES else "WORKER_FAILED"
+    run.error_message = PUBLIC_FAILURE_CODES[run.error_code]
     _clear_lease(run)
     session = _session_for_run(db, run)
     if session.status == SessionStatus.PROCESSING.value:
@@ -339,7 +409,9 @@ def fail_run(
 
 
 def request_cancellation(db: Session, run_id: UUID) -> AnalysisRun:
-    run = get_analysis_run(db, run_id)
+    run = get_run(db, run_id, for_update=True)
+    if run is None:
+        raise PlatformError(404, "ANALYSIS_RUN_NOT_FOUND", "analysis run not found")
     if run.status in {AnalysisRunStatus.PENDING.value, AnalysisRunStatus.QUEUED.value}:
         require_analysis_transition(AnalysisRunStatus(run.status), AnalysisRunStatus.CANCELLED)
         now = _now()
@@ -360,7 +432,7 @@ def request_cancellation(db: Session, run_id: UUID) -> AnalysisRun:
 
 
 def acknowledge_cancellation(db: Session, run_id: UUID, worker_id: str, token: str) -> AnalysisRun:
-    run = _require_lease(db, run_id, worker_id, token)
+    run = _require_lease(db, run_id, worker_id, token, allow_cancel=True)
     if run.cancel_requested_at is None:
         raise analysis_error("ANALYSIS_CANCELLATION_INVALID")
     require_analysis_transition(AnalysisRunStatus.RUNNING, AnalysisRunStatus.CANCELLED)

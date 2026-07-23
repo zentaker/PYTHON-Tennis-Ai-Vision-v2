@@ -10,8 +10,16 @@ _TRANSITIONS: dict[SessionStatus, frozenset[SessionStatus]] = {
     SessionStatus.UPLOADED: frozenset({SessionStatus.QUEUED}),
     SessionStatus.QUEUED: frozenset({SessionStatus.PROCESSING}),
     SessionStatus.PROCESSING: frozenset(
-        {SessionStatus.COMPLETE, SessionStatus.PARTIAL, SessionStatus.FAILED}
+        {
+            SessionStatus.COMPLETE,
+            SessionStatus.PARTIAL,
+            SessionStatus.FAILED,
+            SessionStatus.QUEUED,
+        }
     ),
+    SessionStatus.COMPLETE: frozenset({SessionStatus.QUEUED}),
+    SessionStatus.PARTIAL: frozenset({SessionStatus.QUEUED}),
+    SessionStatus.FAILED: frozenset({SessionStatus.QUEUED}),
 }
 
 

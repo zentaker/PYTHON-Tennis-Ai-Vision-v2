@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from pathlib import PurePosixPath
+from urllib.parse import unquote, urlsplit
 from uuid import UUID
 
 _SAFE_NAME = re.compile(r"[^A-Za-z0-9._-]+")
@@ -18,7 +19,19 @@ def safe_filename(name: str) -> str:
 
 
 def validate_object_key(key: str, prefix: str | None = None) -> str:
-    if not key or key.startswith("/") or "\\" in key or ".." in key:
+    if not key or key.startswith("/") or "\\" in key or "//" in key:
+        raise ValueError("unsafe object key")
+    decoded = unquote(key)
+    parsed = urlsplit(decoded)
+    if (
+        decoded != key
+        or parsed.scheme
+        or parsed.netloc
+        or parsed.query
+        or parsed.fragment
+        or re.match(r"^[A-Za-z]:/", decoded)
+        or any(ord(char) < 32 or ord(char) == 127 for char in decoded)
+    ):
         raise ValueError("unsafe object key")
     path = PurePosixPath(key)
     if any(part in {"", ".", ".."} for part in path.parts):

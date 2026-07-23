@@ -3,6 +3,20 @@
     "schemas": {
       "AnalysisRunCreate": {
         "properties": {
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key"
+          },
           "max_attempts": {
             "default": 3,
             "maximum": 10.0,
@@ -115,6 +129,17 @@
             "title": "Id",
             "type": "string"
           },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key"
+          },
           "input_video_id": {
             "anyOf": [
               {
@@ -212,6 +237,7 @@
           "input_video_id",
           "status",
           "processing_profile",
+          "idempotency_key",
           "attempt",
           "max_attempts",
           "queued_at",
@@ -417,6 +443,17 @@
                         "code": "ACTIVE_ANALYSIS_RUN_EXISTS",
                         "details": {},
                         "message": "an active analysis run already exists",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "IDEMPOTENCY_KEY_REUSED": {
+                    "summary": "IDEMPOTENCY_KEY_REUSED",
+                    "value": {
+                      "error": {
+                        "code": "IDEMPOTENCY_KEY_REUSED",
+                        "details": {},
+                        "message": "idempotency key was reused with a different request",
                         "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
                       }
                     }

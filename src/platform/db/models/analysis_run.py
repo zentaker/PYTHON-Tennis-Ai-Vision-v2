@@ -23,9 +23,28 @@ class AnalysisRun(Base):
             postgresql_where=text("status IN ('PENDING', 'QUEUED', 'RUNNING')"),
             sqlite_where=text("status IN ('PENDING', 'QUEUED', 'RUNNING')"),
         ),
+        Index(
+            "uq_analysis_runs_active_session",
+            "session_id",
+            unique=True,
+            postgresql_where=text("status IN ('PENDING', 'QUEUED', 'RUNNING')"),
+            sqlite_where=text("status IN ('PENDING', 'QUEUED', 'RUNNING')"),
+        ),
         CheckConstraint(
             "attempt >= 0 AND max_attempts >= 1 AND attempt <= max_attempts",
             name="ck_analysis_runs_attempt_bounds",
+        ),
+        CheckConstraint(
+            "status IN ('PENDING', 'QUEUED', 'RUNNING', 'COMPLETE', 'PARTIAL', 'FAILED', 'CANCELLED')",
+            name="ck_analysis_runs_status",
+        ),
+        Index(
+            "uq_analysis_runs_idempotency_key",
+            "session_id",
+            "idempotency_key",
+            unique=True,
+            postgresql_where=text("idempotency_key IS NOT NULL"),
+            sqlite_where=text("idempotency_key IS NOT NULL"),
         ),
     )
 
@@ -36,6 +55,8 @@ class AnalysisRun(Base):
     )
     status: Mapped[str] = mapped_column(String(32), default=AnalysisRunStatus.PENDING.value)
     processing_profile: Mapped[str] = mapped_column(String(80), default="STANDARD")
+    idempotency_key: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    request_fingerprint: Mapped[str | None] = mapped_column(String(64), nullable=True)
     attempt: Mapped[int] = mapped_column(default=0)
     max_attempts: Mapped[int] = mapped_column(default=3)
     queued_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -57,7 +78,11 @@ class AnalysisRun(Base):
     result_manifest: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow
+        DateTime(timezone=True),
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+        nullable=False,
+        server_default=text("CURRENT_TIMESTAMP"),
     )
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

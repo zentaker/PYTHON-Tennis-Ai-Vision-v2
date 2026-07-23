@@ -60,6 +60,7 @@ def _response(run) -> dict[str, Any]:
         "input_video_id": run.input_video_id,
         "status": run.status,
         "processing_profile": run.processing_profile,
+        "idempotency_key": run.idempotency_key,
         "attempt": run.attempt,
         "max_attempts": run.max_attempts,
         "queued_at": run.queued_at,
@@ -85,7 +86,9 @@ def _response(run) -> dict[str, Any]:
     operation_id="requestAnalysisRun",
     summary="Request an analysis run",
     description="Idempotently enqueue a future analysis worker run for an uploaded session.",
-    responses=_analysis_error_responses("SESSION_NOT_READY_FOR_ANALYSIS", "ACTIVE_ANALYSIS_RUN_EXISTS"),
+    responses=_analysis_error_responses(
+        "SESSION_NOT_READY_FOR_ANALYSIS", "ACTIVE_ANALYSIS_RUN_EXISTS", "IDEMPOTENCY_KEY_REUSED"
+    ),
 )
 def request_run(
     payload: AnalysisRunCreate = Body(...), database=Depends(db)
@@ -96,6 +99,7 @@ def request_run(
             payload.session_id,
             payload.processing_profile.value,
             payload.max_attempts,
+            payload.idempotency_key,
         )
     )
 

@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+import logging
+from sqlalchemy import update
+from sqlalchemy.exc import IntegrityError
 
 import pytest
 from sqlalchemy import create_engine
@@ -8,7 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from src.platform.db.base import Base
-from src.platform.db.models import SessionRecord, Video
+from src.platform.db.models import AnalysisRun, SessionRecord, Video
 from src.platform.domain.errors import PlatformError
 from src.platform.services.analysis_jobs import (
     LEASE_SECONDS,
@@ -19,7 +22,9 @@ from src.platform.services.analysis_jobs import (
     heartbeat,
     reclaim_expired_jobs,
     request_cancellation,
+    partial_run,
 )
+from src.platform.services.worker_contract import WorkerContractClient
 
 
 @pytest.fixture()
@@ -200,10 +205,146 @@ def test_cancellation_is_cooperative(database, uploaded_session):
     assert cancelled.status == "CANCELLED"
 
 
-def test_failure_message_is_sanitized(database, uploaded_session):
+def test_failure_message_is_sanitized(database, uploaded_session, caplog):
     run = create_and_queue_run(database, uploaded_session.id, "STANDARD")
     _, token = claim_next_job(database, "worker-a")
-    failed = fail_run(database, run.id, "worker-a", token, "bad code\nwith path", "line\tsecret")
+    with caplog.at_level(logging.INFO):
+        failed = fail_run(
+            database,
+            run.id,
+            "worker-a",
+            token,
+            "bad code\nwith path https://signed.invalid/?token=secret",
+            "line\t/local/private.pem\nAuthorization: Bearer secret",
+        )
     assert failed.status == "FAILED"
     assert "\n" not in failed.error_code and "\t" not in failed.error_message
+    assert "secret" not in failed.error_message.lower()
+    assert "/local" not in failed.error_message
+    assert "secret" not in caplog.text.lower()
     assert uploaded_session.status == "FAILED"
+
+
+def test_partial_worker_contract_and_terminal_heartbeat(database, uploaded_session):
+    run = create_and_queue_run(database, uploaded_session.id, "STANDARD")
+    worker = WorkerContractClient(database, "worker-contract")
+    assert worker.claim().id == run.id
+    partial = worker.partial([_artifact(run.id)], "d" * 64, f"runs/{run.id}/bundle/manifest.json")
+    assert partial.status == "PARTIAL"
+    with pytest.raises(PlatformError) as error:
+        worker.heartbeat()
+    assert error.value.code == "ANALYSIS_LEASE_INVALID"
+    with pytest.raises(PlatformError):
+        worker.partial([_artifact(run.id)])
+    assert uploaded_session.status == "PARTIAL"
+
+
+def test_stale_worker_cannot_complete_or_publish_after_reclaim(database, uploaded_session):
+    run = create_and_queue_run(database, uploaded_session.id, "STANDARD", max_attempts=2)
+    _, old_token = claim_next_job(database, "worker-old")
+    run.lease_expires_at = datetime.now(timezone.utc) - timedelta(seconds=1)
+    database.commit()
+    _, new_token = claim_next_job(database, "worker-new")
+    assert new_token != old_token
+    with pytest.raises(PlatformError) as error:
+        complete_run(database, run.id, "worker-old", old_token, [_artifact(run.id)])
+    assert error.value.code in {"ANALYSIS_LEASE_INVALID", "ANALYSIS_LEASE_EXPIRED"}
+    with pytest.raises(PlatformError):
+        heartbeat(database, run.id, "worker-old", old_token)
+    assert run.status == "RUNNING"
+
+
+def test_artifact_key_matrix_and_cross_run_rejection(database, uploaded_session):
+    run = create_and_queue_run(database, uploaded_session.id, "STANDARD")
+    _, token = claim_next_job(database, "worker-a")
+    invalid_keys = (
+        f"runs/{run.id}/bundle/../escape.json",
+        f"runs/{run.id}/bundle/%2e%2e/escape.json",
+        f"runs/{run.id}/bundle//double.json",
+        f"runs/{run.id}/bundle/\\windows.json",
+        f"runs/{run.id}/bundle/file.json?signature=x",
+        f"runs/{run.id}/bundle/file.json#fragment",
+        "file:///tmp/escape.json",
+        "https://signed.invalid/file.json",
+        "/tmp/local.json",
+    )
+    for key in invalid_keys:
+        with pytest.raises(PlatformError) as error:
+            complete_run(
+                database,
+                run.id,
+                "worker-a",
+                token,
+                [{**_artifact(run.id), "object_key": key}],
+            )
+        assert error.value.code == "ARTIFACT_METADATA_INVALID"
+    from uuid import uuid4
+
+    other_id = uuid4()
+    with pytest.raises(PlatformError):
+        complete_run(
+            database,
+            run.id,
+            "worker-a",
+            token,
+            [_artifact(other_id)],
+        )
+
+
+def test_cancellation_blocks_terminal_worker_operations(database, uploaded_session):
+    run = create_and_queue_run(database, uploaded_session.id, "STANDARD")
+    _, token = claim_next_job(database, "worker-a")
+    request_cancellation(database, run.id)
+    for operation in (
+        lambda: heartbeat(database, run.id, "worker-a", token),
+        lambda: complete_run(database, run.id, "worker-a", token, [_artifact(run.id)]),
+        lambda: partial_run(database, run.id, "worker-a", token, [_artifact(run.id)]),
+        lambda: fail_run(database, run.id, "worker-a", token, "WORKER_FAILED", "ignored"),
+    ):
+        with pytest.raises(PlatformError) as error:
+            operation()
+        assert error.value.code == "ANALYSIS_CANCELLATION_INVALID"
+    from src.platform.services.analysis_jobs import acknowledge_cancellation
+
+    cancelled = acknowledge_cancellation(database, run.id, "worker-a", token)
+    assert cancelled.status == "CANCELLED"
+    with pytest.raises(PlatformError) as error:
+        request_cancellation(database, run.id)
+    assert error.value.code == "ANALYSIS_CANCELLATION_INVALID"
+
+
+def test_processing_profiles_and_idempotency_key_policy(database, uploaded_session):
+    first = create_and_queue_run(
+        database, uploaded_session.id, "STANDARD", idempotency_key="request-1"
+    )
+    assert first.status == "QUEUED"
+    with pytest.raises(PlatformError) as error:
+        create_and_queue_run(
+            database, uploaded_session.id, "STANDARD", max_attempts=2, idempotency_key="request-1"
+        )
+    assert error.value.code == "IDEMPOTENCY_KEY_REUSED"
+    claimed, token = claim_next_job(database, "worker-a")
+    fail_run(database, claimed.id, "worker-a", token, "WORKER_FAILED", "ignored")
+    fast = create_and_queue_run(
+        database, uploaded_session.id, "FAST", idempotency_key="request-fast"
+    )
+    assert fast.status == "QUEUED"
+
+
+def test_unkeyed_terminal_requests_are_not_collapsed(database, uploaded_session):
+    run = create_and_queue_run(database, uploaded_session.id, "STANDARD")
+    claimed, token = claim_next_job(database, "worker-a")
+    fail_run(database, claimed.id, "worker-a", token, "WORKER_FAILED", "ignored")
+    rerun = create_and_queue_run(database, uploaded_session.id, "STANDARD")
+    assert rerun.id != run.id and rerun.status == "QUEUED"
+
+
+def test_database_state_constraint_rejects_impossible_status(database, uploaded_session):
+    run = create_and_queue_run(database, uploaded_session.id, "STANDARD")
+    with pytest.raises(IntegrityError):
+        database.execute(
+            update(AnalysisRun).where(AnalysisRun.id == run.id).values(status="IMPOSSIBLE")
+        )
+        database.commit()
+    database.rollback()
+    assert database.get(AnalysisRun, run.id).status == "QUEUED"

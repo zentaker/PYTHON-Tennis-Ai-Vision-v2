@@ -34,5 +34,9 @@ Core Stage 2B is implemented on `agent/analysis-jobs-stage2b` from frozen main
 Alembic migration, idempotent queue, atomic lease/heartbeat/reclaim logic,
 artifact finalization contract, worker harness, OpenAPI snapshot, Compose
 analysis-api service, tests and documentation are present. No worker,
-inference, GPU, cloud, video or secret work was performed. Candidate gates are
-review-pending; do not merge or create a release tag before the release audit.
+inference, GPU, cloud, video or secret work was performed. The initial release
+audit was blocked at the previous head; remediation now covers real Compose
+HTTP/persistence evidence, row-locked lease reclaim and heartbeat semantics,
+strict artifact-key validation, sanitized worker failures, and atomic
+cancellation linearization. Candidate gates remain registered but not passed
+or frozen; do not merge or create a release tag before the next release audit.

@@ -12,8 +12,11 @@ from ..models import AnalysisRun, SessionRecord
 ACTIVE_STATUSES = ("PENDING", "QUEUED", "RUNNING")
 
 
-def get_run(db: Session, run_id: UUID) -> AnalysisRun | None:
-    return db.scalar(select(AnalysisRun).where(AnalysisRun.id == run_id))
+def get_run(db: Session, run_id: UUID, *, for_update: bool = False) -> AnalysisRun | None:
+    statement = select(AnalysisRun).where(AnalysisRun.id == run_id)
+    if for_update:
+        statement = statement.with_for_update()
+    return db.scalar(statement)
 
 
 def list_runs(db: Session, session_id: UUID) -> list[AnalysisRun]:
@@ -38,6 +41,26 @@ def get_active_run(
     )
 
 
+def get_idempotent_run(
+    db: Session, session_id: UUID, idempotency_key: str
+) -> AnalysisRun | None:
+    return db.scalar(
+        select(AnalysisRun).where(
+            AnalysisRun.session_id == session_id,
+            AnalysisRun.idempotency_key == idempotency_key,
+        )
+    )
+
+
+def has_active_run(db: Session, session_id: UUID) -> bool:
+    return db.scalar(
+        select(AnalysisRun.id).where(
+            AnalysisRun.session_id == session_id,
+            AnalysisRun.status.in_(ACTIVE_STATUSES),
+        ).limit(1)
+    ) is not None
+
+
 def get_expired_running(db: Session, now: datetime) -> list[AnalysisRun]:
     return list(
         db.scalars(
@@ -48,6 +71,7 @@ def get_expired_running(db: Session, now: datetime) -> list[AnalysisRun]:
                 AnalysisRun.lease_expires_at <= now,
             )
             .order_by(AnalysisRun.lease_expires_at, AnalysisRun.created_at)
+            .with_for_update(skip_locked=True)
         )
     )
 

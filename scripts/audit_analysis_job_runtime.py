@@ -20,10 +20,23 @@ def main() -> int:
         raise SystemExit("runtime audit must contain zero video/GPU work")
     if SECRET.search(path.read_text(encoding="utf-8")):
         raise SystemExit("runtime evidence contains a secret-like value")
-    required = {"state_machine", "idempotency", "lease_recovery", "artifact_validation"}
+    required = {
+        "state_machine",
+        "idempotency",
+        "lease_recovery",
+        "artifact_validation",
+        "concurrency",
+        "migration",
+        "http_persistence",
+        "stale_worker_race",
+        "security",
+    }
     missing = required.difference(payload.get("observations", {}))
     if missing:
         raise SystemExit(f"runtime evidence missing observations: {sorted(missing)}")
+    for field in ("base_sha", "head_sha", "migration_revision", "session_openapi_sha256", "analysis_openapi_sha256"):
+        if not payload.get(field):
+            raise SystemExit(f"runtime evidence missing {field}")
     print(json.dumps({"status": "observed", "observations": payload["observations"]}, sort_keys=True))
     return 0
 

@@ -12,6 +12,7 @@ class AnalysisRunCreate(BaseModel):
     session_id: UUID
     processing_profile: ProcessingProfile = ProcessingProfile.STANDARD
     max_attempts: int = Field(default=3, ge=1, le=10)
+    idempotency_key: str | None = Field(default=None, min_length=1, max_length=128, pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 
 
 class AnalysisRunResponse(BaseModel):
@@ -22,6 +23,7 @@ class AnalysisRunResponse(BaseModel):
     input_video_id: UUID | None
     status: AnalysisRunStatus
     processing_profile: ProcessingProfile
+    idempotency_key: str | None
     attempt: int
     max_attempts: int
     queued_at: datetime | None

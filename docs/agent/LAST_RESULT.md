@@ -117,16 +117,15 @@
 - Public candidate operations: `requestAnalysisRun`, `getAnalysisRun`,
   `listSessionAnalysisRuns`, `cancelAnalysisRun`. Internal operations are
   claim, heartbeat, complete, partial, fail and acknowledge cancellation.
-- Unit/HTTP contract result: 22 passed; Docker integration is an explicit
-  CI-only check and is skipped when no Compose runtime is available locally.
-- Analysis OpenAPI snapshot SHA-256:
-  `2998bccd54e8101cc7a072bdb1397846fb11b48046c9c3fe61890865c44ab6a5`.
-- Candidate gates registered: `STAGE2B_ANALYSIS_RUN_STATE_MACHINE_PASSED`,
-  `STAGE2B_IDEMPOTENT_JOB_ORCHESTRATION_PASSED`,
-  `STAGE2B_ATOMIC_WORKER_LEASE_PASSED`,
-  `STAGE2B_ARTIFACT_FINALIZATION_CONTRACT_PASSED`,
-  `STAGE2B_RUNTIME_SECURITY_AUDIT_PASSED`,
-  `ANALYSIS_JOB_API_V1_CONTRACT_PENDING_RELEASE_AUDIT`, and
-  `CORE_STAGE2B_ANALYSIS_ORCHESTRATION_CANDIDATE_READY_FOR_REVIEW`.
+- Initial release audit: `CORE_STAGE2B_RELEASE_AUDIT_BLOCKED` at the audited
+  head `d8b017d5939c89680665a861a4df5e4e6d20d1aa`; remediation is in progress
+  on the same branch and PR. Unit tests cover state, idempotency, leases,
+  artifact validation, cancellation and sanitized errors. Compose HTTP and
+  PostgreSQL/MinIO evidence remains a required CI gate and is never inferred
+  from local tests when Docker is unavailable.
+- Analysis OpenAPI snapshot SHA-256 after the idempotency-key contract change:
+  `329ad9092a1dbf115fe1722f06ea7141b787e454c96f43ec05e7149051087647`.
+- Candidate gates are registered but not passed or frozen pending re-audit;
+  internal worker operations remain non-public.
 - Cloud calls / GPU calls / inference / videos processed / spend: 0 / 0 / 0 / 0 / 0.
-- Next action: release audit and reviewer decision; no merge and no worker implementation.
+- Next action: complete remediation evidence and request a new release audit; no merge, freeze or worker implementation.

@@ -5,6 +5,7 @@ from .errors import PlatformError
 
 ANALYSIS_ERROR_DEFINITIONS: dict[str, tuple[int, str]] = {
     "ANALYSIS_RUN_NOT_FOUND": (404, "analysis run not found"),
+    "IDEMPOTENCY_KEY_REUSED": (409, "idempotency key was reused with a different request"),
     "SESSION_NOT_READY_FOR_ANALYSIS": (409, "session is not ready for analysis"),
     "ACTIVE_ANALYSIS_RUN_EXISTS": (409, "an active analysis run already exists"),
     "ANALYSIS_JOB_NOT_AVAILABLE": (409, "no analysis job is available"),

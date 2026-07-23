@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, Index, String, Uuid
+from sqlalchemy import BigInteger, CheckConstraint, DateTime, ForeignKey, Index, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..base import Base
@@ -11,7 +11,14 @@ from ..base import Base
 
 class Artifact(Base):
     __tablename__ = "artifacts"
-    __table_args__ = (Index("ix_artifacts_analysis_run_id", "analysis_run_id"),)
+    __table_args__ = (
+        Index("ix_artifacts_analysis_run_id", "analysis_run_id"),
+        CheckConstraint(
+            "kind IN ('SOURCE_VIDEO', 'ANALYSIS_BUNDLE', 'MANIFEST', 'SESSION', 'RALLIES', 'EVENTS', 'BALL_TRACK', 'COURT_MAP', 'METRICS', 'CLIP', 'THUMBNAIL', 'REPORT')",
+            name="ck_artifacts_kind",
+        ),
+        CheckConstraint("size_bytes > 0", name="ck_artifacts_size_positive"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     analysis_run_id: Mapped[uuid.UUID] = mapped_column(
