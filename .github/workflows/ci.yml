@@ -259,7 +259,7 @@ jobs:
             --openapi .artifacts/stage2b-analysis-jobs/openapi-validation.json \
             --session-openapi config/platform/session_api_v1.openapi.json \
             --base-sha b3703003fe2aa23f8703097b0dc155c7825f5363 \
-            --head-sha "$(git rev-parse HEAD)" \
+            --head-sha "${{ github.event.pull_request.head.sha || github.sha }}" \
             --migration-revision 0002_analysis_job_orchestration \
             --migration-report .artifacts/stage2a-session-platform/migration-report.json \
             --output .artifacts/stage2b-analysis-jobs/analysis-job-runtime.json
