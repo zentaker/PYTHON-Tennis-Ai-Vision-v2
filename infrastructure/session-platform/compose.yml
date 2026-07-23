@@ -96,10 +96,8 @@ services:
     ports:
       - "${ANALYSIS_API_PORT:-8001}:8001"
     depends_on:
-      postgres:
+      api:
         condition: service_healthy
-      minio-init:
-        condition: service_completed_successfully
     command: ["/app/infrastructure/session-platform/start-analysis-api.sh"]
     healthcheck:
       test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8001/api/v1/analysis/openapi.json', timeout=2)\""]
