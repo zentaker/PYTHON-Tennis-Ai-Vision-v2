@@ -36,6 +36,28 @@ Su ejecución real requiere pasar primero el [GPU provider acceptance gate](docs
 
 Roadmap completo: [ROADMAP.md](ROADMAP.md).
 
+## Core Stage 2A — Session Platform
+
+The local Session Platform foundation is accepted and published as the frozen
+Session API V1 contract. It provides FastAPI HTTP routes, PostgreSQL/Alembic
+metadata, MinIO/S3-compatible object storage, browser-routable presigned uploads,
+and a deterministic OpenAPI contract without loading the tracking or inference
+stack. Browser uploads use a public MinIO endpoint while API storage operations
+use an internal endpoint. See
+[docs/platform/STAGE2A_SESSION_PLATFORM.md](docs/platform/STAGE2A_SESSION_PLATFORM.md)
+and [docs/platform/LOCAL_DEVELOPMENT.md](docs/platform/LOCAL_DEVELOPMENT.md).
+
+Install the optional platform dependencies with `uv sync --extra platform`.
+The generated Postman client and local environment live in
+[docs/postman](docs/postman/README.md); OpenAPI remains their single source of
+truth. Stage 2A release evidence is 12 unit tests, 2 integration tests, and 44
+real HTTP observations (27 positive, 17 negative). CORS ran in
+`global_api_local_development` mode with a private bucket. This is local-only,
+not public Internet infrastructure: authentication and an analysis worker are
+not implemented, inference was not executed, no videos are versioned, and GPU,
+cloud, and spend are zero. The release tag is
+`tennisai-session-platform-v1.0.0`.
+
 ## Setup ligero en macOS
 
 El desarrollo de Stage 4, la documentacion y los tests no requieren tracker, PyTorch ni

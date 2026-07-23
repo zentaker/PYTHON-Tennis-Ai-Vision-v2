@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -88,6 +90,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 6
+          include-hidden-files: true
 
       - name: Publish Stage 1A single-rally import fixture
         uses: actions/upload-artifact@v4
@@ -144,6 +147,119 @@ jobs:
             docs/validation/assets/p1_gpu_retest_before_after.jpg
             docs/validation/P1_GPU_RETEST_VISUAL_AUDIT.md
             config/player_perception/p1_gpu_retest_result.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+
+  session-platform:
+    name: Core Stage 2A Session Platform
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install platform and test dependencies
+        run: uv sync --extra platform --extra dev
+
+      - name: Unit and contract tests
+        run: |
+          mkdir -p .artifacts/stage2a-session-platform
+          uv run --extra platform pytest tests/test_session_platform.py \
+            --junitxml=.artifacts/stage2a-session-platform/unit-test-report.xml
+          SOURCE_COMMIT="$(jq -r '.source_commit' config/platform/SESSION_API_SOURCE.json)"
+          uv run --extra platform python scripts/export_session_api_openapi.py \
+            --source-commit "$SOURCE_COMMIT"
+          uv run --extra platform python scripts/export_session_api_postman.py
+          uv run --extra platform python scripts/validate_session_api_contract.py
+          git diff --exit-code -- config/platform/session_api_v1.openapi.json config/platform/SESSION_API_SOURCE.json docs/postman/TennisAI-Session-API.postman_collection.json
+          uv run ruff check src/platform tests/test_session_platform.py scripts/export_session_api_openapi.py scripts/export_session_api_postman.py scripts/validate_session_api_contract.py
+
+      - name: Start PostgreSQL, MinIO and API container
+        env:
+          POSTGRES_PASSWORD: tennisai
+          S3_SECRET_KEY: minioadmin
+        run: |
+          docker compose -f infrastructure/session-platform/compose.yml up -d postgres minio minio-init
+          docker compose -f infrastructure/session-platform/compose.yml wait minio-init || {
+            docker compose -f infrastructure/session-platform/compose.yml logs --no-color minio-init
+            exit 1
+          }
+          docker compose -f infrastructure/session-platform/compose.yml logs --no-color minio-init
+          docker compose -f infrastructure/session-platform/compose.yml up -d --build api
+          docker compose -f infrastructure/session-platform/compose.yml logs --no-color api || true
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://localhost:8000/healthz >/dev/null; then break; fi
+            sleep 2
+          done
+          curl --fail --silent http://localhost:8000/healthz >/dev/null
+          docker compose -f infrastructure/session-platform/compose.yml ps
+          docker compose -f infrastructure/session-platform/compose.yml images --format json api \
+            > .artifacts/stage2a-session-platform/docker-images.json
+          uv run python -c 'import json; from pathlib import Path; p=Path(".artifacts/stage2a-session-platform/docker-images.json"); raw=p.read_text().strip(); rows=json.loads(raw) if raw.startswith("[") else [json.loads(line) for line in raw.splitlines() if line.strip()]; Path(".artifacts/stage2a-session-platform/docker-build-report.json").write_text(json.dumps({"status":"built","images":rows}, sort_keys=True)+"\n")'
+
+      - name: Apply migrations and run storage integration
+        env:
+          TENNISAI_DATABASE_URL: postgresql+psycopg://tennisai:tennisai@localhost:5432/tennisai
+          S3_ACCESS_KEY: minioadmin
+          S3_SECRET_KEY: minioadmin
+          TENNISAI_S3_INTERNAL_ENDPOINT_URL: http://localhost:9000
+          TENNISAI_S3_PUBLIC_ENDPOINT_URL: http://localhost:9000
+          TENNISAI_S3_ACCESS_KEY: minioadmin
+          TENNISAI_S3_SECRET_KEY: minioadmin
+          TENNISAI_S3_BUCKET: tennisai-local
+          RUN_SESSION_PLATFORM_HTTP_INTEGRATION: "1"
+          SESSION_PLATFORM_API_BASE_URL: http://localhost:8000
+          SESSION_PLATFORM_RUNTIME_RESULTS_PATH: .artifacts/stage2a-session-platform/runtime-results.json
+        run: |
+          uv run --extra platform tennisai platform migrate
+          uv run --extra platform alembic current > .artifacts/stage2a-session-platform/alembic-current.txt
+          uv run python -c 'import json; from pathlib import Path; p=Path(".artifacts/stage2a-session-platform/alembic-current.txt"); Path(".artifacts/stage2a-session-platform/migration-report.json").write_text(json.dumps({"status":"migrations_applied","service":"postgresql","alembic_current":p.read_text().strip()}, sort_keys=True)+"\n")'
+          uv run --extra platform tennisai platform doctor \
+            > .artifacts/stage2a-session-platform/doctor-report.json
+          uv run --extra platform pytest tests/test_session_platform_integration.py \
+            --junitxml=.artifacts/stage2a-session-platform/integration-test-report.xml
+          curl --fail --silent http://localhost:8000/api/v1/openapi.json >/dev/null
+          docker compose -f infrastructure/session-platform/compose.yml run --rm --no-deps \
+            --entrypoint /bin/sh minio-init -c \
+            'mc alias set local http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" >/dev/null && if cors_output=$(mc cors get "local/$S3_BUCKET"); then if printf "%s" "$cors_output" | grep -q "CORSConfiguration"; then echo cors_mode=bucket_policy; printf "%s\n" "$cors_output"; else echo cors_mode=global_api_local_development; mc admin config get local api; fi; else echo cors_mode=global_api_local_development; mc admin config get local api; fi && mc anonymous get "local/$S3_BUCKET"' \
+            > .artifacts/stage2a-session-platform/cors-policy-output.txt
+          uv run --extra platform python scripts/export_session_platform_runtime_evidence.py \
+            --integration-xml .artifacts/stage2a-session-platform/integration-test-report.xml \
+            --runtime-results .artifacts/stage2a-session-platform/runtime-results.json \
+            --doctor .artifacts/stage2a-session-platform/doctor-report.json \
+            --cors-policy-output .artifacts/stage2a-session-platform/cors-policy-output.txt \
+            --output-dir .artifacts/stage2a-session-platform
+
+      - name: Stop local services
+        if: always()
+        run: docker compose -f infrastructure/session-platform/compose.yml down -v
+
+      - name: Publish Stage 2A session platform evidence
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage2a-session-platform-evidence
+          path: |
+            config/platform/session_api_v1.openapi.json
+            config/platform/SESSION_API_SOURCE.json
+            docs/postman/TennisAI-Session-API.postman_collection.json
+            docs/postman/TennisAI-Local.postman_environment.json
+            docs/postman/README.md
+            .artifacts/stage2a-session-platform/unit-test-report.xml
+            .artifacts/stage2a-session-platform/integration-test-report.xml
+            .artifacts/stage2a-session-platform/migration-report.json
+            .artifacts/stage2a-session-platform/doctor-report.json
+            .artifacts/stage2a-session-platform/cors-report.json
+            .artifacts/stage2a-session-platform/presigned-endpoint-report.json
+            .artifacts/stage2a-session-platform/docker-build-report.json
+            .artifacts/stage2a-session-platform/security-summary.json
+            .artifacts/stage2a-session-platform/runtime-test-summary.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 6

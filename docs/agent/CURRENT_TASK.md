@@ -2,8 +2,31 @@
 
 Core Stage 1B — real Single Rally bundle accepted and released.
 
-The accepted `nivel_a2_01` bundle and all selected assets remain unchanged. Fixture
-publication is restricted to the exact Stage 1B path, uses owned staging and an
-atomic rename with rollback. The evidence, data and release gates passed. Session
-and rally remain `partial`, surface remains `unknown`, and calibration is approved
-2D. No 3D claim or inference was made. The next work is TennisWebAI Stage 0B.
+Core Stage 2A — Session Platform foundation is implemented on
+`agent/session-platform-stage2a` and is ready for final contract review. The FastAPI Session API
+V1, PostgreSQL/Alembic model, MinIO/S3 adapter, presigned upload lifecycle, CLI,
+OpenAPI candidate, Compose stack, tests and documentation are included. Docker
+was unavailable locally (`DOCKER_RUNTIME_MISSING`), so PostgreSQL/MinIO
+integration is explicitly pending locally; no inference, GPU, cloud, video or
+model work was performed.
+
+The API architecture addendum is implemented: FastAPI remains the HTTP layer;
+repositories isolate SQLAlchemy queries; routes return DTOs only; errors use a
+uniform request-ID envelope; structured request logging excludes presigned URLs
+and credentials; and the Postman collection/environment are derived and checked
+against the OpenAPI snapshot in CI.
+
+Runtime patch status: browser-facing public storage URLs, pinned MinIO images,
+build-time dependency installation, migration-gated API startup, real doctor
+checks and HTTP integration coverage are implemented. The final contract
+precision patch and derived runtime evidence semantics are implemented. The
+release audit passed as `CHATGPT_CORE_STAGE2A_RELEASE_AUDIT_PASSED`; Session API
+V1 is frozen as `SESSION_PLATFORM_API_V1_FROZEN` and Stage 2A is accepted as
+`CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED`.
+
+The patch fixes exact 64-hex SHA-256/fingerprint constraints, removes impossible
+session `INVALID_REQUEST` documentation, normalizes download signer failures to
+a safe HTTP 503 envelope, and keeps Postman upload metadata in collection
+variables only. The release tag is `tennisai-session-platform-v1.0.0`. The next
+action is TennisWebAI Stage 0C — Session Library and managed uploads; no Stage
+2B worker branch is created.

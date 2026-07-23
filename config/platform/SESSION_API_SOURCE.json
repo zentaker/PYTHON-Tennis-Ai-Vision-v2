@@ -1,0 +1,53 @@
+{
+  "api_style": "LAYERED_FASTAPI_COMPATIBLE_WITH_EXISTING_EXPRESS_MENTAL_MODEL",
+  "api_version": "v1",
+  "endpoints": [
+    "/api/v1/sessions",
+    "/api/v1/sessions/{session_id}",
+    "/api/v1/sessions/{session_id}/analysis-runs",
+    "/api/v1/sessions/{session_id}/artifacts",
+    "/api/v1/sessions/{session_id}/media",
+    "/api/v1/sessions/{session_id}/uploads",
+    "/api/v1/sessions/{session_id}/uploads/{video_id}/complete",
+    "/healthz"
+  ],
+  "gate": "SESSION_PLATFORM_API_V1_FROZEN",
+  "generated_at": "2026-07-22T00:00:00Z",
+  "operation_ids": [
+    "completeVideoUpload",
+    "createSession",
+    "getSession",
+    "getSessionMedia",
+    "healthCheck",
+    "initiateVideoUpload",
+    "listAnalysisRuns",
+    "listArtifacts",
+    "listSessions"
+  ],
+  "schemas": [
+    "AnalysisRunResponse",
+    "AnalysisRunStatus",
+    "AnalysisRunSummary",
+    "ArtifactKind",
+    "ArtifactResponse",
+    "ErrorPayload",
+    "ErrorResponse",
+    "IntegrityStatus",
+    "MediaResponse",
+    "ProcessingProfile",
+    "SessionCreate",
+    "SessionPage",
+    "SessionResponse",
+    "SessionStatus",
+    "Surface",
+    "UploadComplete",
+    "UploadCompleteResponse",
+    "UploadInitiate",
+    "UploadResponse",
+    "VideoContentType",
+    "VideoSummary"
+  ],
+  "sha256": "1747670500014598e6d18f5130e8c7f341323f4fe15f96559d9c5da0550f346b",
+  "source_commit": "d599e468f618d798916432b0f68ddb527969c80a",
+  "source_commit_is_ancestor_of_head": true
+}

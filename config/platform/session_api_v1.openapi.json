@@ -1,0 +1,1757 @@
+{
+  "components": {
+    "schemas": {
+      "AnalysisRunResponse": {
+        "properties": {
+          "bundle_fingerprint": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-fA-F]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bundle Fingerprint"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "core_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Core Version"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "processing_profile": {
+            "$ref": "#/components/schemas/ProcessingProfile"
+          },
+          "session_id": {
+            "format": "uuid",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AnalysisRunStatus"
+          }
+        },
+        "required": [
+          "id",
+          "session_id",
+          "status",
+          "processing_profile",
+          "created_at"
+        ],
+        "title": "AnalysisRunResponse",
+        "type": "object"
+      },
+      "AnalysisRunStatus": {
+        "enum": [
+          "PENDING",
+          "QUEUED",
+          "RUNNING",
+          "COMPLETE",
+          "PARTIAL",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "title": "AnalysisRunStatus",
+        "type": "string"
+      },
+      "AnalysisRunSummary": {
+        "properties": {
+          "bundle_fingerprint": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-fA-F]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bundle Fingerprint"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "processing_profile": {
+            "$ref": "#/components/schemas/ProcessingProfile"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AnalysisRunStatus"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "processing_profile"
+        ],
+        "title": "AnalysisRunSummary",
+        "type": "object"
+      },
+      "ArtifactKind": {
+        "enum": [
+          "SOURCE_VIDEO",
+          "ANALYSIS_BUNDLE",
+          "MANIFEST",
+          "SESSION",
+          "RALLIES",
+          "EVENTS",
+          "BALL_TRACK",
+          "COURT_MAP",
+          "METRICS",
+          "CLIP",
+          "THUMBNAIL",
+          "REPORT"
+        ],
+        "title": "ArtifactKind",
+        "type": "string"
+      },
+      "ArtifactResponse": {
+        "properties": {
+          "analysis_run_id": {
+            "format": "uuid",
+            "title": "Analysis Run Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ArtifactKind"
+          },
+          "media_type": {
+            "minLength": 1,
+            "title": "Media Type",
+            "type": "string"
+          },
+          "object_key": {
+            "minLength": 1,
+            "title": "Object Key",
+            "type": "string"
+          },
+          "schema_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Version"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-fA-F]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "size_bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "analysis_run_id",
+          "kind",
+          "object_key",
+          "media_type",
+          "size_bytes",
+          "sha256",
+          "created_at"
+        ],
+        "title": "ArtifactResponse",
+        "type": "object"
+      },
+      "ErrorPayload": {
+        "properties": {
+          "code": {
+            "examples": [
+              "SESSION_NOT_FOUND"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "details": {
+            "additionalProperties": true,
+            "title": "Details",
+            "type": "object"
+          },
+          "message": {
+            "examples": [
+              "session not found"
+            ],
+            "title": "Message",
+            "type": "string"
+          },
+          "request_id": {
+            "examples": [
+              "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+            ],
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "request_id"
+        ],
+        "title": "ErrorPayload",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorPayload"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "IntegrityStatus": {
+        "enum": [
+          "CLIENT_DECLARED",
+          "STORAGE_VERIFIED",
+          "HASH_VERIFIED",
+          "FAILED"
+        ],
+        "title": "IntegrityStatus",
+        "type": "string"
+      },
+      "MediaResponse": {
+        "properties": {
+          "content_type": {
+            "$ref": "#/components/schemas/VideoContentType"
+          },
+          "download_url": {
+            "title": "Download Url",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "integrity_status": {
+            "$ref": "#/components/schemas/IntegrityStatus"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-fA-F]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "download_url",
+          "expires_at",
+          "content_type",
+          "size_bytes",
+          "integrity_status"
+        ],
+        "title": "MediaResponse",
+        "type": "object"
+      },
+      "ProcessingProfile": {
+        "enum": [
+          "FAST",
+          "STANDARD",
+          "TACTICAL"
+        ],
+        "title": "ProcessingProfile",
+        "type": "string"
+      },
+      "SessionCreate": {
+        "properties": {
+          "processing_profile": {
+            "$ref": "#/components/schemas/ProcessingProfile",
+            "default": "STANDARD"
+          },
+          "surface": {
+            "$ref": "#/components/schemas/Surface",
+            "default": "unknown"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "SessionCreate",
+        "type": "object"
+      },
+      "SessionPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SessionResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "SessionPage",
+        "type": "object"
+      },
+      "SessionResponse": {
+        "properties": {
+          "bundle_fingerprint": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-fA-F]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bundle Fingerprint"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "latest_analysis_run": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalysisRunSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "processing_profile": {
+            "$ref": "#/components/schemas/ProcessingProfile"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SessionStatus"
+          },
+          "surface": {
+            "$ref": "#/components/schemas/Surface"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "video": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VideoSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "status",
+          "processing_profile",
+          "surface",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "SessionResponse",
+        "type": "object"
+      },
+      "SessionStatus": {
+        "enum": [
+          "DRAFT",
+          "AWAITING_UPLOAD",
+          "UPLOADING",
+          "UPLOADED",
+          "QUEUED",
+          "PROCESSING",
+          "COMPLETE",
+          "PARTIAL",
+          "FAILED"
+        ],
+        "title": "SessionStatus",
+        "type": "string"
+      },
+      "Surface": {
+        "enum": [
+          "clay",
+          "hard",
+          "grass",
+          "carpet",
+          "unknown"
+        ],
+        "title": "Surface",
+        "type": "string"
+      },
+      "UploadComplete": {
+        "properties": {
+          "content_type": {
+            "$ref": "#/components/schemas/VideoContentType"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-fA-F]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256"
+          },
+          "size_bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "size_bytes",
+          "content_type"
+        ],
+        "title": "UploadComplete",
+        "type": "object"
+      },
+      "UploadCompleteResponse": {
+        "properties": {
+          "integrity_status": {
+            "$ref": "#/components/schemas/IntegrityStatus"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SessionStatus"
+          },
+          "video_id": {
+            "format": "uuid",
+            "title": "Video Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "video_id",
+          "status",
+          "integrity_status"
+        ],
+        "title": "UploadCompleteResponse",
+        "type": "object"
+      },
+      "UploadInitiate": {
+        "properties": {
+          "content_type": {
+            "$ref": "#/components/schemas/VideoContentType"
+          },
+          "display_name": {
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Display Name",
+            "type": "string"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-fA-F]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256"
+          },
+          "size_bytes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "display_name",
+          "content_type",
+          "size_bytes"
+        ],
+        "title": "UploadInitiate",
+        "type": "object"
+      },
+      "UploadResponse": {
+        "properties": {
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "method": {
+            "title": "Method",
+            "type": "string"
+          },
+          "object_key": {
+            "title": "Object Key",
+            "type": "string"
+          },
+          "required_headers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Required Headers",
+            "type": "object"
+          },
+          "upload_url": {
+            "title": "Upload Url",
+            "type": "string"
+          },
+          "video_id": {
+            "format": "uuid",
+            "title": "Video Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "video_id",
+          "object_key",
+          "upload_url",
+          "method",
+          "required_headers",
+          "expires_at"
+        ],
+        "title": "UploadResponse",
+        "type": "object"
+      },
+      "VideoContentType": {
+        "enum": [
+          "video/mp4",
+          "video/quicktime"
+        ],
+        "title": "VideoContentType",
+        "type": "string"
+      },
+      "VideoSummary": {
+        "properties": {
+          "content_type": {
+            "$ref": "#/components/schemas/VideoContentType"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "integrity_status": {
+            "$ref": "#/components/schemas/IntegrityStatus"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-fA-F]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "display_name",
+          "content_type",
+          "size_bytes",
+          "integrity_status"
+        ],
+        "title": "VideoSummary",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Local-first Session API V1 candidate",
+    "title": "TennisAI Session Platform",
+    "version": "v1"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/sessions": {
+      "get": {
+        "description": "List sessions in creation order with an opaque cursor for pagination.",
+        "operationId": "listSessions",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/SessionStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "order",
+            "required": false,
+            "schema": {
+              "default": "newest",
+              "pattern": "^(newest|oldest)$",
+              "title": "Order",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "items": []
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/SessionPage"
+                }
+              }
+            },
+            "description": "Session page"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_CURSOR": {
+                    "summary": "INVALID_CURSOR",
+                    "value": {
+                      "error": {
+                        "code": "INVALID_CURSOR",
+                        "details": {},
+                        "message": "cursor is invalid",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "INVALID_CURSOR: The pagination cursor cannot be decoded."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "VALIDATION_ERROR: One or more request fields failed validation."
+          }
+        },
+        "summary": "List sessions",
+        "tags": [
+          "Sessions"
+        ]
+      },
+      "post": {
+        "description": "Create metadata for a new analysis session before uploading its source video.",
+        "operationId": "createSession",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "standard": {
+                  "summary": "Standard session",
+                  "value": {
+                    "processing_profile": "STANDARD",
+                    "surface": "unknown",
+                    "title": "Madrid practice"
+                  }
+                }
+              },
+              "schema": {
+                "$ref": "#/components/schemas/SessionCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "DRAFT"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            },
+            "description": "Session created"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "VALIDATION_ERROR: One or more request fields failed validation."
+          }
+        },
+        "summary": "Create a session",
+        "tags": [
+          "Sessions"
+        ]
+      }
+    },
+    "/api/v1/sessions/{session_id}": {
+      "get": {
+        "description": "Return session metadata and the source-video summary when available.",
+        "operationId": "getSession",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "DRAFT"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/SessionResponse"
+                }
+              }
+            },
+            "description": "Session metadata"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "SESSION_NOT_FOUND": {
+                    "summary": "SESSION_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "SESSION_NOT_FOUND",
+                        "details": {},
+                        "message": "session not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "SESSION_NOT_FOUND: The requested session does not exist."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "VALIDATION_ERROR: One or more request fields failed validation."
+          }
+        },
+        "summary": "Get a session",
+        "tags": [
+          "Sessions"
+        ]
+      }
+    },
+    "/api/v1/sessions/{session_id}/analysis-runs": {
+      "get": {
+        "description": "List analysis-run metadata for a session.",
+        "operationId": "listAnalysisRuns",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": [],
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AnalysisRunResponse"
+                  },
+                  "title": "Response Listanalysisruns",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Analysis runs"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "SESSION_NOT_FOUND": {
+                    "summary": "SESSION_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "SESSION_NOT_FOUND",
+                        "details": {},
+                        "message": "session not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "SESSION_NOT_FOUND: The requested session does not exist."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "VALIDATION_ERROR: One or more request fields failed validation."
+          }
+        },
+        "summary": "List analysis runs",
+        "tags": [
+          "Analysis Runs"
+        ]
+      }
+    },
+    "/api/v1/sessions/{session_id}/artifacts": {
+      "get": {
+        "description": "List analysis bundle artifacts linked to the session's analysis runs.",
+        "operationId": "listArtifacts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": [],
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ArtifactResponse"
+                  },
+                  "title": "Response Listartifacts",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Artifacts"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "SESSION_NOT_FOUND": {
+                    "summary": "SESSION_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "SESSION_NOT_FOUND",
+                        "details": {},
+                        "message": "session not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "SESSION_NOT_FOUND: The requested session does not exist."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "VALIDATION_ERROR: One or more request fields failed validation."
+          }
+        },
+        "summary": "List session artifacts",
+        "tags": [
+          "Artifacts"
+        ]
+      }
+    },
+    "/api/v1/sessions/{session_id}/media": {
+      "get": {
+        "description": "Return a short-lived presigned download URL for the session source video.",
+        "operationId": "getSessionMedia",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "download_url": "https://storage.example/object",
+                  "integrity_status": "STORAGE_VERIFIED"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/MediaResponse"
+                }
+              }
+            },
+            "description": "Presigned media URL"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "SESSION_NOT_FOUND": {
+                    "summary": "SESSION_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "SESSION_NOT_FOUND",
+                        "details": {},
+                        "message": "session not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "VIDEO_NOT_FOUND": {
+                    "summary": "VIDEO_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "VIDEO_NOT_FOUND",
+                        "details": {},
+                        "message": "video not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "SESSION_NOT_FOUND: The requested session does not exist.; VIDEO_NOT_FOUND: The requested video does not exist in the session."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "VALIDATION_ERROR: One or more request fields failed validation."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "STORAGE_SIGNING_FAILED": {
+                    "summary": "STORAGE_SIGNING_FAILED",
+                    "value": {
+                      "error": {
+                        "code": "STORAGE_SIGNING_FAILED",
+                        "details": {},
+                        "message": "storage could not sign the requested URL",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "STORAGE_SIGNING_FAILED: Object storage could not create a presigned URL."
+          }
+        },
+        "summary": "Get session media",
+        "tags": [
+          "Media"
+        ]
+      }
+    },
+    "/api/v1/sessions/{session_id}/uploads": {
+      "post": {
+        "description": "Validate source-video metadata and return a short-lived presigned PUT URL.",
+        "operationId": "initiateVideoUpload",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "mp4": {
+                  "summary": "MP4 source video",
+                  "value": {
+                    "content_type": "video/mp4",
+                    "display_name": "rally.mp4",
+                    "size_bytes": 1048576
+                  }
+                }
+              },
+              "schema": {
+                "$ref": "#/components/schemas/UploadInitiate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "method": "PUT",
+                  "object_key": "sessions/..."
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            },
+            "description": "Presigned upload URL"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "SESSION_NOT_FOUND": {
+                    "summary": "SESSION_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "SESSION_NOT_FOUND",
+                        "details": {},
+                        "message": "session not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "SESSION_NOT_FOUND: The requested session does not exist."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_SESSION_STATE": {
+                    "summary": "INVALID_SESSION_STATE",
+                    "value": {
+                      "error": {
+                        "code": "INVALID_SESSION_STATE",
+                        "details": {},
+                        "message": "session state does not allow this operation",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "SOURCE_VIDEO_ALREADY_EXISTS": {
+                    "summary": "SOURCE_VIDEO_ALREADY_EXISTS",
+                    "value": {
+                      "error": {
+                        "code": "SOURCE_VIDEO_ALREADY_EXISTS",
+                        "details": {},
+                        "message": "session already has a source video",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "INVALID_SESSION_STATE: The session is not in a state that permits this operation.; SOURCE_VIDEO_ALREADY_EXISTS: A source video has already been initiated for the session."
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VIDEO_SIZE_EXCEEDED": {
+                    "summary": "VIDEO_SIZE_EXCEEDED",
+                    "value": {
+                      "error": {
+                        "code": "VIDEO_SIZE_EXCEEDED",
+                        "details": {},
+                        "message": "video size exceeds configured limit",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "VIDEO_SIZE_EXCEEDED: The requested video exceeds the configured maximum size."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_SHA256": {
+                    "summary": "INVALID_SHA256",
+                    "value": {
+                      "error": {
+                        "code": "INVALID_SHA256",
+                        "details": {},
+                        "message": "sha256 must be 64 hexadecimal characters",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "UNSUPPORTED_VIDEO_CONTENT_TYPE": {
+                    "summary": "UNSUPPORTED_VIDEO_CONTENT_TYPE",
+                    "value": {
+                      "error": {
+                        "code": "UNSUPPORTED_VIDEO_CONTENT_TYPE",
+                        "details": {},
+                        "message": "unsupported video content type",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "VIDEO_EXTENSION_MISMATCH": {
+                    "summary": "VIDEO_EXTENSION_MISMATCH",
+                    "value": {
+                      "error": {
+                        "code": "VIDEO_EXTENSION_MISMATCH",
+                        "details": {},
+                        "message": "filename extension does not match content type",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "INVALID_SHA256: The SHA-256 value must contain exactly 64 hexadecimal characters.; UNSUPPORTED_VIDEO_CONTENT_TYPE: The video content type is not supported.; VIDEO_EXTENSION_MISMATCH: The filename extension does not match the content type.; VALIDATION_ERROR: One or more request fields failed validation."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "STORAGE_SIGNING_FAILED": {
+                    "summary": "STORAGE_SIGNING_FAILED",
+                    "value": {
+                      "error": {
+                        "code": "STORAGE_SIGNING_FAILED",
+                        "details": {},
+                        "message": "storage could not sign the requested URL",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "STORAGE_SIGNING_FAILED: Object storage could not create a presigned URL."
+          }
+        },
+        "summary": "Initiate a video upload",
+        "tags": [
+          "Uploads"
+        ]
+      }
+    },
+    "/api/v1/sessions/{session_id}/uploads/{video_id}/complete": {
+      "post": {
+        "description": "HEAD the object in MinIO/S3 and mark it STORAGE_VERIFIED when metadata matches.",
+        "operationId": "completeVideoUpload",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "video_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Video Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "uploaded": {
+                  "summary": "Uploaded object metadata",
+                  "value": {
+                    "content_type": "video/mp4",
+                    "size_bytes": 1048576
+                  }
+                }
+              },
+              "schema": {
+                "$ref": "#/components/schemas/UploadComplete"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "integrity_status": "STORAGE_VERIFIED",
+                  "status": "UPLOADED"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/UploadCompleteResponse"
+                }
+              }
+            },
+            "description": "Upload verified"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "SESSION_NOT_FOUND": {
+                    "summary": "SESSION_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "SESSION_NOT_FOUND",
+                        "details": {},
+                        "message": "session not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "STORAGE_OBJECT_MISSING": {
+                    "summary": "STORAGE_OBJECT_MISSING",
+                    "value": {
+                      "error": {
+                        "code": "STORAGE_OBJECT_MISSING",
+                        "details": {},
+                        "message": "storage object is not present",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "VIDEO_NOT_FOUND": {
+                    "summary": "VIDEO_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "VIDEO_NOT_FOUND",
+                        "details": {},
+                        "message": "video not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "SESSION_NOT_FOUND: The requested session does not exist.; VIDEO_NOT_FOUND: The requested video does not exist in the session.; STORAGE_OBJECT_MISSING: The uploaded object is missing from object storage."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_SESSION_STATE": {
+                    "summary": "INVALID_SESSION_STATE",
+                    "value": {
+                      "error": {
+                        "code": "INVALID_SESSION_STATE",
+                        "details": {},
+                        "message": "session state does not allow this operation",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "STORAGE_OBJECT_MISMATCH": {
+                    "summary": "STORAGE_OBJECT_MISMATCH",
+                    "value": {
+                      "error": {
+                        "code": "STORAGE_OBJECT_MISMATCH",
+                        "details": {},
+                        "message": "storage object does not match declared upload",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "UPLOAD_METADATA_MISMATCH": {
+                    "summary": "UPLOAD_METADATA_MISMATCH",
+                    "value": {
+                      "error": {
+                        "code": "UPLOAD_METADATA_MISMATCH",
+                        "details": {},
+                        "message": "upload metadata does not match initiation",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "UPLOAD_SHA_MISMATCH": {
+                    "summary": "UPLOAD_SHA_MISMATCH",
+                    "value": {
+                      "error": {
+                        "code": "UPLOAD_SHA_MISMATCH",
+                        "details": {},
+                        "message": "initiate and complete sha256 values differ",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "INVALID_SESSION_STATE: The session is not in a state that permits this operation.; UPLOAD_METADATA_MISMATCH: Completion metadata differs from the initiated upload.; UPLOAD_SHA_MISMATCH: The SHA-256 declarations do not match.; STORAGE_OBJECT_MISMATCH: Object storage metadata differs from the declared upload."
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "VIDEO_SIZE_EXCEEDED": {
+                    "summary": "VIDEO_SIZE_EXCEEDED",
+                    "value": {
+                      "error": {
+                        "code": "VIDEO_SIZE_EXCEEDED",
+                        "details": {},
+                        "message": "video size exceeds configured limit",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "VIDEO_SIZE_EXCEEDED: The requested video exceeds the configured maximum size."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "INVALID_SHA256": {
+                    "summary": "INVALID_SHA256",
+                    "value": {
+                      "error": {
+                        "code": "INVALID_SHA256",
+                        "details": {},
+                        "message": "sha256 must be 64 hexadecimal characters",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "UNSUPPORTED_VIDEO_CONTENT_TYPE": {
+                    "summary": "UNSUPPORTED_VIDEO_CONTENT_TYPE",
+                    "value": {
+                      "error": {
+                        "code": "UNSUPPORTED_VIDEO_CONTENT_TYPE",
+                        "details": {},
+                        "message": "unsupported video content type",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "VALIDATION_ERROR": {
+                    "summary": "VALIDATION_ERROR",
+                    "value": {
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "details": {},
+                        "message": "request validation failed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "VIDEO_EXTENSION_MISMATCH": {
+                    "summary": "VIDEO_EXTENSION_MISMATCH",
+                    "value": {
+                      "error": {
+                        "code": "VIDEO_EXTENSION_MISMATCH",
+                        "details": {},
+                        "message": "filename extension does not match content type",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "INVALID_SHA256: The SHA-256 value must contain exactly 64 hexadecimal characters.; UNSUPPORTED_VIDEO_CONTENT_TYPE: The video content type is not supported.; VIDEO_EXTENSION_MISMATCH: The filename extension does not match the content type.; VALIDATION_ERROR: One or more request fields failed validation."
+          }
+        },
+        "summary": "Complete a video upload",
+        "tags": [
+          "Uploads"
+        ]
+      }
+    },
+    "/healthz": {
+      "get": {
+        "description": "Return a process-level health response without probing external services.",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "service": "session-platform",
+                  "status": "ok"
+                },
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Healthcheck",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Healthy"
+          }
+        },
+        "summary": "Check service health",
+        "tags": [
+          "Health"
+        ]
+      }
+    }
+  },
+  "tags": [
+    {
+      "description": "Process health.",
+      "name": "Health"
+    },
+    {
+      "description": "Session metadata and lifecycle.",
+      "name": "Sessions"
+    },
+    {
+      "description": "Presigned source-video uploads.",
+      "name": "Uploads"
+    },
+    {
+      "description": "Presigned media downloads.",
+      "name": "Media"
+    },
+    {
+      "description": "Analysis run metadata.",
+      "name": "Analysis Runs"
+    },
+    {
+      "description": "Analysis bundle artifacts.",
+      "name": "Artifacts"
+    }
+  ]
+}

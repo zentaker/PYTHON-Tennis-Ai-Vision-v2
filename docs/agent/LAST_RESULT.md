@@ -90,3 +90,21 @@
   the approved fixture through Stage 0B.
 - The five local asset-dependent tests remain separate debt and are not Stage 1B
   failures.
+
+## Core Stage 2A Session Platform
+
+- Session API V1 candidate, PostgreSQL/Alembic model, MinIO/S3 adapter and local Compose stack implemented.
+- Optional `platform` dependencies are isolated from the Core/tracker extras; `src.platform` import is heavy-model safe.
+- Browser upload completion verifies object HEAD metadata and records `STORAGE_VERIFIED`, never an unearned hash claim.
+- OpenAPI gate: `SESSION_PLATFORM_API_V1_FROZEN`.
+- Stage gate: `CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED`.
+- Release audit: `CHATGPT_CORE_STAGE2A_RELEASE_AUDIT_PASSED`.
+- Unit suite: 12 passed. Integration suite: 2 passed. Runtime observations: 44 total (27 positive, 17 negative).
+- Cloud calls / GPU calls / inference / videos committed / secrets committed / spend: 0 / 0 / 0 / 0 / 0 / 0.
+- Browser upload runtime patch: internal/public S3 endpoints separated, MinIO CORS pinned and idempotent, API image dependencies installed at build, startup migration-gated, source UUID/DB pointers/keys unified, and source uniqueness/FKs enforced.
+- Real HTTP integration suite covers browser PUT/GET, CORS preflight, complete idempotency, typed errors and negative lifecycle cases in Compose CI.
+- Current gates: `STAGE2A_LAYERED_API_ARCHITECTURE_PASSED`, `STAGE2A_BROWSER_UPLOAD_RUNTIME_AUDIT_PASSED`, `STAGE2A_PERSISTENCE_FOUNDATION_PASSED`, `STAGE2A_FINAL_CONTRACT_PRECISION_PATCH_IMPLEMENTED`, `CHATGPT_CORE_STAGE2A_RELEASE_AUDIT_PASSED`, `SESSION_PLATFORM_API_V1_FROZEN`, `CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED`.
+- API architecture addendum: layered FastAPI with repositories, uniform error envelope, correlation/request logging, configurable CORS, and OpenAPI at `/api/v1/openapi.json`.
+- Postman collection/environment are versioned; collection is generated from OpenAPI, includes a manual-binary presigned PUT workflow, and CI validates operation IDs, path scope, derivation, and absence of credentials.
+- Final contract precision: all public SHA-256 and bundle fingerprints require exactly 64 hex characters; impossible session `INVALID_REQUEST` responses are absent from OpenAPI; download signing failures return HTTP 503 `STORAGE_SIGNING_FAILED` with `operation: download`; Postman temporary upload variables never enter the four-key environment and are cleaned after completion.
+- Approved runtime mode: `global_api_local_development`; MinIO bucket private; local-only, no authentication, no worker, no inference, no videos committed, and GPU/cloud/spend all zero. Next action: TennisWebAI Stage 0C — Session Library and managed uploads.

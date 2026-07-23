@@ -1,0 +1,432 @@
+{
+  "info": {
+    "description": "Generated from config/platform/session_api_v1.openapi.json.",
+    "name": "TennisAI Session API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "item": [
+        {
+          "_openapiMethod": "GET",
+          "_openapiPath": "/api/v1/sessions/{session_id}/analysis-runs",
+          "_operationId": "listAnalysisRuns",
+          "name": "List analysis runs",
+          "protocolProfileBehavior": {},
+          "request": {
+            "description": "List analysis-run metadata for a session.",
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sessions",
+                "{{sessionId}}",
+                "analysis-runs"
+              ],
+              "raw": "{{baseUrl}}/api/v1/sessions/{{sessionId}}/analysis-runs"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Analysis Runs"
+    },
+    {
+      "item": [
+        {
+          "_openapiMethod": "GET",
+          "_openapiPath": "/api/v1/sessions/{session_id}/artifacts",
+          "_operationId": "listArtifacts",
+          "name": "List session artifacts",
+          "protocolProfileBehavior": {},
+          "request": {
+            "description": "List analysis bundle artifacts linked to the session's analysis runs.",
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sessions",
+                "{{sessionId}}",
+                "artifacts"
+              ],
+              "raw": "{{baseUrl}}/api/v1/sessions/{{sessionId}}/artifacts"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Artifacts"
+    },
+    {
+      "item": [
+        {
+          "_openapiMethod": "GET",
+          "_openapiPath": "/healthz",
+          "_operationId": "healthCheck",
+          "name": "Check service health",
+          "protocolProfileBehavior": {},
+          "request": {
+            "description": "Return a process-level health response without probing external services.",
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "healthz"
+              ],
+              "raw": "{{baseUrl}}/healthz"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Health"
+    },
+    {
+      "item": [
+        {
+          "_openapiMethod": "GET",
+          "_openapiPath": "/api/v1/sessions/{session_id}/media",
+          "_operationId": "getSessionMedia",
+          "name": "Get session media",
+          "protocolProfileBehavior": {},
+          "request": {
+            "description": "Return a short-lived presigned download URL for the session source video.",
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sessions",
+                "{{sessionId}}",
+                "media"
+              ],
+              "raw": "{{baseUrl}}/api/v1/sessions/{{sessionId}}/media"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Media"
+    },
+    {
+      "item": [
+        {
+          "_openapiMethod": "GET",
+          "_openapiPath": "/api/v1/sessions",
+          "_operationId": "listSessions",
+          "name": "List sessions",
+          "protocolProfileBehavior": {},
+          "request": {
+            "description": "List sessions in creation order with an opaque cursor for pagination.",
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sessions"
+              ],
+              "query": [
+                {
+                  "disabled": true,
+                  "key": "limit",
+                  "value": ""
+                },
+                {
+                  "disabled": true,
+                  "key": "cursor",
+                  "value": ""
+                },
+                {
+                  "disabled": true,
+                  "key": "status",
+                  "value": ""
+                },
+                {
+                  "disabled": true,
+                  "key": "order",
+                  "value": ""
+                }
+              ],
+              "raw": "{{baseUrl}}/api/v1/sessions"
+            }
+          },
+          "response": []
+        },
+        {
+          "_openapiMethod": "POST",
+          "_openapiPath": "/api/v1/sessions",
+          "_operationId": "createSession",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.environment.set('sessionId', pm.response.json().id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Create a session",
+          "protocolProfileBehavior": {},
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"processing_profile\": \"STANDARD\",\n  \"surface\": \"unknown\",\n  \"title\": \"Madrid practice\"\n}"
+            },
+            "description": "Create metadata for a new analysis session before uploading its source video.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sessions"
+              ],
+              "raw": "{{baseUrl}}/api/v1/sessions"
+            }
+          },
+          "response": []
+        },
+        {
+          "_openapiMethod": "GET",
+          "_openapiPath": "/api/v1/sessions/{session_id}",
+          "_operationId": "getSession",
+          "name": "Get a session",
+          "protocolProfileBehavior": {},
+          "request": {
+            "description": "Return session metadata and the source-video summary when available.",
+            "header": [],
+            "method": "GET",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sessions",
+                "{{sessionId}}"
+              ],
+              "raw": "{{baseUrl}}/api/v1/sessions/{{sessionId}}"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Sessions"
+    },
+    {
+      "item": [
+        {
+          "_openapiMethod": "POST",
+          "_openapiPath": "/api/v1/sessions/{session_id}/uploads",
+          "_operationId": "initiateVideoUpload",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const payload = pm.response.json();\npm.environment.set('videoId', payload.video_id);\npm.collectionVariables.set('uploadUrl', payload.upload_url);\npm.collectionVariables.set('uploadContentType', payload.required_headers['Content-Type']);\nconst requested = pm.request.body.raw ? JSON.parse(pm.request.body.raw) : {};\npm.collectionVariables.set('uploadSizeBytes', String(requested.size_bytes || ''));\npm.collectionVariables.set('uploadSha256', requested.sha256 || '');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Initiate a video upload",
+          "protocolProfileBehavior": {},
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"content_type\": \"video/mp4\",\n  \"display_name\": \"rally.mp4\",\n  \"size_bytes\": 1048576\n}"
+            },
+            "description": "Validate source-video metadata and return a short-lived presigned PUT URL.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sessions",
+                "{{sessionId}}",
+                "uploads"
+              ],
+              "raw": "{{baseUrl}}/api/v1/sessions/{{sessionId}}/uploads"
+            }
+          },
+          "response": []
+        },
+        {
+          "_generatedWorkflow": "presignedUpload",
+          "name": "Upload bytes to presigned URL",
+          "protocolProfileBehavior": {},
+          "request": {
+            "body": {
+              "file": {
+                "src": ""
+              },
+              "mode": "file"
+            },
+            "description": "Generated workflow step. Select the local source file in Postman; the collection intentionally contains no video bytes.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "{{uploadContentType}}"
+              }
+            ],
+            "method": "PUT",
+            "url": {
+              "raw": "{{uploadUrl}}"
+            }
+          },
+          "response": []
+        },
+        {
+          "_openapiMethod": "POST",
+          "_openapiPath": "/api/v1/sessions/{session_id}/uploads/{video_id}/complete",
+          "_operationId": "completeVideoUpload",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const body = {\n  size_bytes: Number(pm.collectionVariables.get('uploadSizeBytes')),\n  content_type: pm.collectionVariables.get('uploadContentType')\n};\nconst sha256 = pm.collectionVariables.get('uploadSha256');\nif (sha256) body.sha256 = sha256;\npm.request.body.update(JSON.stringify(body, null, 2));"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code >= 200 && pm.response.code < 300) {\n  pm.collectionVariables.unset('uploadUrl');\n  pm.collectionVariables.unset('uploadContentType');\n  pm.collectionVariables.unset('uploadSizeBytes');\n  pm.collectionVariables.unset('uploadSha256');\n}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "name": "Complete a video upload",
+          "protocolProfileBehavior": {},
+          "request": {
+            "body": {
+              "mode": "raw",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              },
+              "raw": "{\n  \"content_type\": \"video/mp4\",\n  \"size_bytes\": 1048576\n}"
+            },
+            "description": "HEAD the object in MinIO/S3 and mark it STORAGE_VERIFIED when metadata matches.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": {
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "sessions",
+                "{{sessionId}}",
+                "uploads",
+                "{{videoId}}",
+                "complete"
+              ],
+              "raw": "{{baseUrl}}/api/v1/sessions/{{sessionId}}/uploads/{{videoId}}/complete"
+            }
+          },
+          "response": []
+        }
+      ],
+      "name": "Uploads"
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "sessionId",
+      "value": ""
+    },
+    {
+      "key": "videoId",
+      "value": ""
+    },
+    {
+      "key": "analysisRunId",
+      "value": ""
+    },
+    {
+      "key": "uploadUrl",
+      "value": ""
+    },
+    {
+      "key": "uploadContentType",
+      "value": ""
+    },
+    {
+      "key": "uploadSizeBytes",
+      "value": ""
+    },
+    {
+      "key": "uploadSha256",
+      "value": ""
+    }
+  ],
+  "x-openapi-sha256": "1747670500014598e6d18f5130e8c7f341323f4fe15f96559d9c5da0550f346b"
+}
