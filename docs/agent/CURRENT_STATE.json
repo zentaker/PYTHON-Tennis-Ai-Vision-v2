@@ -3,7 +3,7 @@
   "branch": "agent/session-platform-stage2a",
   "base_sha": "7e03550c5dfe37448cee58e285e0cbece08ae8da",
   "task": "Build Core Stage 2A Session Platform foundation",
-  "status": "STAGE2A_FINAL_CONTRACT_PRECISION_PATCH_IMPLEMENTED",
+  "status": "CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED",
   "stage1a_importer_implementation_gate": "STAGE1A_IMPORTER_IMPLEMENTATION_ACCEPTED",
   "stage1a_court_contract_gate": "STAGE1A_COURT_CONTRACT_CORRECTED",
   "stage1a_human_gate": "CORE_STAGE1A_SYNTHETIC_IMPORT_GATE_PASSED",
@@ -47,9 +47,11 @@
   "stage2a_persistence_foundation_gate": "STAGE2A_PERSISTENCE_FOUNDATION_PASSED",
   "stage2a_public_contract_evidence_gate": "STAGE2A_FINAL_CONTRACT_PRECISION_PATCH_IMPLEMENTED",
   "stage2a_final_contract_precision_gate": "STAGE2A_FINAL_CONTRACT_PRECISION_PATCH_IMPLEMENTED",
-  "session_platform_api_contract_gate": "SESSION_PLATFORM_API_V1_CONTRACT_PENDING_RELEASE_AUDIT",
+  "release_audit_gate": "CHATGPT_CORE_STAGE2A_RELEASE_AUDIT_PASSED",
+  "session_platform_api_contract_gate": "SESSION_PLATFORM_API_V1_FROZEN",
+  "stage2a_release_gate": "CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED",
   "session_platform_api_style": "LAYERED_FASTAPI_COMPATIBLE_WITH_EXISTING_EXPRESS_MENTAL_MODEL",
   "session_platform_postman_contract": "DERIVED_FROM_OPENAPI_AND_CI_VALIDATED",
-  "blocker": "SESSION_PLATFORM_API_V1_CONTRACT_PENDING_RELEASE_AUDIT",
-  "next_action": "ChatGPT Core Stage 2A final Session Platform audit."
+  "blocker": "none",
+  "next_action": "TennisWebAI Stage 0C — Session Library and managed uploads."
 }

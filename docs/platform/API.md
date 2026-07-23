@@ -15,7 +15,11 @@ versioned as `v1`:
 | GET | `/api/v1/sessions/{session_id}/analysis-runs` | list analysis runs |
 | GET | `/api/v1/sessions/{session_id}/artifacts` | list run artifacts |
 
-The canonical OpenAPI snapshot is generated with:
+The canonical OpenAPI snapshot is frozen at
+`config/platform/session_api_v1.openapi.json` (SHA-256
+`1747670500014598e6d18f5130e8c7f341323f4fe15f96559d9c5da0550f346b`). It was
+generated from source commit
+`d599e468f618d798916432b0f68ddb527969c80a` with:
 
 ```bash
 uv run --extra platform python scripts/export_session_api_openapi.py
@@ -49,3 +53,6 @@ processing-profile and artifact values. SHA-256 fields are 64 hexadecimal
 characters (`^[0-9a-fA-F]{64}$`) and are normalized to lowercase internally.
 The same exact constraint applies to `bundle_fingerprint` in session and run
 responses.
+
+Release gates: `CHATGPT_CORE_STAGE2A_RELEASE_AUDIT_PASSED`,
+`SESSION_PLATFORM_API_V1_FROZEN`, and `CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED`.

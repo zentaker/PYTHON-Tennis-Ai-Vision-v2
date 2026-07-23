@@ -1,8 +1,10 @@
 # TennisAI Session API Postman contract
 
-`TennisAI-Session-API.postman_collection.json` is generated from the canonical
-OpenAPI snapshot. It is evidence and a client convenience, not a second HTTP
-contract. Regenerate it after changing routes or schemas:
+`TennisAI-Session-API.postman_collection.json` is derived from the frozen
+canonical OpenAPI snapshot. It is evidence and a client convenience, not a
+second HTTP contract. The published source is
+`config/platform/session_api_v1.openapi.json` with SHA-256
+`1747670500014598e6d18f5130e8c7f341323f4fe15f96559d9c5da0550f346b`.
 
 ```bash
 uv run --extra platform python scripts/export_session_api_openapi.py

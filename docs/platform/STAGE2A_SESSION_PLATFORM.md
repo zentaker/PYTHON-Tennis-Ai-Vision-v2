@@ -1,13 +1,16 @@
 # Stage 2A Session Platform foundation
 
-Status: `STAGE2A_FINAL_CONTRACT_PRECISION_PATCH_IMPLEMENTED`
+Status: `CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED`
 
 Gates: `STAGE2A_LAYERED_API_ARCHITECTURE_PASSED`,
 `STAGE2A_BROWSER_UPLOAD_RUNTIME_AUDIT_PASSED`,
 `STAGE2A_PERSISTENCE_FOUNDATION_PASSED`,
-`STAGE2A_FINAL_CONTRACT_PRECISION_PATCH_IMPLEMENTED`
+`STAGE2A_FINAL_CONTRACT_PRECISION_PATCH_IMPLEMENTED`,
+`CHATGPT_CORE_STAGE2A_RELEASE_AUDIT_PASSED`,
+`SESSION_PLATFORM_API_V1_FROZEN`,
+`CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED`
 
-Next gate: `SESSION_PLATFORM_API_V1_CONTRACT_PENDING_RELEASE_AUDIT`
+Next product step: TennisWebAI Stage 0C — Session Library and managed uploads.
 
 This candidate adds the Session API V1, PostgreSQL/Alembic metadata model,
 S3-compatible object-storage adapter, MinIO/PostgreSQL Compose stack, CLI
@@ -25,7 +28,8 @@ behaviour, upload HEAD verification, import isolation, OpenAPI stability, and
 the metadata-only Stage 1B seed. Docker was unavailable in the execution
 environment (`DOCKER_RUNTIME_MISSING`), so no PostgreSQL/MinIO integration run
 is claimed. Cloud calls, GPU calls, inference, videos committed, secrets
-committed, and spend are all zero.
+committed, and spend are all zero. The release evidence contains 12 unit tests,
+2 integration tests, and 44 real HTTP observations (27 positive, 17 negative).
 
 The final precision patch constrains every public SHA-256 and bundle fingerprint
 to exactly 64 hexadecimal characters, removes impossible `INVALID_REQUEST`
@@ -39,5 +43,8 @@ pagination in both directions, independent sessions, public-host presigned
 PUT/GET, MinIO CORS preflight, upload completion, download bytes/metadata,
 idempotent completion, typed error envelopes and every documented negative
 domain case. Runtime reports are derived from those results and the real MinIO
-policy check. The API contract is not yet frozen. Release audit gate:
-`SESSION_PLATFORM_API_V1_CONTRACT_PENDING_RELEASE_AUDIT`.
+policy check. The approved CORS mode is
+`global_api_local_development` with a private bucket. The frozen OpenAPI SHA is
+`1747670500014598e6d18f5130e8c7f341323f4fe15f96559d9c5da0550f346b`, sourced from
+`d599e468f618d798916432b0f68ddb527969c80a`. The platform is local-only, has no
+authentication or analysis worker, and no inference was executed.

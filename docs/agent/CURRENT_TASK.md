@@ -19,10 +19,14 @@ against the OpenAPI snapshot in CI.
 Runtime patch status: browser-facing public storage URLs, pinned MinIO images,
 build-time dependency installation, migration-gated API startup, real doctor
 checks and HTTP integration coverage are implemented. The final contract
-precision patch and derived runtime evidence semantics are implemented; the
-release audit remains pending as `SESSION_PLATFORM_API_V1_CONTRACT_PENDING_RELEASE_AUDIT`.
+precision patch and derived runtime evidence semantics are implemented. The
+release audit passed as `CHATGPT_CORE_STAGE2A_RELEASE_AUDIT_PASSED`; Session API
+V1 is frozen as `SESSION_PLATFORM_API_V1_FROZEN` and Stage 2A is accepted as
+`CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED`.
 
 The patch fixes exact 64-hex SHA-256/fingerprint constraints, removes impossible
 session `INVALID_REQUEST` documentation, normalizes download signer failures to
 a safe HTTP 503 envelope, and keeps Postman upload metadata in collection
-variables only. `SESSION_PLATFORM_API_V1_FROZEN` has not been declared.
+variables only. The release tag is `tennisai-session-platform-v1.0.0`. The next
+action is TennisWebAI Stage 0C — Session Library and managed uploads; no Stage
+2B worker branch is created.
