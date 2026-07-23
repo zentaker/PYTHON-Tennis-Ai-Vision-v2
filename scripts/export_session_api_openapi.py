@@ -40,6 +40,10 @@ def main() -> int:
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     digest = hashlib.sha256(OUTPUT.read_bytes()).hexdigest()
+    source_path = ROOT / "config/platform/SESSION_API_SOURCE.json"
+    previous_source = {}
+    if source_path.exists():
+        previous_source = json.loads(source_path.read_text(encoding="utf-8"))
     source = {
         "api_version": "v1",
         "api_style": "LAYERED_FASTAPI_COMPATIBLE_WITH_EXISTING_EXPRESS_MENTAL_MODEL",
@@ -55,9 +59,11 @@ def main() -> int:
             if method.lower() in {"get", "post", "put", "patch", "delete"}
         ),
         "schemas": sorted(payload.get("components", {}).get("schemas", {})),
-        "gate": "SESSION_PLATFORM_API_V1_CONTRACT_PENDING_RELEASE_AUDIT",
+        "gate": previous_source.get(
+            "gate", "SESSION_PLATFORM_API_V1_CONTRACT_PENDING_RELEASE_AUDIT"
+        ),
     }
-    (ROOT / "config/platform/SESSION_API_SOURCE.json").write_text(
+    source_path.write_text(
         json.dumps(source, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     print(
