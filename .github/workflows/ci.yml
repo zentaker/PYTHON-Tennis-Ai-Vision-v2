@@ -204,16 +204,22 @@ jobs:
           }
           docker compose -f infrastructure/session-platform/compose.yml logs --no-color minio-init
           docker compose -f infrastructure/session-platform/compose.yml up -d --build api analysis-api
-          docker compose -f infrastructure/session-platform/compose.yml logs --no-color api || true
+          docker compose -f infrastructure/session-platform/compose.yml logs --no-color api analysis-api || true
+          api_ready=false
           for attempt in $(seq 1 60); do
-            if curl --fail --silent http://localhost:8000/healthz >/dev/null; then break; fi
+            if curl --fail --silent http://localhost:8000/healthz >/dev/null; then api_ready=true; break; fi
             sleep 2
           done
+          docker compose -f infrastructure/session-platform/compose.yml logs --no-color api analysis-api || true
+          test "$api_ready" = true
           curl --fail --silent http://localhost:8000/healthz >/dev/null
+          analysis_api_ready=false
           for attempt in $(seq 1 60); do
-            if curl --fail --silent http://localhost:8001/api/v1/analysis/openapi.json >/dev/null; then break; fi
+            if curl --fail --silent http://localhost:8001/api/v1/analysis/openapi.json >/dev/null; then analysis_api_ready=true; break; fi
             sleep 2
           done
+          docker compose -f infrastructure/session-platform/compose.yml logs --no-color api analysis-api || true
+          test "$analysis_api_ready" = true
           curl --fail --silent http://localhost:8001/api/v1/analysis/openapi.json >/dev/null
           docker compose -f infrastructure/session-platform/compose.yml ps
           docker compose -f infrastructure/session-platform/compose.yml images --format json api \
