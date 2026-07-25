@@ -69,6 +69,17 @@ def _build_parser() -> argparse.ArgumentParser:
     api = platform_sub.add_parser("api")
     api.add_argument("--host")
     api.add_argument("--port", type=int)
+    worker = sub.add_parser("worker", help="analysis worker runtime")
+    worker_sub = worker.add_subparsers(dest="worker_command", required=True)
+    run_worker = worker_sub.add_parser("run")
+    run_worker.add_argument("--once", action="store_true")
+    run_worker.add_argument("--poll-interval", type=float, default=2.0)
+    run_worker.add_argument("--worker-id", default=None)
+    run_worker.add_argument("--worker-version", default="stage2c-contract-fixture")
+    run_worker.add_argument("--heartbeat-interval", type=float, default=10.0)
+    run_worker.add_argument("--processor", choices=("contract-fixture",), default="contract-fixture")
+    run_worker.add_argument("--worker-root", type=Path, default=None)
+    run_worker.add_argument("--max-artifact-bytes", type=int, default=2_000_000)
     return parser
 
 
@@ -77,6 +88,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "platform":
             return _platform_main(args)
+        if args.command == "worker":
+            return _worker_main(args)
         if args.command == "profile":
             result = resolve_profile(args.name)
         elif args.command == "rally":
@@ -158,6 +171,49 @@ def _platform_main(args) -> int:
         print(json.dumps(seed_stage1b_reference(), sort_keys=True))
         return 0
     raise ValueError(f"unknown platform command: {args.platform_command}")
+
+
+def _worker_main(args) -> int:
+    if args.worker_command != "run":
+        raise ValueError(f"unknown worker command: {args.worker_command}")
+    import json
+    import logging
+    import os
+
+    from src.platform.config.settings import get_settings
+    from src.platform.db.session import make_session_factory
+    from src.platform.storage.s3 import S3ObjectStorage
+    from src.platform.worker.fixture_processor import ContractFixtureProcessor
+    from src.platform.worker.runtime import WorkerRuntime
+
+    class _JsonFormatter(logging.Formatter):
+        def format(self, record):
+            payload = {"event": getattr(record, "event", record.getMessage())}
+            for name in ("worker_id", "run_id", "attempt", "status", "duration_ms", "code", "error_code"):
+                value = getattr(record, name, None)
+                if value is not None:
+                    payload[name] = value
+            return json.dumps(payload, sort_keys=True)
+
+    root_logger = logging.getLogger()
+    if not root_logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(_JsonFormatter())
+        root_logger.addHandler(handler)
+    root_logger.setLevel(logging.INFO)
+    settings = get_settings()
+    runtime = WorkerRuntime(
+        make_session_factory(settings),
+        S3ObjectStorage(settings),
+        worker_id=args.worker_id or os.environ.get("TENNISAI_WORKER_ID", "stage2c-worker"),
+        worker_version=args.worker_version,
+        processor_factory=ContractFixtureProcessor,
+        worker_root=args.worker_root or os.environ.get("TENNISAI_WORKER_ROOT", "/tmp/tennisai-worker"),
+        poll_interval=args.poll_interval,
+        heartbeat_interval=args.heartbeat_interval,
+        max_artifact_bytes=args.max_artifact_bytes,
+    )
+    return runtime.run(once=args.once)
 
 
 def _human(result: dict, args) -> str:

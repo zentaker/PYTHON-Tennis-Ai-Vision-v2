@@ -1,0 +1,266 @@
+from __future__ import annotations
+
+import json
+import logging
+import signal
+import threading
+import time
+from hashlib import sha256
+from pathlib import Path
+from typing import Callable
+
+from sqlalchemy.orm import Session, sessionmaker
+
+from ..db.repositories.analysis_jobs import get_run
+from ..domain.errors import PlatformError
+from ..services.analysis_jobs import heartbeat as renew_lease
+from ..services.worker_contract import WorkerContractClient
+from ..storage.interface import ObjectStorage
+from ..storage.keys import bundle_artifact_key
+from .fixture_processor import ContractFixtureProcessor
+from .protocol import AnalysisContext, AnalysisProcessor, AnalysisResult
+from .workspace import attempt_workspace, cleanup_workspace, ensure_worker_root
+
+LOGGER = logging.getLogger("tennisai.worker")
+
+
+class LeaseLost(RuntimeError):
+    pass
+
+
+class WorkerRuntime:
+    def __init__(
+        self,
+        session_factory: sessionmaker[Session],
+        storage: ObjectStorage,
+        *,
+        worker_id: str,
+        worker_version: str,
+        processor_factory: Callable[[], AnalysisProcessor] = ContractFixtureProcessor,
+        worker_root: str | Path = "/tmp/tennisai-worker",
+        poll_interval: float = 2.0,
+        heartbeat_interval: float = 10.0,
+        max_artifact_bytes: int = 2_000_000,
+    ) -> None:
+        if poll_interval <= 0 or heartbeat_interval <= 0:
+            raise ValueError("worker intervals must be positive")
+        if heartbeat_interval >= 60:
+            raise ValueError("heartbeat interval must be shorter than the lease")
+        if max_artifact_bytes <= 0:
+            raise ValueError("max artifact size must be positive")
+        self.session_factory = session_factory
+        self.storage = storage
+        self.worker_id = worker_id
+        self.worker_version = worker_version
+        self.processor_factory = processor_factory
+        self.worker_root = ensure_worker_root(worker_root)
+        self.poll_interval = poll_interval
+        self.heartbeat_interval = heartbeat_interval
+        self.max_artifact_bytes = max_artifact_bytes
+        self.shutdown_requested = threading.Event()
+        self.counters: dict[str, int] = {}
+
+    def request_shutdown(self, *_args) -> None:
+        self.shutdown_requested.set()
+
+    def run(self, *, once: bool = False) -> int:
+        self._install_signal_handlers()
+        while not self.shutdown_requested.is_set():
+            processed = self.run_once()
+            if once or processed:
+                if once:
+                    return 0
+            if not processed:
+                self._event("idle_poll")
+                self.shutdown_requested.wait(self.poll_interval)
+        return 0
+
+    def run_once(self) -> bool:
+        with self.session_factory() as db:
+            client = WorkerContractClient(db, self.worker_id, self.worker_version)
+            try:
+                run = client.claim()
+                # ``refresh`` opens a read transaction; release it before a
+                # long processor call so cancellation and heartbeat writers
+                # are never blocked by the worker's orchestration session.
+                db.commit()
+            except PlatformError as exc:
+                if exc.code == "ANALYSIS_JOB_NOT_AVAILABLE":
+                    return False
+                LOGGER.info("worker_claim_rejected", extra={"event": "claim_rejected", "code": exc.code})
+                return False
+            except Exception:
+                # Database outages are retried by the outer poll loop without
+                # exposing driver messages or connection details.
+                self._event("database_unavailable", error_code="WORKER_DATABASE_UNAVAILABLE")
+                return False
+            run_id = run.id
+            self._event("claimed", run_id=str(run.id), attempt=run.attempt)
+            cancel_event = threading.Event()
+            lease_lost = threading.Event()
+            heartbeat_stop = threading.Event()
+            cancellation_stop = threading.Event()
+            heartbeat_thread = threading.Thread(
+                target=self._heartbeat_loop,
+                args=(run_id, client.lease_token, heartbeat_stop, lease_lost),
+                daemon=True,
+                name="analysis-heartbeat",
+            )
+            workspace = attempt_workspace(self.worker_root, run.id, run.attempt)
+            started = time.monotonic()
+            published_keys: list[str] = []
+            heartbeat_thread.start()
+            cancellation_thread = threading.Thread(
+                target=self._cancellation_loop,
+                args=(run_id, cancel_event, cancellation_stop, lease_lost),
+                daemon=True,
+                name="analysis-cancellation-watch",
+            )
+            cancellation_thread.start()
+            try:
+                context = AnalysisContext(
+                    run_id=run.id,
+                    session_id=run.session_id,
+                    input_video_id=run.input_video_id,
+                    processing_profile=run.processing_profile,
+                    attempt=run.attempt,
+                    workspace=workspace,
+                    cancellation_requested=cancel_event,
+                )
+                result = self.processor_factory().process(context)
+                if lease_lost.is_set() or self.shutdown_requested.is_set():
+                    raise LeaseLost()
+                # The claim object is deliberately detached from long-running
+                # processor work; reload it before every lease-sensitive
+                # transition so cancellation written by another session is
+                # never hidden by SQLAlchemy's identity map.
+                db.expire_all()
+                if cancel_event.is_set() or result.status == "CANCELLED":
+                    client.acknowledge_cancel()
+                    self._event("cancelled", run_id=str(run.id), attempt=run.attempt)
+                    return True
+                if result.status == "FAILED":
+                    client.fail(result.error_code or "WORKER_FAILED", "processor failed")
+                    self._event("failed", run_id=str(run.id), attempt=run.attempt,
+                                error_code=result.error_code or "WORKER_FAILED")
+                    return True
+                artifacts = self._publish(run.id, result)
+                published_keys = [item["object_key"] for item in artifacts]
+                if lease_lost.is_set() or cancel_event.is_set():
+                    raise LeaseLost()
+                manifest_key = next(
+                    (item["object_key"] for item in artifacts if item["object_key"].endswith("/manifest.json")),
+                    artifacts[0]["object_key"],
+                )
+                if result.result_manifest and result.result_manifest not in {"manifest.json", manifest_key}:
+                    raise ValueError("processor returned an unsafe result manifest")
+                fingerprint = result.bundle_fingerprint or self._fingerprint(artifacts)
+                if result.status == "PARTIAL":
+                    client.partial(artifacts, fingerprint, manifest_key)
+                    self._event("partial", run_id=str(run.id), attempt=run.attempt)
+                else:
+                    client.complete(artifacts, fingerprint, manifest_key)
+                    self._event("completed", run_id=str(run.id), attempt=run.attempt)
+                LOGGER.info(
+                    "worker_run_finished",
+                    extra={"event": "run_finished", "run_id": str(run.id), "status": result.status,
+                           "duration_ms": int((time.monotonic() - started) * 1000)},
+                )
+                return True
+            except LeaseLost:
+                self._discard_published(published_keys)
+                self._event("lease_lost")
+                LOGGER.info("worker_lease_lost", extra={"event": "lease_lost"})
+                return True
+            except PlatformError as exc:
+                self._discard_published(published_keys)
+                if exc.code == "ANALYSIS_CANCELLATION_INVALID":
+                    LOGGER.info("worker_cancel_race", extra={"event": "cancel_race"})
+                else:
+                    LOGGER.info("worker_transition_rejected", extra={"event": "transition_rejected", "code": exc.code})
+                return True
+            except Exception:
+                self._discard_published(published_keys)
+                # Never expose processor exception text, paths, or a traceback.
+                try:
+                    if not lease_lost.is_set() and not cancel_event.is_set():
+                        client.fail("WORKER_FAILED", "processor failed")
+                except Exception:
+                    pass
+                LOGGER.info("worker_run_failed", extra={"event": "run_failed", "code": "WORKER_FAILED"})
+                self._event("failed", error_code="WORKER_FAILED")
+                return True
+            finally:
+                heartbeat_stop.set()
+                cancellation_stop.set()
+                heartbeat_thread.join(timeout=max(1.0, self.heartbeat_interval))
+                cancellation_thread.join(timeout=1.0)
+                try:
+                    cleanup_workspace(self.worker_root, workspace)
+                except OSError:
+                    LOGGER.info("worker_cleanup_failed", extra={"event": "cleanup_failed"})
+
+    def _heartbeat_loop(self, run_id, token, stop: threading.Event, lost: threading.Event) -> None:
+        while not stop.wait(self.heartbeat_interval):
+            try:
+                with self.session_factory() as db:
+                    renew_lease(db, run_id, self.worker_id, token)
+            except Exception:
+                lost.set()
+                return
+
+    def _cancellation_loop(self, run_id, event: threading.Event, stop: threading.Event, lost: threading.Event) -> None:
+        # Separate short-lived sessions keep processor code independent of
+        # SQLAlchemy state and make cancellation observable during execution.
+        while not stop.wait(0.05):
+            try:
+                with self.session_factory() as db:
+                    run = get_run(db, run_id)
+                    if run is None or run.cancel_requested_at is not None:
+                        event.set()
+                        return
+            except Exception:
+                # A transient database observation failure must not publish an
+                # output; the heartbeat/lease remains the authority.
+                if lost.is_set():
+                    event.set()
+
+    def _publish(self, run_id, result: AnalysisResult) -> list[dict]:
+        published: list[dict] = []
+        for path in result.artifacts:
+            body = path.read_bytes()
+            if len(body) > self.max_artifact_bytes:
+                raise ValueError("processor artifact exceeds configured size")
+            relative = path.name
+            key = bundle_artifact_key(run_id, relative)
+            self.storage.put_bytes(key, body, "application/json")
+            published.append({"kind": "MANIFEST" if relative == "manifest.json" else "METRICS",
+                              "object_key": key, "media_type": "application/json",
+                              "size_bytes": len(body), "sha256": sha256(body).hexdigest(),
+                              "schema_version": "stage2c.fixture.v1"})
+        if not published:
+            raise ValueError("processor returned no artifacts")
+        return published
+
+    def _discard_published(self, keys: list[str]) -> None:
+        for key in keys:
+            try:
+                self.storage.delete_object(key)
+            except Exception:
+                LOGGER.info("worker_storage_cleanup_failed", extra={"event": "storage_cleanup_failed"})
+
+    def _event(self, name: str, **fields) -> None:
+        self.counters[name] = self.counters.get(name, 0) + 1
+        LOGGER.info(name, extra={"event": name, "worker_id": self.worker_id, **fields})
+
+    @staticmethod
+    def _fingerprint(artifacts: list[dict]) -> str:
+        payload = json.dumps(sorted(artifacts, key=lambda item: item["object_key"]), sort_keys=True)
+        return sha256(payload.encode()).hexdigest()
+
+    def _install_signal_handlers(self) -> None:
+        for name in ("SIGINT", "SIGTERM"):
+            try:
+                signal.signal(getattr(signal, name), self.request_shutdown)
+            except (ValueError, AttributeError):
+                pass
