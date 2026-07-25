@@ -52,6 +52,23 @@ before reading. Objects use exclusive keys such as
 `runs/{run_id}/bundle/attempt-1/manifest.json`; partial uploads are compensated
 and cleanup is restricted to the attempt's own publication set.
 
+Release evidence is generated from JUnit testcase names and fails closed when
+required tests are skipped or absent. The Stage 2C security auditor scans the
+generated reports, worker log, Compose state, and structured evidence for lease
+tokens, signed URLs, credentials, local workspace paths, tracebacks, video
+files, unsupported file types, and unsupported positive claims. A security
+summary is produced by that scan; it is not a hardcoded status.
+
+The evidence suite names the proof points explicitly: symlink-to-file inside
+and outside the workspace, symlinked parent, hardlink, duplicate descriptor and
+key, single and aggregate size limits, lease loss before and after publication,
+shutdown during processing and finalization, cancellation/lease-loss race,
+partial-upload compensation, and stale-attempt recovery. The PostgreSQL test
+claims attempt 1 expiry/requeue, attempt 2 publication, stale finalization
+rejection, and preservation of attempt 2 objects. A skipped integration or
+PostgreSQL testcase prevents evidence export and therefore prevents artifact
+publication.
+
 Runtime events (`claim`, `run_finished`, `run_failed`, `lease_lost`,
 `cleanup_failed`, and idle polls) are structured log records. No external
 metrics service is introduced in this foundation stage. A later stage may
