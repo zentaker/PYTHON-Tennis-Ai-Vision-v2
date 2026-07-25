@@ -193,6 +193,15 @@ jobs:
             scripts/validate_analysis_job_contract.py scripts/audit_analysis_job_runtime.py \
             scripts/export_analysis_job_runtime_evidence.py
 
+      - name: Stage 2C worker runtime unit contract
+        run: |
+          mkdir -p .artifacts/stage2c-worker-runtime
+          test "$(sha256sum config/platform/session_api_v1.openapi.json | cut -d' ' -f1)" = "1747670500014598e6d18f5130e8c7f341323f4fe15f96559d9c5da0550f346b"
+          test "$(sha256sum config/platform/analysis_job_api_v1.openapi.json | cut -d' ' -f1)" = "329ad9092a1dbf115fe1722f06ea7141b787e454c96f43ec05e7149051087647"
+          uv run --extra platform pytest tests/test_worker_runtime.py \
+            --junitxml=.artifacts/stage2c-worker-runtime/unit-test-report.xml
+          uv run ruff check src/platform/worker tests/test_worker_runtime.py tests/test_worker_runtime_integration.py tests/test_worker_runtime_postgres.py scripts/export_stage2c_worker_runtime_evidence.py scripts/audit_stage2c_worker_security.py
+
       - name: Start PostgreSQL, MinIO and API container
         env:
           POSTGRES_PASSWORD: tennisai
@@ -253,6 +262,9 @@ jobs:
           RUN_ANALYSIS_JOB_HTTP_INTEGRATION=1 ANALYSIS_JOB_API_BASE_URL=http://localhost:8001 \
             uv run --extra platform pytest tests/test_analysis_jobs_integration.py \
             --junitxml=.artifacts/stage2b-analysis-jobs/integration-test-report.xml
+          RUN_STAGE2C_POSTGRES_INTEGRATION=1 ANALYSIS_JOB_API_BASE_URL=http://localhost:8001 \
+            uv run --extra platform pytest tests/test_worker_runtime_postgres.py \
+            --junitxml=.artifacts/stage2c-worker-runtime/postgres-test-report.xml
           uv run python scripts/export_analysis_job_runtime_evidence.py \
             --unit .artifacts/stage2b-analysis-jobs/unit-test-report.xml \
             --integration .artifacts/stage2b-analysis-jobs/integration-test-report.xml \
@@ -276,6 +288,44 @@ jobs:
             --doctor .artifacts/stage2a-session-platform/doctor-report.json \
             --cors-policy-output .artifacts/stage2a-session-platform/cors-policy-output.txt \
             --output-dir .artifacts/stage2a-session-platform
+
+      - name: Start worker and run Stage 2C HTTP persistence evidence
+        env:
+          POSTGRES_PASSWORD: tennisai
+          S3_SECRET_KEY: minioadmin
+          TENNISAI_DATABASE_URL: postgresql+psycopg://tennisai:tennisai@localhost:5432/tennisai
+          TENNISAI_S3_INTERNAL_ENDPOINT_URL: http://localhost:9000
+          TENNISAI_S3_PUBLIC_ENDPOINT_URL: http://localhost:9000
+          TENNISAI_S3_ACCESS_KEY: minioadmin
+          TENNISAI_S3_SECRET_KEY: minioadmin
+          TENNISAI_S3_BUCKET: tennisai-local
+          RUN_STAGE2C_WORKER_HTTP_INTEGRATION: "1"
+          SESSION_PLATFORM_API_BASE_URL: http://localhost:8000
+          ANALYSIS_JOB_API_BASE_URL: http://localhost:8001
+        run: |
+          test "$(docker compose -f infrastructure/session-platform/compose.yml config --services | grep -c '^worker$' || true)" = "0"
+          docker compose --profile stage2c-evidence -f infrastructure/session-platform/compose.yml build worker
+          docker compose --profile stage2c-evidence -f infrastructure/session-platform/compose.yml up -d --no-build worker
+          docker compose --profile stage2c-evidence -f infrastructure/session-platform/compose.yml ps worker
+          uv run --extra platform pytest tests/test_worker_runtime_integration.py \
+            --junitxml=.artifacts/stage2c-worker-runtime/integration-test-report.xml
+          docker compose --profile stage2c-evidence -f infrastructure/session-platform/compose.yml logs --no-color worker \
+            > .artifacts/stage2c-worker-runtime/worker-log.txt
+          docker compose --profile stage2c-evidence -f infrastructure/session-platform/compose.yml ps \
+            > .artifacts/stage2c-worker-runtime/compose-ps.txt
+          uv run python scripts/export_stage2c_worker_runtime_evidence.py \
+            --base-sha bc73f738f5846748250016f1e494f1804bd65274 \
+            --head-sha "${{ github.event.pull_request.head.sha || github.sha }}" \
+            --workflow-run "${{ github.run_id }}" \
+            --unit .artifacts/stage2c-worker-runtime/unit-test-report.xml \
+            --integration .artifacts/stage2c-worker-runtime/integration-test-report.xml \
+            --postgres .artifacts/stage2c-worker-runtime/postgres-test-report.xml \
+            --session-openapi config/platform/session_api_v1.openapi.json \
+            --analysis-openapi config/platform/analysis_job_api_v1.openapi.json \
+            --output .artifacts/stage2c-worker-runtime/worker-runtime-evidence.json
+          uv run python scripts/audit_stage2c_worker_security.py \
+            --evidence-dir .artifacts/stage2c-worker-runtime \
+            --output .artifacts/stage2c-worker-runtime/security-summary.json
 
       - name: Stop local services
         if: always()
@@ -318,6 +368,24 @@ jobs:
             .artifacts/stage2b-analysis-jobs/analysis-job-runtime.json
             .artifacts/stage2b-analysis-jobs/security-summary.json
             .artifacts/stage2a-session-platform/migration-report.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+
+      - name: Publish Stage 2C worker runtime evidence
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage2c-worker-runtime-evidence
+          path: |
+            docs/platform/STAGE2C_WORKER_RUNTIME.md
+            .artifacts/stage2c-worker-runtime/unit-test-report.xml
+            .artifacts/stage2c-worker-runtime/integration-test-report.xml
+            .artifacts/stage2c-worker-runtime/postgres-test-report.xml
+            .artifacts/stage2c-worker-runtime/worker-runtime-evidence.json
+            .artifacts/stage2c-worker-runtime/security-summary.json
+            .artifacts/stage2c-worker-runtime/worker-log.txt
+            .artifacts/stage2c-worker-runtime/compose-ps.txt
           if-no-files-found: error
           retention-days: 30
           compression-level: 6
