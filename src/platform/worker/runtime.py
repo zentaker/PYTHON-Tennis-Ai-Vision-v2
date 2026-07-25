@@ -113,7 +113,8 @@ class WorkerRuntime:
                 self._event("database_unavailable", error_code="WORKER_DATABASE_UNAVAILABLE")
                 return False
             run_id = run.id
-            self._event("claimed", run_id=str(run.id), attempt=run.attempt)
+            claimed_attempt = run.attempt
+            self._event("claimed", run_id=str(run.id), attempt=claimed_attempt)
             cancel_event = threading.Event()
             lease_lost = threading.Event()
             heartbeat_stop = threading.Event()
@@ -124,7 +125,7 @@ class WorkerRuntime:
                 daemon=True,
                 name="analysis-heartbeat",
             )
-            workspace = attempt_workspace(self.worker_root, run.id, run.attempt)
+            workspace = attempt_workspace(self.worker_root, run.id, claimed_attempt)
             workspace_identity = capture_workspace_identity(self.worker_root, workspace)
             started = time.monotonic()
             published_keys: list[str] = []
@@ -143,7 +144,7 @@ class WorkerRuntime:
                     session_id=run.session_id,
                     input_video_id=run.input_video_id,
                     processing_profile=run.processing_profile,
-                    attempt=run.attempt,
+                    attempt=claimed_attempt,
                     workspace=workspace,
                     cancellation_requested=cancel_event,
                     shutdown_requested=self.active_stop_event,
@@ -162,24 +163,24 @@ class WorkerRuntime:
                 except (TypeError, ValueError):
                     if not lease_lost.is_set() and not cancel_event.is_set() and not self.shutdown_requested.is_set():
                         client.fail("ANALYSIS_OUTPUT_INVALID", "processor output invalid")
-                    self._event("failed", run_id=str(run.id), attempt=run.attempt, error_code="ANALYSIS_OUTPUT_INVALID")
+                    self._event("failed", run_id=str(run.id), attempt=claimed_attempt, error_code="ANALYSIS_OUTPUT_INVALID")
                     return True
                 if outcome == ProcessorOutcome.CANCELLED or cancel_event.is_set():
                     client.acknowledge_cancel()
-                    self._event("cancelled", run_id=str(run.id), attempt=run.attempt)
+                    self._event("cancelled", run_id=str(run.id), attempt=claimed_attempt)
                     return True
                 if outcome == ProcessorOutcome.FAILED:
                     if result.artifacts or result.error_code not in {"WORKER_FAILED", "ANALYSIS_INPUT_INVALID", "ANALYSIS_OUTPUT_INVALID", "ANALYSIS_CANCELLED"}:
                         client.fail("ANALYSIS_OUTPUT_INVALID", "processor output invalid")
                         return True
                     client.fail(result.error_code or "WORKER_FAILED", "processor failed")
-                    self._event("failed", run_id=str(run.id), attempt=run.attempt,
+                    self._event("failed", run_id=str(run.id), attempt=claimed_attempt,
                                 error_code=result.error_code or "WORKER_FAILED")
                     return True
                 if outcome not in {ProcessorOutcome.COMPLETE, ProcessorOutcome.PARTIAL}:
                     client.fail("ANALYSIS_OUTPUT_INVALID", "processor output invalid")
                     return True
-                artifacts, published_keys = self._publish(run.id, run.attempt, workspace, result, cancel_event)
+                artifacts, published_keys = self._publish(run.id, claimed_attempt, workspace, result, cancel_event)
                 if lease_lost.is_set() or cancel_event.is_set() or self.shutdown_requested.is_set():
                     raise LeaseLost()
                 # Publication is deliberately outside the orchestration
@@ -196,10 +197,10 @@ class WorkerRuntime:
                 fingerprint = result.bundle_fingerprint or self._fingerprint(artifacts)
                 if outcome == ProcessorOutcome.PARTIAL:
                     client.partial(artifacts, fingerprint, manifest_key)
-                    self._event("partial", run_id=str(run.id), attempt=run.attempt)
+                    self._event("partial", run_id=str(run.id), attempt=claimed_attempt)
                 else:
                     client.complete(artifacts, fingerprint, manifest_key)
-                    self._event("completed", run_id=str(run.id), attempt=run.attempt)
+                    self._event("completed", run_id=str(run.id), attempt=claimed_attempt)
                 LOGGER.info(
                     "worker_run_finished",
                     extra={"event": "run_finished", "run_id": str(run.id), "status": result.status,
@@ -207,23 +208,23 @@ class WorkerRuntime:
                 )
                 return True
             except LeaseLost:
-                self._discard_published(published_keys, run.id, run.attempt)
+                self._discard_published(published_keys, run.id, claimed_attempt)
                 self._event("lease_lost")
                 LOGGER.info("worker_lease_lost", extra={"event": "lease_lost"})
                 return True
             except PlatformError as exc:
-                self._discard_published(published_keys, run.id, run.attempt)
+                self._discard_published(published_keys, run.id, claimed_attempt)
                 if exc.code == "ANALYSIS_CANCELLATION_INVALID":
                     LOGGER.info("worker_cancel_race", extra={"event": "cancel_race"})
                 else:
                     LOGGER.info("worker_transition_rejected", extra={"event": "transition_rejected", "code": exc.code})
                 return True
             except PublicationError as exc:
-                self._discard_published(exc.keys, run.id, run.attempt)
+                self._discard_published(exc.keys, run.id, claimed_attempt)
                 LOGGER.info("worker_publication_failed", extra={"event": "publication_failed", "code": "ANALYSIS_OUTPUT_INVALID"})
                 return True
             except Exception:
-                self._discard_published(published_keys, run.id, run.attempt)
+                self._discard_published(published_keys, run.id, claimed_attempt)
                 # Never expose processor exception text, paths, or a traceback.
                 try:
                     if not lease_lost.is_set() and not cancel_event.is_set():
