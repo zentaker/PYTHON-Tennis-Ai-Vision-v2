@@ -127,6 +127,22 @@ def _race(factory, operations):
         return list(pool.map(invoke, operations))
 
 
+def _http_create_race(base: str, session_id: str, payloads: list[dict]):
+    barrier = Barrier(len(payloads))
+
+    def invoke(payload):
+        barrier.wait()
+        return _call(
+            base,
+            "POST",
+            "/api/v1/analysis-runs",
+            {"session_id": session_id, **payload},
+        )
+
+    with ThreadPoolExecutor(max_workers=len(payloads)) as pool:
+        return list(pool.map(invoke, payloads))
+
+
 @pytest.mark.skipif(
     os.getenv("RUN_ANALYSIS_JOB_HTTP_INTEGRATION") != "1",
     reason="set RUN_ANALYSIS_JOB_HTTP_INTEGRATION=1 when Compose services are ready",
@@ -498,3 +514,84 @@ def test_analysis_job_concurrency_races_compose_contract():
         worker.complete([_artifact(terminal_id)])
     status, cancelled = _call(analysis_base, "POST", f"/api/v1/analysis-runs/{terminal_id}/cancel", {})
     assert status == 409 and cancelled["error"]["code"] == "ANALYSIS_CANCELLATION_INVALID"
+
+
+@pytest.mark.skipif(
+    os.getenv("RUN_ANALYSIS_JOB_HTTP_INTEGRATION") != "1",
+    reason="set RUN_ANALYSIS_JOB_HTTP_INTEGRATION=1 when Compose services are ready",
+)
+def test_analysis_job_idempotency_races_compose_contract():
+    session_base = os.getenv("SESSION_PLATFORM_API_BASE_URL", "http://localhost:8000")
+    analysis_base = os.getenv("ANALYSIS_JOB_API_BASE_URL", "http://localhost:8001")
+    factory = make_session_factory(PlatformSettings())
+
+    def rows(session_id):
+        with factory() as db:
+            return db.query(AnalysisRun).filter(AnalysisRun.session_id == UUID(session_id)).all()
+
+    # Same key and same payload reuse one committed run.
+    session_id = _new_uploaded_session(session_base, "idempotency-same-payload")
+    payload = {"processing_profile": "STANDARD", "max_attempts": 3, "idempotency_key": "same-payload"}
+    responses = _http_create_race(analysis_base, session_id, [payload, payload])
+    assert [status for status, _ in responses] == [202, 202]
+    assert responses[0][1]["id"] == responses[1][1]["id"]
+    assert len(rows(session_id)) == 1
+
+    # Same key with a different fingerprint fails closed.
+    session_id = _new_uploaded_session(session_base, "idempotency-fingerprint")
+    responses = _http_create_race(
+        analysis_base,
+        session_id,
+        [
+            {"processing_profile": "STANDARD", "max_attempts": 3, "idempotency_key": "same-key"},
+            {"processing_profile": "STANDARD", "max_attempts": 2, "idempotency_key": "same-key"},
+        ],
+    )
+    assert sorted(status for status, _ in responses) == [202, 409]
+    assert any(body["error"]["code"] == "IDEMPOTENCY_KEY_REUSED" for status, body in responses if status == 409)
+    assert len(rows(session_id)) == 1
+
+    # Same key with a different profile is also a key reuse conflict.
+    session_id = _new_uploaded_session(session_base, "idempotency-profile")
+    responses = _http_create_race(
+        analysis_base,
+        session_id,
+        [
+            {"processing_profile": "STANDARD", "idempotency_key": "profile-key"},
+            {"processing_profile": "FAST", "idempotency_key": "profile-key"},
+        ],
+    )
+    assert sorted(status for status, _ in responses) == [202, 409]
+    assert any(body["error"]["code"] == "IDEMPOTENCY_KEY_REUSED" for status, body in responses if status == 409)
+    assert len(rows(session_id)) == 1
+
+    # Different keys cannot silently reuse an active run.
+    session_id = _new_uploaded_session(session_base, "idempotency-different-keys")
+    responses = _http_create_race(
+        analysis_base,
+        session_id,
+        [
+            {"processing_profile": "STANDARD", "idempotency_key": "key-a"},
+            {"processing_profile": "STANDARD", "idempotency_key": "key-b"},
+        ],
+    )
+    assert sorted(status for status, _ in responses) == [202, 409]
+    assert any(body["error"]["code"] == "ACTIVE_ANALYSIS_RUN_EXISTS" for status, body in responses if status == 409)
+    assert len(rows(session_id)) == 1
+
+    # An unkeyed request follows its documented active-run policy, while a keyed
+    # request never receives a different keyed request's run as a success.
+    session_id = _new_uploaded_session(session_base, "idempotency-key-and-unkeyed")
+    responses = _http_create_race(
+        analysis_base,
+        session_id,
+        [
+            {"processing_profile": "STANDARD", "idempotency_key": "keyed-request"},
+            {"processing_profile": "STANDARD"},
+        ],
+    )
+    statuses = sorted(status for status, _ in responses)
+    assert statuses in ([202, 202], [202, 409])
+    assert len(rows(session_id)) == 1
+    if statuses == [202, 202]:
+        assert responses[0][1]["id"] == responses[1][1]["id"]

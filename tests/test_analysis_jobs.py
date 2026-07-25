@@ -331,6 +331,19 @@ def test_processing_profiles_and_idempotency_key_policy(database, uploaded_sessi
     assert fast.status == "QUEUED"
 
 
+def test_different_key_does_not_reuse_active_run(database, uploaded_session):
+    first = create_and_queue_run(
+        database, uploaded_session.id, "STANDARD", idempotency_key="request-1"
+    )
+    with pytest.raises(PlatformError) as error:
+        create_and_queue_run(
+            database, uploaded_session.id, "STANDARD", idempotency_key="request-2"
+        )
+    assert error.value.code == "ACTIVE_ANALYSIS_RUN_EXISTS"
+    assert database.query(AnalysisRun).count() == 1
+    assert database.get(AnalysisRun, first.id).idempotency_key == "request-1"
+
+
 def test_unkeyed_terminal_requests_are_not_collapsed(database, uploaded_session):
     run = create_and_queue_run(database, uploaded_session.id, "STANDARD")
     claimed, token = claim_next_job(database, "worker-a")

@@ -95,6 +95,8 @@ def create_and_queue_run(
         return existing_key
     active = get_active_run(db, session_id, processing_profile)
     if active is not None:
+        if key is not None:
+            raise analysis_error("ACTIVE_ANALYSIS_RUN_EXISTS")
         return active
     if has_active_run(db, session_id):
         raise analysis_error("SESSION_NOT_READY_FOR_ANALYSIS")
@@ -135,14 +137,16 @@ def create_and_queue_run(
         return run
     except IntegrityError:
         db.rollback()
-        active = get_active_run(db, session_id, processing_profile)
-        if active is not None:
-            return active
         existing_key = get_idempotent_run(db, session_id, key) if key is not None else None
         if existing_key is not None:
             if existing_key.request_fingerprint != fingerprint:
                 raise analysis_error("IDEMPOTENCY_KEY_REUSED")
             return existing_key
+        active = get_active_run(db, session_id, processing_profile)
+        if active is not None:
+            if key is not None:
+                raise analysis_error("ACTIVE_ANALYSIS_RUN_EXISTS")
+            return active
         raise analysis_error("ACTIVE_ANALYSIS_RUN_EXISTS")
 
 
