@@ -21,6 +21,13 @@ from .analysis_jobs import (
 
 
 class WorkerContractClient:
+    """Internal harness; ``result_manifest`` must be a complete object key.
+
+    Callers should construct manifests with ``bundle_artifact_key(run_id,
+    relative_path)`` before invoking ``complete`` or ``partial``. Relative
+    paths are intentionally rejected by the service contract.
+    """
+
     def __init__(self, db: Session, worker_id: str, worker_version: str = "contract-harness"):
         self.db = db
         self.worker_id = worker_id

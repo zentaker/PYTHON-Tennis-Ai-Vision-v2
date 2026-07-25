@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 import logging
+from uuid import uuid4
 from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
 
@@ -144,7 +145,7 @@ def test_artifact_finalization_updates_session(database, uploaded_session):
         token,
         [_artifact(run.id)],
         bundle_fingerprint="b" * 64,
-        result_manifest="manifest.json",
+        result_manifest=bundle_artifact_key(run.id, "manifest.json"),
     )
     assert completed.status == "COMPLETE"
     assert completed.terminal_at is not None
@@ -320,11 +321,34 @@ def test_result_manifest_rejects_noncanonical_paths(database, uploaded_session):
     _, token = claim_next_job(database, "worker-a")
     invalid_manifests = (
         ".",
+        "..",
         "",
+        "manifest.json",
+        "nested/manifest.json",
+        "./manifest.json",
+        "../manifest.json",
+        "C:/tmp/report.json",
+        r"C:\tmp\report.json",
+        "C:report.json",
+        "file:report.json",
+        "file:///tmp/report.json",
+        "http:report.json",
+        "http://example.com/report.json",
+        "https:report.json",
+        "https://example.com/report.json",
+        "s3:bucket/report.json",
+        "s3://bucket/report.json",
+        "/tmp/report.json",
+        "//server/report.json",
         f"runs/{run.id}/bundle",
         f"runs/{run.id}/bundle/",
+        f"runs/{run.id}/bundle/.",
         f"runs/{run.id}/bundle/./result.json",
-        "../result.json",
+        f"runs/{run.id}/bundle/../result.json",
+        f"runs/{uuid4()}/bundle/report.json",
+        f"runs/{run.id}/bundle/report.json?sig=x",
+        f"runs/{run.id}/bundle/report.json#fragment",
+        f"runs/{run.id}/bundle/%72eport.json",
     )
     for manifest in invalid_manifests:
         with pytest.raises(PlatformError) as error:
@@ -345,9 +369,43 @@ def test_result_manifest_rejects_noncanonical_paths(database, uploaded_session):
         "worker-a",
         token,
         [_artifact(run.id)],
-        result_manifest=f"runs/{run.id}/bundle/result.json",
+        result_manifest=bundle_artifact_key(run.id, "nested/manifest.json"),
     )
-    assert completed.result_manifest == f"runs/{run.id}/bundle/result.json"
+    assert completed.result_manifest == bundle_artifact_key(run.id, "nested/manifest.json")
+
+
+def test_partial_run_requires_and_stores_complete_manifest_key(database, uploaded_session):
+    run = create_and_queue_run(database, uploaded_session.id, "STANDARD")
+    _, token = claim_next_job(database, "worker-a")
+    manifest = bundle_artifact_key(run.id, "reports/partial.json")
+    partial = partial_run(
+        database,
+        run.id,
+        "worker-a",
+        token,
+        [_artifact(run.id, "MANIFEST")],
+        result_manifest=manifest,
+    )
+    assert partial.status == "PARTIAL"
+    assert partial.result_manifest == manifest
+
+
+def test_partial_run_rejects_relative_and_windows_manifest(database, uploaded_session):
+    run = create_and_queue_run(database, uploaded_session.id, "STANDARD")
+    _, token = claim_next_job(database, "worker-a")
+    for manifest in ("manifest.json", r"C:\tmp\partial.json", "https:partial.json"):
+        with pytest.raises(PlatformError) as error:
+            partial_run(
+                database,
+                run.id,
+                "worker-a",
+                token,
+                [_artifact(run.id, "MANIFEST")],
+                result_manifest=manifest,
+            )
+        assert error.value.code == "ARTIFACT_METADATA_INVALID"
+        assert run.status == "RUNNING"
+        database.rollback()
 
 
 def test_cancellation_blocks_terminal_worker_operations(database, uploaded_session):
