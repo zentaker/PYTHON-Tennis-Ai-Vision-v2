@@ -4,7 +4,8 @@ import json
 import time
 from hashlib import sha256
 
-from .protocol import AnalysisContext, AnalysisResult
+from ..domain.enums import ArtifactKind
+from .protocol import AnalysisContext, AnalysisResult, ProcessorArtifact, ProcessorOutcome
 
 
 class ContractFixtureProcessor:
@@ -17,12 +18,12 @@ class ContractFixtureProcessor:
 
     def process(self, context: AnalysisContext) -> AnalysisResult:
         for _ in range(3):
-            if context.cancelled():
-                return AnalysisResult("CANCELLED", error_code="ANALYSIS_CANCELLED")
+            if context.stopped():
+                return AnalysisResult(ProcessorOutcome.CANCELLED, error_code="ANALYSIS_CANCELLED")
             time.sleep(0.01)
         if context.processing_profile == "TACTICAL":
-            return AnalysisResult("FAILED", error_code="ANALYSIS_INPUT_INVALID")
-        status = "PARTIAL" if context.processing_profile == "FAST" else "COMPLETE"
+            return AnalysisResult(ProcessorOutcome.FAILED, error_code="ANALYSIS_INPUT_INVALID")
+        status = ProcessorOutcome.PARTIAL if context.processing_profile == "FAST" else ProcessorOutcome.COMPLETE
         manifest = context.workspace / "manifest.json"
         metrics = context.workspace / "metrics.json"
         metrics.write_text(
@@ -48,4 +49,11 @@ class ContractFixtureProcessor:
             + "\n",
             encoding="utf-8",
         )
-        return AnalysisResult(status, (manifest, metrics), result_manifest="manifest.json")
+        return AnalysisResult(
+            status,
+            (
+                ProcessorArtifact("manifest.json", ArtifactKind.MANIFEST, "application/json", "stage2c.fixture.v1"),
+                ProcessorArtifact("metrics.json", ArtifactKind.METRICS, "application/json", "stage2c.fixture.v1"),
+            ),
+            result_manifest="manifest.json",
+        )

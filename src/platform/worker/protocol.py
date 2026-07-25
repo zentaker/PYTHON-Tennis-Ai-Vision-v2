@@ -1,10 +1,28 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import StrEnum
 from pathlib import Path
 from threading import Event
 from typing import Protocol
 from uuid import UUID
+
+from ..domain.enums import ArtifactKind
+
+
+class ProcessorOutcome(StrEnum):
+    COMPLETE = "COMPLETE"
+    PARTIAL = "PARTIAL"
+    FAILED = "FAILED"
+    CANCELLED = "CANCELLED"
+
+
+@dataclass(frozen=True)
+class ProcessorArtifact:
+    relative_path: str
+    kind: ArtifactKind
+    media_type: str
+    schema_version: str
 
 
 @dataclass(frozen=True)
@@ -22,17 +40,21 @@ class AnalysisContext:
     attempt: int
     workspace: Path
     cancellation_requested: Event
+    shutdown_requested: Event
 
     def cancelled(self) -> bool:
         return self.cancellation_requested.is_set()
+
+    def stopped(self) -> bool:
+        return self.cancellation_requested.is_set() or self.shutdown_requested.is_set()
 
 
 @dataclass(frozen=True)
 class AnalysisResult:
     """Processor output; publication and state transitions remain runtime-owned."""
 
-    status: str
-    artifacts: tuple[Path, ...] = ()
+    status: ProcessorOutcome | str
+    artifacts: tuple[ProcessorArtifact, ...] = ()
     error_code: str | None = None
     bundle_fingerprint: str | None = None
     result_manifest: str | None = None

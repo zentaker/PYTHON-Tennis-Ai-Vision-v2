@@ -6,7 +6,7 @@ import signal
 import threading
 import time
 from hashlib import sha256
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Callable
 
 from sqlalchemy.orm import Session, sessionmaker
@@ -16,9 +16,8 @@ from ..domain.errors import PlatformError
 from ..services.analysis_jobs import heartbeat as renew_lease
 from ..services.worker_contract import WorkerContractClient
 from ..storage.interface import ObjectStorage
-from ..storage.keys import bundle_artifact_key
-from .fixture_processor import ContractFixtureProcessor
-from .protocol import AnalysisContext, AnalysisProcessor, AnalysisResult
+from ..storage.keys import bundle_artifact_key, validate_object_key
+from .protocol import AnalysisContext, AnalysisProcessor, AnalysisResult, ProcessorOutcome
 from .workspace import attempt_workspace, cleanup_workspace, ensure_worker_root
 
 LOGGER = logging.getLogger("tennisai.worker")
@@ -26,6 +25,12 @@ LOGGER = logging.getLogger("tennisai.worker")
 
 class LeaseLost(RuntimeError):
     pass
+
+
+class PublicationError(RuntimeError):
+    def __init__(self, keys: list[str]):
+        super().__init__("artifact publication failed")
+        self.keys = keys
 
 
 class WorkerRuntime:
@@ -36,7 +41,7 @@ class WorkerRuntime:
         *,
         worker_id: str,
         worker_version: str,
-        processor_factory: Callable[[], AnalysisProcessor] = ContractFixtureProcessor,
+        processor_factory: Callable[[], AnalysisProcessor] | None = None,
         worker_root: str | Path = "/tmp/tennisai-worker",
         poll_interval: float = 2.0,
         heartbeat_interval: float = 10.0,
@@ -52,6 +57,8 @@ class WorkerRuntime:
         self.storage = storage
         self.worker_id = worker_id
         self.worker_version = worker_version
+        if processor_factory is None:
+            raise ValueError("no analysis processor is configured")
         self.processor_factory = processor_factory
         self.worker_root = ensure_worker_root(worker_root)
         self.poll_interval = poll_interval
@@ -59,9 +66,12 @@ class WorkerRuntime:
         self.max_artifact_bytes = max_artifact_bytes
         self.shutdown_requested = threading.Event()
         self.counters: dict[str, int] = {}
+        self.active_stop_event: threading.Event | None = None
 
     def request_shutdown(self, *_args) -> None:
         self.shutdown_requested.set()
+        if self.active_stop_event is not None:
+            self.active_stop_event.set()
 
     def run(self, *, once: bool = False) -> int:
         self._install_signal_handlers()
@@ -109,6 +119,7 @@ class WorkerRuntime:
             workspace = attempt_workspace(self.worker_root, run.id, run.attempt)
             started = time.monotonic()
             published_keys: list[str] = []
+            self.active_stop_event = threading.Event()
             heartbeat_thread.start()
             cancellation_thread = threading.Thread(
                 target=self._cancellation_loop,
@@ -126,6 +137,7 @@ class WorkerRuntime:
                     attempt=run.attempt,
                     workspace=workspace,
                     cancellation_requested=cancel_event,
+                    shutdown_requested=self.active_stop_event,
                 )
                 result = self.processor_factory().process(context)
                 if lease_lost.is_set() or self.shutdown_requested.is_set():
@@ -135,17 +147,29 @@ class WorkerRuntime:
                 # transition so cancellation written by another session is
                 # never hidden by SQLAlchemy's identity map.
                 db.expire_all()
-                if cancel_event.is_set() or result.status == "CANCELLED":
+                try:
+                    outcome = ProcessorOutcome(result.status)
+                except (TypeError, ValueError):
+                    if not lease_lost.is_set() and not cancel_event.is_set() and not self.shutdown_requested.is_set():
+                        client.fail("ANALYSIS_OUTPUT_INVALID", "processor output invalid")
+                    self._event("failed", run_id=str(run.id), attempt=run.attempt, error_code="ANALYSIS_OUTPUT_INVALID")
+                    return True
+                if outcome == ProcessorOutcome.CANCELLED or cancel_event.is_set():
                     client.acknowledge_cancel()
                     self._event("cancelled", run_id=str(run.id), attempt=run.attempt)
                     return True
-                if result.status == "FAILED":
+                if outcome == ProcessorOutcome.FAILED:
+                    if result.artifacts or result.error_code not in {"WORKER_FAILED", "ANALYSIS_INPUT_INVALID", "ANALYSIS_OUTPUT_INVALID", "ANALYSIS_CANCELLED"}:
+                        client.fail("ANALYSIS_OUTPUT_INVALID", "processor output invalid")
+                        return True
                     client.fail(result.error_code or "WORKER_FAILED", "processor failed")
                     self._event("failed", run_id=str(run.id), attempt=run.attempt,
                                 error_code=result.error_code or "WORKER_FAILED")
                     return True
-                artifacts = self._publish(run.id, result)
-                published_keys = [item["object_key"] for item in artifacts]
+                if outcome not in {ProcessorOutcome.COMPLETE, ProcessorOutcome.PARTIAL}:
+                    client.fail("ANALYSIS_OUTPUT_INVALID", "processor output invalid")
+                    return True
+                artifacts, published_keys = self._publish(run.id, run.attempt, workspace, result, cancel_event)
                 if lease_lost.is_set() or cancel_event.is_set():
                     raise LeaseLost()
                 manifest_key = next(
@@ -155,7 +179,7 @@ class WorkerRuntime:
                 if result.result_manifest and result.result_manifest not in {"manifest.json", manifest_key}:
                     raise ValueError("processor returned an unsafe result manifest")
                 fingerprint = result.bundle_fingerprint or self._fingerprint(artifacts)
-                if result.status == "PARTIAL":
+                if outcome == ProcessorOutcome.PARTIAL:
                     client.partial(artifacts, fingerprint, manifest_key)
                     self._event("partial", run_id=str(run.id), attempt=run.attempt)
                 else:
@@ -168,19 +192,23 @@ class WorkerRuntime:
                 )
                 return True
             except LeaseLost:
-                self._discard_published(published_keys)
+                self._discard_published(published_keys, run.id, run.attempt)
                 self._event("lease_lost")
                 LOGGER.info("worker_lease_lost", extra={"event": "lease_lost"})
                 return True
             except PlatformError as exc:
-                self._discard_published(published_keys)
+                self._discard_published(published_keys, run.id, run.attempt)
                 if exc.code == "ANALYSIS_CANCELLATION_INVALID":
                     LOGGER.info("worker_cancel_race", extra={"event": "cancel_race"})
                 else:
                     LOGGER.info("worker_transition_rejected", extra={"event": "transition_rejected", "code": exc.code})
                 return True
+            except PublicationError as exc:
+                self._discard_published(exc.keys, run.id, run.attempt)
+                LOGGER.info("worker_publication_failed", extra={"event": "publication_failed", "code": "ANALYSIS_OUTPUT_INVALID"})
+                return True
             except Exception:
-                self._discard_published(published_keys)
+                self._discard_published(published_keys, run.id, run.attempt)
                 # Never expose processor exception text, paths, or a traceback.
                 try:
                     if not lease_lost.is_set() and not cancel_event.is_set():
@@ -199,6 +227,7 @@ class WorkerRuntime:
                     cleanup_workspace(self.worker_root, workspace)
                 except OSError:
                     LOGGER.info("worker_cleanup_failed", extra={"event": "cleanup_failed"})
+                self.active_stop_event = None
 
     def _heartbeat_loop(self, run_id, token, stop: threading.Event, lost: threading.Event) -> None:
         while not stop.wait(self.heartbeat_interval):
@@ -225,25 +254,66 @@ class WorkerRuntime:
                 if lost.is_set():
                     event.set()
 
-    def _publish(self, run_id, result: AnalysisResult) -> list[dict]:
-        published: list[dict] = []
-        for path in result.artifacts:
-            body = path.read_bytes()
-            if len(body) > self.max_artifact_bytes:
-                raise ValueError("processor artifact exceeds configured size")
-            relative = path.name
-            key = bundle_artifact_key(run_id, relative)
-            self.storage.put_bytes(key, body, "application/json")
-            published.append({"kind": "MANIFEST" if relative == "manifest.json" else "METRICS",
-                              "object_key": key, "media_type": "application/json",
-                              "size_bytes": len(body), "sha256": sha256(body).hexdigest(),
-                              "schema_version": "stage2c.fixture.v1"})
-        if not published:
-            raise ValueError("processor returned no artifacts")
-        return published
+    def _publish(self, run_id, attempt: int, workspace: Path, result: AnalysisResult, cancel_event: threading.Event) -> tuple[list[dict], list[str]]:
+        try:
+            return self._publish_impl(run_id, attempt, workspace, result, cancel_event)
+        except PublicationError as exc:
+            self._discard_published(exc.keys, run_id, attempt)
+            raise
 
-    def _discard_published(self, keys: list[str]) -> None:
+    def _publish_impl(self, run_id, attempt: int, workspace: Path, result: AnalysisResult, cancel_event: threading.Event) -> tuple[list[dict], list[str]]:
+        published: list[dict] = []
+        keys: list[str] = []
+        seen: set[str] = set()
+        total = 0
+        if len(result.artifacts) > 32:
+            raise PublicationError([])
+        for descriptor in result.artifacts:
+            relative = descriptor.relative_path
+            try:
+                canonical_relative = validate_object_key(relative)
+            except ValueError as exc:
+                raise PublicationError(keys) from exc
+            if (not relative or canonical_relative != relative or relative.startswith("/") or "\\" in relative
+                    or any(ord(char) < 32 or ord(char) == 127 for char in relative)):
+                raise PublicationError(keys)
+            target = (workspace / PurePosixPath(relative)).resolve()
+            root = workspace.resolve()
+            if root not in target.parents or target == root or target.is_symlink() or not target.is_file():
+                raise PublicationError(keys)
+            if target.stat().st_nlink != 1:
+                raise PublicationError(keys)
+            body = target.read_bytes()
+            if len(body) > self.max_artifact_bytes:
+                raise PublicationError(keys)
+            total += len(body)
+            if total > self.max_artifact_bytes * 4:
+                raise PublicationError(keys)
+            key = bundle_artifact_key(run_id, f"attempt-{attempt}/{relative}")
+            if relative in seen or key in seen:
+                raise PublicationError(keys)
+            seen.add(relative)
+            seen.add(key)
+            if cancel_event.is_set() or self.shutdown_requested.is_set():
+                raise PublicationError(keys)
+            try:
+                self.storage.put_bytes(key, body, descriptor.media_type)
+            except Exception as exc:
+                raise PublicationError(keys) from exc
+            keys.append(key)
+            published.append({"kind": descriptor.kind.value, "object_key": key, "media_type": descriptor.media_type,
+                              "size_bytes": len(body), "sha256": sha256(body).hexdigest(),
+                              "schema_version": descriptor.schema_version})
+        if not published:
+            raise PublicationError(keys)
+        return published, keys
+
+    def _discard_published(self, keys: list[str], run_id=None, attempt: int | None = None) -> None:
         for key in keys:
+            if run_id is not None and attempt is not None:
+                expected = f"runs/{run_id}/bundle/attempt-{attempt}/"
+                if not key.startswith(expected) or validate_object_key(key, expected) != key:
+                    continue
             try:
                 self.storage.delete_object(key)
             except Exception:

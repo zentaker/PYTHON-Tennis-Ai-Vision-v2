@@ -77,7 +77,8 @@ def _build_parser() -> argparse.ArgumentParser:
     run_worker.add_argument("--worker-id", default=None)
     run_worker.add_argument("--worker-version", default="stage2c-contract-fixture")
     run_worker.add_argument("--heartbeat-interval", type=float, default=10.0)
-    run_worker.add_argument("--processor", choices=("contract-fixture",), default="contract-fixture")
+    run_worker.add_argument("--processor", choices=("contract-fixture",), default=None)
+    run_worker.add_argument("--allow-contract-fixture", action="store_true")
     run_worker.add_argument("--worker-root", type=Path, default=None)
     run_worker.add_argument("--max-artifact-bytes", type=int, default=2_000_000)
     return parser
@@ -183,8 +184,15 @@ def _worker_main(args) -> int:
     from src.platform.config.settings import get_settings
     from src.platform.db.session import make_session_factory
     from src.platform.storage.s3 import S3ObjectStorage
-    from src.platform.worker.fixture_processor import ContractFixtureProcessor
     from src.platform.worker.runtime import WorkerRuntime
+
+    if args.processor is None:
+        print("error: no processor configured; contract-fixture is not real analysis", file=sys.stderr)
+        return 2
+    if args.processor == "contract-fixture" and not args.allow_contract_fixture:
+        print("error: contract-fixture is disabled by default; pass --allow-contract-fixture (not real analysis)", file=sys.stderr)
+        return 2
+    from src.platform.worker.fixture_processor import ContractFixtureProcessor
 
     class _JsonFormatter(logging.Formatter):
         def format(self, record):

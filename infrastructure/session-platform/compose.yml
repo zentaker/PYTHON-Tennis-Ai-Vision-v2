@@ -106,6 +106,7 @@ services:
       retries: 20
 
   worker:
+    profiles: ["stage2c-evidence"]
     build:
       context: ../..
       dockerfile: infrastructure/session-platform/Dockerfile
@@ -121,7 +122,7 @@ services:
     depends_on:
       analysis-api:
         condition: service_healthy
-    command: ["uv", "run", "--frozen", "--no-sync", "tennisai", "worker", "run", "--poll-interval", "2", "--heartbeat-interval", "10"]
+    command: ["uv", "run", "--frozen", "--no-sync", "tennisai", "worker", "run", "--processor", "contract-fixture", "--allow-contract-fixture", "--poll-interval", "2", "--heartbeat-interval", "10"]
 
 volumes:
   session-platform-postgres:
