@@ -57,7 +57,6 @@ class TwoArtifactProcessor:
                 ProcessorArtifact("first.json", ArtifactKind.METRICS, "application/json", "test"),
                 ProcessorArtifact("second.json", ArtifactKind.METRICS, "application/json", "test"),
             ),
-            result_manifest="first.json",
         )
 
 
@@ -138,13 +137,12 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
     assert not any(storage.object_exists(key) for key in old_keys)
     with factory() as db:
         terminal = db.get(AnalysisRun, run_id)
-        assert terminal is not None and terminal.status == "COMPLETE", {
-            "status": terminal.status if terminal else None,
-            "error_code": terminal.error_code if terminal else None,
-            "attempt": terminal.attempt if terminal else None,
-            "worker_a": worker_a.counters,
-            "worker_b": worker_b.counters,
-        }
+        assert terminal is not None
+        if terminal.status != "COMPLETE":
+            pytest.fail(
+                f"status={terminal.status} error_code={terminal.error_code} "
+                f"attempt={terminal.attempt} worker_a={worker_a.counters} worker_b={worker_b.counters}"
+            )
         assert terminal.attempt == 2
         assert terminal.result_manifest == new_manifest
         assert all(artifact.object_key.startswith(new_prefix) for artifact in terminal.artifacts)
