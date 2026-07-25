@@ -34,13 +34,17 @@ class BarrierStorage:
         self.delete_calls: list[str] = []
 
     def put_bytes(self, key: str, body: bytes, content_type: str) -> None:
-        self.delegate.put_bytes(key, body, content_type)
         if "/attempt-1/" in key and key.endswith("first.json"):
+            self.delegate.put_bytes(key, body, content_type)
             self.first_attempt_one_put.set()
+            return
+        if "/attempt-1/" in key and key.endswith("second.json"):
             if not self.resume_attempt_one.wait(20):
                 raise TimeoutError("publication barrier timed out")
-        elif "/attempt-1/" in key and key.endswith("second.json"):
+            self.delegate.put_bytes(key, body, content_type)
             self.second_attempt_one_put.set()
+            return
+        self.delegate.put_bytes(key, body, content_type)
 
     def delete_object(self, key: str) -> None:
         self.delete_calls.append(key)
@@ -137,7 +141,9 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
     old_keys = [old_prefix + "first.json", old_prefix + "second.json"]
     new_manifest = new_prefix + "first.json"
     new_second = new_prefix + "second.json"
-    assert not any(storage.object_exists(key) for key in old_keys)
+    assert not any(storage.object_exists(key) for key in old_keys), (
+        f"deletes={storage.delete_calls} worker_a={worker_a.counters} worker_b={worker_b.counters}"
+    )
     with factory() as db:
         terminal = db.get(AnalysisRun, run_id)
         assert terminal is not None
