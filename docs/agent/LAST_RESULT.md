@@ -117,21 +117,30 @@
 - Public candidate operations: `requestAnalysisRun`, `getAnalysisRun`,
   `listSessionAnalysisRuns`, `cancelAnalysisRun`. Internal operations are
   claim, heartbeat, complete, partial, fail and acknowledge cancellation.
-- Independent release audit: `CORE_STAGE2B_RELEASE_AUDIT_BLOCKED` at head
-  `0b8554c411c53b7ea9d2d4e7a1ddaef3d8f149f7`. Idempotency and artifact-key
-  blockers were corrected, but `result_manifest` still accepted relative or
-  scheme-like values by prefix completion. The same PR contains the final
-  correction; an independent audit of the new head remains required. Compose
-  HTTP and PostgreSQL/MinIO evidence is never inferred from local tests when
-  Docker is unavailable.
+- Independent release audit passed as `CORE_STAGE2B_RELEASE_AUDIT_PASSED` at
+  functional head `4d5fde966bd36354b77151ece5b28f47c4f3d0e2`. Stage 2B is
+  accepted as `CORE_STAGE2B_ANALYSIS_ORCHESTRATION_ACCEPTED`, and the public
+  Analysis Job API is frozen as `ANALYSIS_JOB_API_V1_CONTRACT_FROZEN`.
 - Analysis OpenAPI snapshot SHA-256 after the idempotency-key contract change:
   `329ad9092a1dbf115fe1722f06ea7141b787e454c96f43ec05e7149051087647`.
 - Candidate gates are registered but not passed or frozen pending re-audit;
   internal worker operations remain non-public.
-- Candidate gates remain pending and not frozen; internal worker operations
-  remain non-public. PR #11 is open and unmerged, and the production worker is
-  not implemented. The corrective workflow must publish fresh evidence tied to
-  the corrected head; no previous workflow or artifact may be reused.
+- Final gates: `STAGE2B_ANALYSIS_RUN_STATE_MACHINE_PASSED`,
+  `STAGE2B_IDEMPOTENT_JOB_ORCHESTRATION_PASSED`,
+  `STAGE2B_ATOMIC_WORKER_LEASE_PASSED`,
+  `STAGE2B_ARTIFACT_FINALIZATION_CONTRACT_PASSED`,
+  `STAGE2B_RUNTIME_SECURITY_AUDIT_PASSED`,
+  `ANALYSIS_JOB_API_V1_CONTRACT_FROZEN`, and
+  `CORE_STAGE2B_ANALYSIS_ORCHESTRATION_ACCEPTED`.
+- Workflow `30136680719` succeeded and artifact `8613038474`
+  (`stage2b-analysis-orchestration-evidence`, 6,078 bytes, expires
+  `2026-08-24T00:37:51Z`) is tied to the audited head. Session API SHA and
+  Analysis OpenAPI SHA remain frozen and unchanged.
+- PR #11 is merged by normal merge commit. The production worker remains
+  unimplemented; no video processing, inference, GPU/cloud work or spend was
+  introduced.
+- Non-blocking debt: `processing_profile` has API/domain validation but no
+  PostgreSQL `CHECK` constraint.
 - Cloud calls / GPU calls / inference / videos processed / spend: 0 / 0 / 0 / 0 / 0.
-- Next action: independent audit of the corrected PR #11 head; no merge, freeze
-  or worker implementation.
+- Next action: plan the separately scoped production-worker stage; do not
+  implement it without a new prompt.

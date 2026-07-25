@@ -19,3 +19,7 @@ Worker identity is a bounded printable identifier. Authentication and durable
 authorization are future seams; no credential is persisted or logged in Stage
 2B. Lease expiry and retry recovery are deterministic and observable through
 the service-level tests.
+
+The Stage 2B orchestration and internal contract are frozen and accepted after
+the independent release audit. A production worker remains unimplemented and
+must be delivered only as a separately scoped future stage.

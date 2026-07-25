@@ -5,12 +5,20 @@ V1. It persists an analysis run, queues it idempotently, leases it to a future
 worker, and finalizes only validated artifact metadata. It does not execute
 inference, decode video, load models, or call a cloud provider.
 
-The second release audit is blocked as
-`CORE_STAGE2B_RELEASE_AUDIT_BLOCKED`. The confirmed blockers are concurrent
-idempotency resolution and non-canonical artifact-key handling. Candidate gates
-remain intentionally review-pending: none are passed or frozen. PR #11 remains
-open and unmerged, the production worker is not implemented, and the next
-action is an independent audit of the corrected head.
+The independent release audit passed as `CORE_STAGE2B_RELEASE_AUDIT_PASSED` at
+head `4d5fde966bd36354b77151ece5b28f47c4f3d0e2`. The accepted orchestration
+contract is frozen as `CORE_STAGE2B_ANALYSIS_ORCHESTRATION_ACCEPTED`; the public
+Analysis Job API is frozen as `ANALYSIS_JOB_API_V1_CONTRACT_FROZEN`. This stage
+does not implement the production worker, process video, execute inference, or
+call GPU/cloud infrastructure. The worker is a separately scoped future stage.
+
+Frozen gates: `STAGE2B_ANALYSIS_RUN_STATE_MACHINE_PASSED`,
+`STAGE2B_IDEMPOTENT_JOB_ORCHESTRATION_PASSED`,
+`STAGE2B_ATOMIC_WORKER_LEASE_PASSED`,
+`STAGE2B_ARTIFACT_FINALIZATION_CONTRACT_PASSED`,
+`STAGE2B_RUNTIME_SECURITY_AUDIT_PASSED`,
+`ANALYSIS_JOB_API_V1_CONTRACT_FROZEN`, and
+`CORE_STAGE2B_ANALYSIS_ORCHESTRATION_ACCEPTED`.
 
 ## State and transitions
 
@@ -30,9 +38,11 @@ no `CANCELLED` status.
 ## Idempotency and concurrency
 
 `(session_id, processing_profile)` has a partial unique index for active runs
-(`PENDING`, `QUEUED`, `RUNNING`). Repeated requests return the existing active
-run. Queue claiming uses a row lock with `SKIP LOCKED` on PostgreSQL; the
-lease token is opaque and is never derived from credentials.
+(`PENDING`, `QUEUED`, `RUNNING`). Repeated unkeyed requests may return the
+existing active run; keyed requests reuse only an identical key and request
+fingerprint, while incompatible keys return a conflict. Queue claiming uses a
+row lock with `SKIP LOCKED` on PostgreSQL; the lease token is opaque and is
+never derived from credentials.
 
 The default lease is 60 seconds. Heartbeats renew it for another 60 seconds.
 Reclaim clears all lease fields before requeueing. The default retry budget is

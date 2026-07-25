@@ -67,13 +67,12 @@ artifact finalization. The OpenAPI snapshot is
 validated by the Stage 2B scripts. The local Compose stack exposes the
 additive contract at port 8001 while the frozen Session API remains unchanged.
 
-The second release audit remains blocked as
-`CORE_STAGE2B_RELEASE_AUDIT_BLOCKED` by concurrent idempotency semantics and
-non-canonical artifact-key handling. Candidate gates remain pending: none are
-passed or frozen. The next action is an independent audit of the corrected
-head; PR #11 remains open and unmerged, and no production worker is included.
-No worker, video processing, inference, model, GPU, cloud call or spend is
-included. See [Stage 2B orchestration](docs/platform/STAGE2B_ANALYSIS_JOB_ORCHESTRATION.md).
+The independent release audit passed as `CORE_STAGE2B_RELEASE_AUDIT_PASSED` at
+head `4d5fde966bd36354b77151ece5b28f47c4f3d0e2`. The analysis-job API V1 and
+orchestration contract are frozen and accepted. This stage does not implement
+the production worker, process video, execute inference, load models, or make
+GPU/cloud calls; the worker is a separately scoped future stage. The accepted
+contract is documented in [Stage 2B orchestration](docs/platform/STAGE2B_ANALYSIS_JOB_ORCHESTRATION.md).
 
 ## Setup ligero en macOS
 
