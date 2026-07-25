@@ -60,7 +60,7 @@
   "stage2b_runtime_security_gate": "STAGE2B_RUNTIME_SECURITY_CANDIDATE_PENDING_REAUDIT",
   "stage2b_release_audit_gate": "CORE_STAGE2B_RELEASE_AUDIT_BLOCKED",
   "analysis_job_openapi_sha256": "329ad9092a1dbf115fe1722f06ea7141b787e454c96f43ec05e7149051087647",
-  "blocker": "CORE_STAGE2B_RELEASE_AUDIT_BLOCKED: concurrent idempotency and non-canonical artifact-key blockers require independent re-audit",
+  "blocker": "CORE_STAGE2B_RELEASE_AUDIT_BLOCKED: result_manifest must require a complete canonical object key; independent re-audit remains pending",
   "pr": "11 OPEN NOT_MERGED",
   "worker": "PRODUCTION_WORKER_NOT_IMPLEMENTED",
   "next_action": "Independent audit of the corrected PR #11 head; no merge, freeze or worker implementation."

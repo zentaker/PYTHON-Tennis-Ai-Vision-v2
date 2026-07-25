@@ -46,6 +46,12 @@ non-empty media type, unique key, and a 64-hex SHA-256. Bundle fingerprints
 are also 64-hex SHA-256 values. No presigned URL, local path, video bytes, or
 secret is accepted by the contract.
 
+`result_manifest` uses one convention only: a complete canonical object key.
+The worker harness must build it with `bundle_artifact_key(run_id,
+relative_path)` before calling `complete` or `partial`; values such as
+`manifest.json`, Windows paths and URL-like references are rejected rather than
+having the bundle prefix added automatically.
+
 The worker-facing Python contract is in
 `src/platform/services/worker_contract.py`; it is a harness, not a worker
 implementation.

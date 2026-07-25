@@ -117,12 +117,13 @@
 - Public candidate operations: `requestAnalysisRun`, `getAnalysisRun`,
   `listSessionAnalysisRuns`, `cancelAnalysisRun`. Internal operations are
   claim, heartbeat, complete, partial, fail and acknowledge cancellation.
-- Second release audit: `CORE_STAGE2B_RELEASE_AUDIT_BLOCKED` at head
-  `1641b29120b32c3ee39cdd41d3d5614d6234bd67`. Confirmed blockers are concurrent
-  idempotency resolution and non-canonical artifact-key handling. The same PR
-  contains the correction commits; an independent audit of the new head is
-  required. Compose HTTP and PostgreSQL/MinIO evidence is never inferred from
-  local tests when Docker is unavailable.
+- Independent release audit: `CORE_STAGE2B_RELEASE_AUDIT_BLOCKED` at head
+  `0b8554c411c53b7ea9d2d4e7a1ddaef3d8f149f7`. Idempotency and artifact-key
+  blockers were corrected, but `result_manifest` still accepted relative or
+  scheme-like values by prefix completion. The same PR contains the final
+  correction; an independent audit of the new head remains required. Compose
+  HTTP and PostgreSQL/MinIO evidence is never inferred from local tests when
+  Docker is unavailable.
 - Analysis OpenAPI snapshot SHA-256 after the idempotency-key contract change:
   `329ad9092a1dbf115fe1722f06ea7141b787e454c96f43ec05e7149051087647`.
 - Candidate gates are registered but not passed or frozen pending re-audit;
