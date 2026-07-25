@@ -9,7 +9,9 @@ from pathlib import Path
 
 def count_tests(path: Path) -> int:
     root = ET.parse(path).getroot()
-    return int(root.attrib.get("tests", 0))
+    if "tests" in root.attrib:
+        return int(root.attrib["tests"])
+    return sum(int(suite.attrib.get("tests", 0)) for suite in root.findall(".//testsuite"))
 
 
 def main() -> int:
