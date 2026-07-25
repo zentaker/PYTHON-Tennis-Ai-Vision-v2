@@ -1,5 +1,30 @@
 # Core Stage 2C — Worker Runtime Foundation
 
+## Acceptance
+
+Stage 2C is accepted as `CORE_STAGE2C_WORKER_RUNTIME_FOUNDATION_ACCEPTED`.
+The independent release audit passed as
+`CHATGPT_CORE_STAGE2C_FINAL_RELEASE_AUDIT_PASSED`. Accepted gates:
+
+- `STAGE2C_FAIL_CLOSED_WORKER_RUNTIME_PASSED`
+- `STAGE2C_ATTEMPT_SCOPED_PUBLICATION_PASSED`
+- `STAGE2C_LEASE_LOSS_RECOVERY_PASSED`
+- `STAGE2C_WORKSPACE_BOUNDARY_SECURITY_PASSED`
+- `STAGE2C_RUNTIME_EVIDENCE_AUDIT_PASSED`
+- `CHATGPT_CORE_STAGE2C_FINAL_RELEASE_AUDIT_PASSED`
+- `CORE_STAGE2C_WORKER_RUNTIME_FOUNDATION_ACCEPTED`
+
+Audited evidence is tied to functional head
+`c1b6cfdbd78a693b7d2997dd4af5ff959e4b3a81`, workflow `30171317968`, and
+artifact `stage2c-worker-runtime-evidence` (ID `8623007949`, 7077 bytes).
+It contains 34 unit tests, 1 Compose scenario and 2 PostgreSQL/MinIO
+scenarios; security status is `passed` with violations `[]`.
+
+The runtime is production-shaped, but no real vision processor is connected.
+The contract fixture is explicit, opt-in and disabled by default. No
+inference, video processing, GPU, cloud deployment or spend occurred. The
+Session API and Analysis Job API contracts remain frozen.
+
 Stage 2C adds the production-shaped execution shell around the frozen Analysis
 Job contract. `tennisai worker run` claims one queued run at a time, renews its
 lease from an independent database session, watches cancellation, publishes
@@ -84,3 +109,11 @@ Runtime events (`claim`, `run_finished`, `run_failed`, `lease_lost`,
 metrics service is introduced in this foundation stage. A later stage may
 replace the fixture with a real analysis processor after a separate contract
 and evidence gate.
+
+## Non-blocking hardening debt
+
+`STAGE2C_AMBIGUOUS_STORAGE_WRITE_GARBAGE_COLLECTION_DEBT`: an S3-compatible
+PUT can theoretically succeed server-side while the client receives a
+transport exception. Attempt-scoped namespaces protect correctness and prevent
+stale finalization; a future cleanup or garbage-collection stage should detect
+and remove unreferenced attempt objects. This is not a Stage 2C blocker.

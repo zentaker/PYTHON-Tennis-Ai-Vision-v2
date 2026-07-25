@@ -74,6 +74,29 @@ the production worker, process video, execute inference, load models, or make
 GPU/cloud calls; the worker is a separately scoped future stage. The accepted
 contract is documented in [Stage 2B orchestration](docs/platform/STAGE2B_ANALYSIS_JOB_ORCHESTRATION.md).
 
+## Core Stage 2C — Worker runtime foundation
+
+Stage 2C is accepted as `CORE_STAGE2C_WORKER_RUNTIME_FOUNDATION_ACCEPTED` after
+the independent release audit passed. It supplies a production-shaped,
+fail-closed worker runtime around the frozen Analysis Job API: claims,
+heartbeats, cancellation, lease-loss recovery, terminal transitions and
+attempt-scoped artifact publication are implemented. Workspace paths and
+filesystem identities are validated, and release evidence is JUnit-derived and
+security-audited.
+
+The `contract-fixture` processor is explicit, opt-in and disabled by default;
+no real vision processor is connected. The audited evidence at
+`c1b6cfdbd78a693b7d2997dd4af5ff959e4b3a81` contains 34 unit tests, 1 Compose
+scenario and 2 PostgreSQL/MinIO scenarios. Artifact:
+`stage2c-worker-runtime-evidence` (workflow `30171317968`, artifact ID
+`8623007949`). Session API and Analysis Job API remain frozen. No inference,
+video processing, GPU, cloud deployment or spend occurred.
+
+Non-blocking debt: `STAGE2C_AMBIGUOUS_STORAGE_WRITE_GARBAGE_COLLECTION_DEBT`.
+An S3-compatible PUT can succeed server-side while the client receives a
+transport exception; attempt-scoped namespaces preserve correctness, while a
+future garbage-collection stage should remove unreferenced attempt objects.
+
 ## Setup ligero en macOS
 
 El desarrollo de Stage 4, la documentacion y los tests no requieren tracker, PyTorch ni

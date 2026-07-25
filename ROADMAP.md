@@ -3,7 +3,7 @@
 **Version:** 0.3
 **Fecha de creacion:** 2026-05-18
 **Fecha de reconciliacion:** 2026-07-13
-**Estado:** CORE_STAGE1B_REAL_SINGLE_RALLY_CANDIDATE_READY_FOR_REVIEW
+**Estado:** CORE_STAGE2C_WORKER_RUNTIME_FOUNDATION_ACCEPTED
 
 The experimental Stage 5B branch is archived research. The official product path is
 the TennisAI Training Session Analyzer and its versioned Analysis Bundle.
@@ -15,9 +15,10 @@ frozen with gates `STAGE2A_LAYERED_API_ARCHITECTURE_PASSED`,
 `STAGE2A_FINAL_CONTRACT_PRECISION_PATCH_IMPLEMENTED`.
 Release gates are `CHATGPT_CORE_STAGE2A_RELEASE_AUDIT_PASSED`,
 `SESSION_PLATFORM_API_V1_FROZEN`, and `CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED`.
-The additive Core Stage 2B analysis-job orchestration candidate is implemented
-on `agent/analysis-jobs-stage2b`; it is pending release audit and review. It
-does not implement a worker or inference.
+The additive Core Stage 2B analysis-job orchestration contract is accepted and
+frozen. Core Stage 2C adds the production-shaped worker runtime foundation;
+its contract fixture is explicit, opt-in and disabled by default, and it does
+not connect a real vision processor or execute inference.
 
 La pasada de datos activa es Nivel A2. Stage 1–4 están cerradas con gates aprobados y la
 la auditoría de cámara Stage 5A terminó con `READY_FOR_STAGE_5B` tras evaluar Stage 5A.1.
@@ -46,7 +47,8 @@ Construir un sistema que, dado un video de broadcast de tenis con camara fija, g
 - [ ] Stage 7 - Metricas y validacion final. No iniciada.
 - [x] P1 → Analytics - Cinco contactos aceptados producen cinco registros schema-valid.
 - [x] Core Stage 2A - Session Platform foundation (`CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED`).
-- [ ] Core Stage 2B - Analysis job orchestration (candidate ready for review; release audit pending).
+- [x] Core Stage 2B - Analysis job orchestration (`CORE_STAGE2B_ANALYSIS_ORCHESTRATION_ACCEPTED`).
+- [x] Core Stage 2C - Worker runtime foundation (`CORE_STAGE2C_WORKER_RUNTIME_FOUNDATION_ACCEPTED`).
 
 Stage 0 se considera funcionalmente cerrada. Su cierre documental fue reconciliado
 retrospectivamente despues de confirmar en Git el avance y los gates posteriores.
@@ -177,6 +179,30 @@ Estado: no iniciada.
 Consolidar metricas, ejemplos, limitaciones y decision sobre el siguiente nivel.
 
 Estado: no iniciada. Gate: aprobacion humana del reporte final.
+
+### Core Stage 2C - Worker runtime foundation
+
+Estado: aceptada y preparada para merge como
+`CORE_STAGE2C_WORKER_RUNTIME_FOUNDATION_ACCEPTED`. Los gates aceptados son
+`STAGE2C_FAIL_CLOSED_WORKER_RUNTIME_PASSED`,
+`STAGE2C_ATTEMPT_SCOPED_PUBLICATION_PASSED`,
+`STAGE2C_LEASE_LOSS_RECOVERY_PASSED`,
+`STAGE2C_WORKSPACE_BOUNDARY_SECURITY_PASSED`,
+`STAGE2C_RUNTIME_EVIDENCE_AUDIT_PASSED`, y
+`CHATGPT_CORE_STAGE2C_FINAL_RELEASE_AUDIT_PASSED`.
+
+La evidencia auditada corresponde al head
+`c1b6cfdbd78a693b7d2997dd4af5ff959e4b3a81`: 34 tests unitarios, 1 escenario
+Compose y 2 escenarios PostgreSQL/MinIO. El runtime es production-shaped,
+fail-closed y publica por intento; el fixture contractual es explícito,
+opt-in y está deshabilitado por defecto. No hay procesador de visión real,
+inferencia, vídeo, GPU, cloud ni gasto.
+
+Deuda no bloqueante:
+`STAGE2C_AMBIGUOUS_STORAGE_WRITE_GARBAGE_COLLECTION_DEBT`. Un PUT S3 puede
+completarse en servidor aunque el cliente reciba una excepción de transporte;
+los namespaces por intento preservan la corrección, y una futura etapa de
+garbage collection deberá retirar objetos de intentos no referenciados.
 
 ### P1 → Analytics
 
