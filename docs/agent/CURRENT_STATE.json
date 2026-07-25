@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
-  "branch": "agent/production-worker-stage2c-foundation",
+  "branch": "main",
+  "main_sha": "ea90631491dd467b38f8247c8144a68e5a3f1ed5",
   "base_sha": "bc73f738f5846748250016f1e494f1804bd65274",
   "task": "Core Stage 2C production-shaped worker runtime foundation",
   "status": "CORE_STAGE2C_WORKER_RUNTIME_FOUNDATION_ACCEPTED",
@@ -78,8 +79,20 @@
   },
   "migration": "0002_analysis_job_orchestration",
   "blocker": "none",
-  "pr": "12 OPEN_PENDING_MERGE",
+  "pr": "12 MERGED",
+  "merge_sha": "ea90631491dd467b38f8247c8144a68e5a3f1ed5",
+  "release_tag": "tennisai-worker-runtime-v1.0.0",
+  "tag_target": "ea90631491dd467b38f8247c8144a68e5a3f1ed5",
+  "main_ci_run": "30173312099",
+  "main_ci_status": "success",
+  "main_artifact": {
+    "name": "stage2c-worker-runtime-evidence",
+    "id": "8623526207",
+    "size_bytes": 7777,
+    "expires_at": "2026-08-24T20:20:12Z"
+  },
   "worker": "PRODUCTION_SHAPED_RUNTIME_REAL_PROCESSOR_NOT_CONNECTED",
+  "real_processor_connected": false,
   "non_blocking_debt": "STAGE2C_AMBIGUOUS_STORAGE_WRITE_GARBAGE_COLLECTION_DEBT",
   "videos_committed": 0,
   "secrets_committed": 0,
@@ -87,5 +100,5 @@
   "gpu_calls": 0,
   "cloud_calls": 0,
   "spend": 0,
-  "next_action": "Merge PR 12 normally after final CI, tag tennisai-worker-runtime-v1.0.0 on the main merge commit, and verify merged-main CI."
+  "next_action": "Scope Core Stage 2D real Analysis Bundle processor integration separately. Do not implement inference until the processor boundary, accepted input assets, output bundle contract, execution profile and evidence plan are explicitly frozen."
 }
