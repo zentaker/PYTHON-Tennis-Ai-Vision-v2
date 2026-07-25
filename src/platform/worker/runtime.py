@@ -182,6 +182,11 @@ class WorkerRuntime:
                 artifacts, published_keys = self._publish(run.id, run.attempt, workspace, result, cancel_event)
                 if lease_lost.is_set() or cancel_event.is_set() or self.shutdown_requested.is_set():
                     raise LeaseLost()
+                # Publication is deliberately outside the orchestration
+                # transaction.  Start the lease-sensitive transition from a
+                # fresh transaction so a stale worker cannot finalize against
+                # an old snapshot after another worker reclaimed the run.
+                db.rollback()
                 manifest_key = next(
                     (item["object_key"] for item in artifacts if item["object_key"].endswith("/manifest.json")),
                     artifacts[0]["object_key"],
