@@ -29,6 +29,7 @@ class BarrierStorage:
     def __init__(self, delegate: S3ObjectStorage):
         self.delegate = delegate
         self.first_attempt_one_put = threading.Event()
+        self.second_attempt_one_put = threading.Event()
         self.resume_attempt_one = threading.Event()
         self.delete_calls: list[str] = []
 
@@ -38,6 +39,8 @@ class BarrierStorage:
             self.first_attempt_one_put.set()
             if not self.resume_attempt_one.wait(20):
                 raise TimeoutError("publication barrier timed out")
+        elif "/attempt-1/" in key and key.endswith("second.json"):
+            self.second_attempt_one_put.set()
 
     def delete_object(self, key: str) -> None:
         self.delete_calls.append(key)
@@ -125,6 +128,7 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
     assert not thread_b.is_alive()
     assert result_b == [True], worker_b.counters
     storage.resume_attempt_one.set()
+    assert storage.second_attempt_one_put.wait(15)
     thread_a.join(15)
     assert not thread_a.is_alive()
 
