@@ -79,6 +79,8 @@ class S3ObjectStorage:
     def object_exists(self, key: str) -> bool:
         try:
             self.head_object(key)
+        except KeyError:
+            return False
         except self.internal_client.exceptions.ClientError as exc:
             if exc.response.get("Error", {}).get("Code") in {"404", "NoSuchKey", "NotFound"}:
                 return False
