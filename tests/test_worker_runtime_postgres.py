@@ -101,7 +101,10 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
         worker_version="test",
         processor_factory=TwoArtifactProcessor,
         worker_root=tmp_path / "worker-a",
-        heartbeat_interval=0.1,
+        # Keep the first worker from renewing after the barrier.  The test
+        # expires and reclaims its lease from a separate DB session, creating
+        # a real stale-worker race rather than a test-side deletion shortcut.
+        heartbeat_interval=59.0,
         poll_interval=0.01,
     )
     worker_b = WorkerRuntime(
