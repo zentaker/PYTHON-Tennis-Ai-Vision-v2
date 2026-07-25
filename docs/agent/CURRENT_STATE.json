@@ -5,6 +5,7 @@
   "base_sha": "bc73f738f5846748250016f1e494f1804bd65274",
   "task": "Core Stage 2C production-shaped worker runtime foundation",
   "status": "CORE_STAGE2C_WORKER_RUNTIME_FOUNDATION_ACCEPTED",
+  "post_merge_reconciliation_marker": "CORE_STAGE2C_POST_MERGE_STATE_RECONCILED_READY_FOR_REVIEW",
   "stage1a_importer_implementation_gate": "STAGE1A_IMPORTER_IMPLEMENTATION_ACCEPTED",
   "stage1a_court_contract_gate": "STAGE1A_COURT_CONTRACT_CORRECTED",
   "stage1a_human_gate": "CORE_STAGE1A_SYNTHETIC_IMPORT_GATE_PASSED",

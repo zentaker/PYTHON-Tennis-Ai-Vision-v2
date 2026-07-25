@@ -39,3 +39,5 @@ should remove unreferenced attempt objects. This is not a Stage 2C blocker.
 Scope Core Stage 2D real Analysis Bundle processor integration separately.
 Do not implement inference until the processor boundary, accepted input assets,
 output bundle contract, execution profile and evidence plan are explicitly frozen.
+
+Candidate marker: `CORE_STAGE2C_POST_MERGE_STATE_RECONCILED_READY_FOR_REVIEW`.
