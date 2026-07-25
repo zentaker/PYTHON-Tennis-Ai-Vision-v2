@@ -32,8 +32,10 @@ class BarrierStorage:
         self.second_attempt_one_put = threading.Event()
         self.resume_attempt_one = threading.Event()
         self.delete_calls: list[str] = []
+        self.put_keys: list[str] = []
 
     def put_bytes(self, key: str, body: bytes, content_type: str) -> None:
+        self.put_keys.append(key)
         if "/attempt-1/" in key and key.endswith("first.json"):
             self.delegate.put_bytes(key, body, content_type)
             self.first_attempt_one_put.set()
@@ -134,6 +136,12 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
     thread_b.join(15)
     assert not thread_b.is_alive()
     assert result_b == [True], worker_b.counters
+    with factory() as db:
+        recovered = db.get(AnalysisRun, run_id)
+        assert recovered is not None
+        assert recovered.attempt == 2 and recovered.status == "COMPLETE", (
+            f"attempt={recovered.attempt} status={recovered.status} puts={storage.put_keys}"
+        )
     storage.resume_attempt_one.set()
     assert storage.second_attempt_one_put.wait(15)
     thread_a.join(15)
@@ -145,7 +153,8 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
     new_manifest = new_prefix + "first.json"
     new_second = new_prefix + "second.json"
     assert not any(storage.object_exists(key) for key in old_keys), (
-        f"deletes={storage.delete_calls} worker_a={worker_a.counters} worker_b={worker_b.counters}"
+        f"deletes={storage.delete_calls} puts={storage.put_keys} "
+        f"worker_a={worker_a.counters} worker_b={worker_b.counters}"
     )
     with factory() as db:
         terminal = db.get(AnalysisRun, run_id)
