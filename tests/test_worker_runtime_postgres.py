@@ -119,11 +119,11 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
         heartbeat_interval=0.1,
         poll_interval=0.01,
     )
-    discarded_by_a: list[list[str]] = []
+    discarded_by_a: list[tuple[list[str], object, object]] = []
     original_discard_a = worker_a._discard_published
 
     def record_discard_a(keys, run_id=None, attempt=None):
-        discarded_by_a.append(list(keys))
+        discarded_by_a.append((list(keys), run_id, attempt))
         original_discard_a(keys, run_id, attempt)
 
     worker_a._discard_published = record_discard_a
