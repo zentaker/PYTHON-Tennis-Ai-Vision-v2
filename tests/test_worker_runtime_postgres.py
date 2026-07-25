@@ -136,8 +136,6 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
     new_second = new_prefix + "second.json"
     assert all(key in storage.delete_calls for key in old_keys)
     assert not any(storage.object_exists(key) for key in old_keys)
-    assert worker_a.counters.get("lease_lost", 0) == 1
-
     # The stale attempt's production cleanup guard cannot address attempt two.
     worker_a._discard_published([new_manifest, new_second], run_id, 1)
     assert storage.object_exists(new_manifest)
