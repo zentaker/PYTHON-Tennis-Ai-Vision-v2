@@ -3,7 +3,7 @@
   "branch": "agent/analysis-jobs-stage2b",
   "base_sha": "b3703003fe2aa23f8703097b0dc155c7825f5363",
   "task": "Build Core Stage 2B analysis job orchestration and worker contract",
-  "status": "CORE_STAGE2B_RELEASE_AUDIT_REMEDIATION_READY_FOR_REAUDIT",
+  "status": "CORE_STAGE2B_RELEASE_AUDIT_BLOCKED",
   "stage1a_importer_implementation_gate": "STAGE1A_IMPORTER_IMPLEMENTATION_ACCEPTED",
   "stage1a_court_contract_gate": "STAGE1A_COURT_CONTRACT_CORRECTED",
   "stage1a_human_gate": "CORE_STAGE1A_SYNTHETIC_IMPORT_GATE_PASSED",
@@ -55,13 +55,13 @@
   "analysis_job_api_contract_gate": "ANALYSIS_JOB_API_V1_CONTRACT_CANDIDATE_REGISTERED",
   "stage2b_analysis_run_state_machine_gate": "STAGE2B_ANALYSIS_RUN_STATE_MACHINE_CANDIDATE_REGISTERED",
   "stage2b_idempotent_job_orchestration_gate": "STAGE2B_IDEMPOTENT_JOB_ORCHESTRATION_CANDIDATE_REGISTERED",
-  "stage2b_atomic_worker_lease_gate": "STAGE2B_ATOMIC_WORKER_LEASE_REMEDIATION_IN_PROGRESS",
+  "stage2b_atomic_worker_lease_gate": "STAGE2B_ATOMIC_WORKER_LEASE_CANDIDATE_PENDING_REAUDIT",
   "stage2b_artifact_finalization_gate": "STAGE2B_ARTIFACT_FINALIZATION_CANDIDATE_REGISTERED",
-  "stage2b_runtime_security_gate": "STAGE2B_RUNTIME_SECURITY_REMEDIATION_IN_PROGRESS",
-  "stage2b_release_audit_gate": "CORE_STAGE2B_RELEASE_AUDIT_REMEDIATION_READY_FOR_REAUDIT",
+  "stage2b_runtime_security_gate": "STAGE2B_RUNTIME_SECURITY_CANDIDATE_PENDING_REAUDIT",
+  "stage2b_release_audit_gate": "CORE_STAGE2B_RELEASE_AUDIT_BLOCKED",
   "analysis_job_openapi_sha256": "329ad9092a1dbf115fe1722f06ea7141b787e454c96f43ec05e7149051087647",
-  "blocker": "CORE_STAGE2B_RELEASE_AUDIT_BLOCKED at prior head; remediation evidence ready for re-audit",
+  "blocker": "CORE_STAGE2B_RELEASE_AUDIT_BLOCKED: concurrent idempotency and non-canonical artifact-key blockers require independent re-audit",
   "pr": "11 OPEN NOT_MERGED",
   "worker": "PRODUCTION_WORKER_NOT_IMPLEMENTED",
-  "next_action": "Complete blocker remediation validation and resubmit PR #11 for release audit; no merge, freeze or worker implementation."
+  "next_action": "Independent audit of the corrected PR #11 head; no merge, freeze or worker implementation."
 }

@@ -117,23 +117,20 @@
 - Public candidate operations: `requestAnalysisRun`, `getAnalysisRun`,
   `listSessionAnalysisRuns`, `cancelAnalysisRun`. Internal operations are
   claim, heartbeat, complete, partial, fail and acknowledge cancellation.
-- Initial release audit: `CORE_STAGE2B_RELEASE_AUDIT_BLOCKED` at the audited
-  head `d8b017d5939c89680665a861a4df5e4e6d20d1aa`; remediation is in progress
-  on the same branch and PR. Unit tests cover state, idempotency, leases,
-  artifact validation, cancellation and sanitized errors. Compose HTTP and
-  PostgreSQL/MinIO evidence remains a required CI gate and is never inferred
-  from local tests when Docker is unavailable.
+- Second release audit: `CORE_STAGE2B_RELEASE_AUDIT_BLOCKED` at head
+  `1641b29120b32c3ee39cdd41d3d5614d6234bd67`. Confirmed blockers are concurrent
+  idempotency resolution and non-canonical artifact-key handling. The same PR
+  contains the correction commits; an independent audit of the new head is
+  required. Compose HTTP and PostgreSQL/MinIO evidence is never inferred from
+  local tests when Docker is unavailable.
 - Analysis OpenAPI snapshot SHA-256 after the idempotency-key contract change:
   `329ad9092a1dbf115fe1722f06ea7141b787e454c96f43ec05e7149051087647`.
 - Candidate gates are registered but not passed or frozen pending re-audit;
   internal worker operations remain non-public.
-- A successful remediation CI run is required and recorded on PR #11 for the
-  exact branch head under review. Its
-  `stage2b-analysis-orchestration-evidence` artifact contains the OpenAPI
-  snapshot, migration report, unit and Compose JUnit reports, runtime evidence
-  and security summary. Runtime evidence records 17 unit tests, 2 Compose
-  tests, real HTTP/persistence and concurrent lease/cancellation observations,
-  with zero video/GPU/cloud work and zero spend. This is remediation evidence
-  only; the next release audit remains required.
+- Candidate gates remain pending and not frozen; internal worker operations
+  remain non-public. PR #11 is open and unmerged, and the production worker is
+  not implemented. The corrective workflow must publish fresh evidence tied to
+  the corrected head; no previous workflow or artifact may be reused.
 - Cloud calls / GPU calls / inference / videos processed / spend: 0 / 0 / 0 / 0 / 0.
-- Next action: request a new release audit; no merge, freeze or worker implementation.
+- Next action: independent audit of the corrected PR #11 head; no merge, freeze
+  or worker implementation.

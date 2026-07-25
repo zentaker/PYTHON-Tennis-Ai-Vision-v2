@@ -5,15 +5,12 @@ V1. It persists an analysis run, queues it idempotently, leases it to a future
 worker, and finalizes only validated artifact metadata. It does not execute
 inference, decode video, load models, or call a cloud provider.
 
-The candidate gates are intentionally review-pending:
-
-`STAGE2B_ANALYSIS_RUN_STATE_MACHINE_PASSED`,
-`STAGE2B_IDEMPOTENT_JOB_ORCHESTRATION_PASSED`,
-`STAGE2B_ATOMIC_WORKER_LEASE_PASSED`,
-`STAGE2B_ARTIFACT_FINALIZATION_CONTRACT_PASSED`,
-`STAGE2B_RUNTIME_SECURITY_AUDIT_PASSED`,
-`ANALYSIS_JOB_API_V1_CONTRACT_PENDING_RELEASE_AUDIT`,
-`CORE_STAGE2B_ANALYSIS_ORCHESTRATION_CANDIDATE_READY_FOR_REVIEW`.
+The second release audit is blocked as
+`CORE_STAGE2B_RELEASE_AUDIT_BLOCKED`. The confirmed blockers are concurrent
+idempotency resolution and non-canonical artifact-key handling. Candidate gates
+remain intentionally review-pending: none are passed or frozen. PR #11 remains
+open and unmerged, the production worker is not implemented, and the next
+action is an independent audit of the corrected head.
 
 ## State and transitions
 
