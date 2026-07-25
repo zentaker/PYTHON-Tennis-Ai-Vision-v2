@@ -271,11 +271,17 @@ def _safe_manifest(value: str | None, prefix: str) -> str | None:
         return None
     if len(value) > 2048:
         raise analysis_error("ARTIFACT_METADATA_INVALID")
+    prefix_value = prefix.rstrip("/")
+    if value.rstrip("/") == prefix_value:
+        raise analysis_error("ARTIFACT_METADATA_INVALID")
     candidate = value if value.startswith(prefix) else f"{prefix}{value}"
     try:
-        return validate_object_key(candidate, prefix)
+        canonical = validate_object_key(candidate, prefix)
     except ValueError as exc:
         raise analysis_error("ARTIFACT_METADATA_INVALID") from exc
+    if canonical != candidate:
+        raise analysis_error("ARTIFACT_METADATA_INVALID")
+    return canonical
 
 
 def _validate_artifacts(run: AnalysisRun, artifacts: list[dict]) -> list[Artifact]:

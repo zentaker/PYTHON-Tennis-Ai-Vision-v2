@@ -25,6 +25,7 @@ from src.platform.services.analysis_jobs import (
     partial_run,
 )
 from src.platform.services.worker_contract import WorkerContractClient
+from src.platform.storage.keys import bundle_artifact_key, validate_object_key
 
 
 @pytest.fixture()
@@ -289,6 +290,64 @@ def test_artifact_key_matrix_and_cross_run_rejection(database, uploaded_session)
             token,
             [_artifact(other_id)],
         )
+
+
+def test_object_key_helpers_reject_noncanonical_paths(uploaded_session):
+    run_id = uploaded_session.id
+    prefix = f"runs/{run_id}/bundle/"
+    invalid = (
+        f"{prefix}.",
+        f"{prefix}./result.json",
+        f"{prefix}../result.json",
+        f"runs/{run_id}/bundle",
+        f"runs/{run_id}/bundle/",
+        "",
+        "/",
+        "../result.json",
+        "./result.json",
+    )
+    for key in invalid:
+        with pytest.raises(ValueError):
+            validate_object_key(key, prefix)
+    for relative_path in ("", ".", "..", "/", "./result.json", "../result.json"):
+        with pytest.raises(ValueError):
+            bundle_artifact_key(run_id, relative_path)
+    assert bundle_artifact_key(run_id, "nested/result.json") == f"{prefix}nested/result.json"
+
+
+def test_result_manifest_rejects_noncanonical_paths(database, uploaded_session):
+    run = create_and_queue_run(database, uploaded_session.id, "STANDARD")
+    _, token = claim_next_job(database, "worker-a")
+    invalid_manifests = (
+        ".",
+        "",
+        f"runs/{run.id}/bundle",
+        f"runs/{run.id}/bundle/",
+        f"runs/{run.id}/bundle/./result.json",
+        "../result.json",
+    )
+    for manifest in invalid_manifests:
+        with pytest.raises(PlatformError) as error:
+            complete_run(
+                database,
+                run.id,
+                "worker-a",
+                token,
+                [_artifact(run.id)],
+                result_manifest=manifest,
+            )
+        assert error.value.code == "ARTIFACT_METADATA_INVALID"
+        assert run.status == "RUNNING"
+        database.rollback()
+    completed = complete_run(
+        database,
+        run.id,
+        "worker-a",
+        token,
+        [_artifact(run.id)],
+        result_manifest=f"runs/{run.id}/bundle/result.json",
+    )
+    assert completed.result_manifest == f"runs/{run.id}/bundle/result.json"
 
 
 def test_cancellation_blocks_terminal_worker_operations(database, uploaded_session):

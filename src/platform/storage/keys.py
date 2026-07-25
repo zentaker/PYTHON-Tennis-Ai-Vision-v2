@@ -19,7 +19,13 @@ def safe_filename(name: str) -> str:
 
 
 def validate_object_key(key: str, prefix: str | None = None) -> str:
-    if not key or key.startswith("/") or "\\" in key or "//" in key:
+    if (
+        not key
+        or key.startswith("/")
+        or key.endswith("/")
+        or "\\" in key
+        or "//" in key
+    ):
         raise ValueError("unsafe object key")
     decoded = unquote(key)
     parsed = urlsplit(decoded)
@@ -33,14 +39,17 @@ def validate_object_key(key: str, prefix: str | None = None) -> str:
         or any(ord(char) < 32 or ord(char) == 127 for char in decoded)
     ):
         raise ValueError("unsafe object key")
-    path = PurePosixPath(key)
-    if any(part in {"", ".", ".."} for part in path.parts):
+    raw_parts = key.split("/")
+    if any(part in {"", ".", ".."} for part in raw_parts):
         raise ValueError("unsafe object key")
+    path = PurePosixPath(key)
     normalized = str(path)
-    if prefix is not None and (
-        normalized != prefix.rstrip("/") and not normalized.startswith(prefix.rstrip("/") + "/")
-    ):
-        raise ValueError("object key escapes assigned prefix")
+    if normalized != key:
+        raise ValueError("unsafe object key")
+    if prefix is not None:
+        prefix_value = prefix.rstrip("/")
+        if normalized == prefix_value or not normalized.startswith(prefix_value + "/"):
+            raise ValueError("object key escapes assigned prefix")
     return normalized
 
 
