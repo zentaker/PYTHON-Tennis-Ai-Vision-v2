@@ -265,15 +265,27 @@ class WorkerRuntime:
                     event.set()
 
     def _publish(self, run_id, attempt: int, workspace: Path, result: AnalysisResult, cancel_event: threading.Event) -> tuple[list[dict], list[str]]:
+        staged_keys: list[str] = []
         try:
-            return self._publish_impl(run_id, attempt, workspace, result, cancel_event)
+            return self._publish_impl(run_id, attempt, workspace, result, cancel_event, staged_keys)
         except PublicationError as exc:
-            self._discard_published(exc.keys, run_id, attempt)
+            self._discard_published(exc.keys or staged_keys, run_id, attempt)
+            raise
+        except Exception:
+            self._discard_published(staged_keys, run_id, attempt)
             raise
 
-    def _publish_impl(self, run_id, attempt: int, workspace: Path, result: AnalysisResult, cancel_event: threading.Event) -> tuple[list[dict], list[str]]:
+    def _publish_impl(
+        self,
+        run_id,
+        attempt: int,
+        workspace: Path,
+        result: AnalysisResult,
+        cancel_event: threading.Event,
+        staged_keys: list[str] | None = None,
+    ) -> tuple[list[dict], list[str]]:
         published: list[dict] = []
-        keys: list[str] = []
+        keys = staged_keys if staged_keys is not None else []
         seen: set[str] = set()
         total = 0
         if len(result.artifacts) > 32:
