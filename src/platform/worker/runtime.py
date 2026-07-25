@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import signal
+import stat
 import threading
 import time
 from hashlib import sha256
@@ -170,7 +172,7 @@ class WorkerRuntime:
                     client.fail("ANALYSIS_OUTPUT_INVALID", "processor output invalid")
                     return True
                 artifacts, published_keys = self._publish(run.id, run.attempt, workspace, result, cancel_event)
-                if lease_lost.is_set() or cancel_event.is_set():
+                if lease_lost.is_set() or cancel_event.is_set() or self.shutdown_requested.is_set():
                     raise LeaseLost()
                 manifest_key = next(
                     (item["object_key"] for item in artifacts if item["object_key"].endswith("/manifest.json")),
@@ -277,13 +279,15 @@ class WorkerRuntime:
             if (not relative or canonical_relative != relative or relative.startswith("/") or "\\" in relative
                     or any(ord(char) < 32 or ord(char) == 127 for char in relative)):
                 raise PublicationError(keys)
-            target = (workspace / PurePosixPath(relative)).resolve()
             root = workspace.resolve()
-            if root not in target.parents or target == root or target.is_symlink() or not target.is_file():
+            target = workspace / PurePosixPath(relative)
+            resolved = target.resolve(strict=False)
+            if root not in resolved.parents or resolved == root:
                 raise PublicationError(keys)
-            if target.stat().st_nlink != 1:
-                raise PublicationError(keys)
-            body = target.read_bytes()
+            try:
+                body = self._read_regular_artifact(workspace, relative)
+            except (OSError, ValueError) as exc:
+                raise PublicationError(keys) from exc
             if len(body) > self.max_artifact_bytes:
                 raise PublicationError(keys)
             total += len(body)
@@ -307,6 +311,34 @@ class WorkerRuntime:
         if not published:
             raise PublicationError(keys)
         return published, keys
+
+    @staticmethod
+    def _read_regular_artifact(workspace: Path, relative: str) -> bytes:
+        """Read only a non-link regular file, with no-follow semantics."""
+
+        root = workspace.resolve()
+        current = root
+        parts = PurePosixPath(relative).parts
+        for index, part in enumerate(parts):
+            current = current / part
+            info = os.lstat(current)
+            if stat.S_ISLNK(info.st_mode):
+                raise ValueError("symlink component")
+            if index == len(parts) - 1 and not stat.S_ISREG(info.st_mode):
+                raise ValueError("artifact is not a regular file")
+        flags = os.O_RDONLY
+        nofollow = getattr(os, "O_NOFOLLOW", 0)
+        fd = os.open(current, flags | nofollow)
+        try:
+            info = os.fstat(fd)
+            if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+                raise ValueError("artifact link count or type invalid")
+            with os.fdopen(fd, "rb") as handle:
+                fd = -1
+                return handle.read()
+        finally:
+            if fd >= 0:
+                os.close(fd)
 
     def _discard_published(self, keys: list[str], run_id=None, attempt: int | None = None) -> None:
         for key in keys:
