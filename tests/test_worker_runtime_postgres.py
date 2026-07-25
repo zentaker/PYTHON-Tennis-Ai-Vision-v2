@@ -119,10 +119,12 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
         claimed.lease_expires_at = datetime.now(timezone.utc) - timedelta(seconds=1)
         db.commit()
         assert reclaim_expired_jobs(db) == 1
-    thread_b = threading.Thread(target=worker_b.run_once)
+    result_b: list[bool] = []
+    thread_b = threading.Thread(target=lambda: result_b.append(worker_b.run_once()))
     thread_b.start()
     thread_b.join(15)
     assert not thread_b.is_alive()
+    assert result_b == [True], worker_b.counters
     storage.resume_attempt_one.set()
     thread_a.join(15)
     assert not thread_a.is_alive()
@@ -134,8 +136,6 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
     new_second = new_prefix + "second.json"
     assert all(key in storage.delete_calls for key in old_keys)
     assert not any(storage.object_exists(key) for key in old_keys)
-    assert storage.object_exists(new_manifest)
-    assert storage.object_exists(new_second)
     assert worker_a.counters.get("lease_lost", 0) == 1
 
     # The stale attempt's production cleanup guard cannot address attempt two.
@@ -145,7 +145,13 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
 
     with factory() as db:
         terminal = db.get(AnalysisRun, run_id)
-        assert terminal is not None and terminal.status == "COMPLETE"
+        assert terminal is not None and terminal.status == "COMPLETE", {
+            "status": terminal.status if terminal else None,
+            "error_code": terminal.error_code if terminal else None,
+            "attempt": terminal.attempt if terminal else None,
+            "worker_a": worker_a.counters,
+            "worker_b": worker_b.counters,
+        }
         assert terminal.attempt == 2
         assert terminal.result_manifest == new_manifest
         assert all(artifact.object_key.startswith(new_prefix) for artifact in terminal.artifacts)
@@ -158,6 +164,8 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
                 "0" * 64,
                 new_manifest,
             )
+    assert storage.object_exists(new_manifest)
+    assert storage.object_exists(new_second)
 
 
 @pytest.mark.skipif(os.getenv("RUN_STAGE2C_POSTGRES_INTEGRATION") != "1", reason="PostgreSQL Compose is required")
