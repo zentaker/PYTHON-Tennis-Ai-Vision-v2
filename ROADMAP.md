@@ -182,7 +182,9 @@ Estado: no iniciada. Gate: aprobacion humana del reporte final.
 
 ### Core Stage 2C - Worker runtime foundation
 
-Estado: aceptada y preparada para merge como
+Core Stage 2C was accepted, merged and released as
+`tennisai-worker-runtime-v1.0.0`.
+Estado: aceptada como
 `CORE_STAGE2C_WORKER_RUNTIME_FOUNDATION_ACCEPTED`. Los gates aceptados son
 `STAGE2C_FAIL_CLOSED_WORKER_RUNTIME_PASSED`,
 `STAGE2C_ATTEMPT_SCOPED_PUBLICATION_PASSED`,
@@ -203,6 +205,14 @@ Deuda no bloqueante:
 completarse en servidor aunque el cliente reciba una excepción de transporte;
 los namespaces por intento preservan la corrección, y una futura etapa de
 garbage collection deberá retirar objetos de intentos no referenciados.
+
+### Core Stage 2D — Real Analysis Bundle Processor Integration
+
+Status: not started and not yet scoped.
+
+Stage 2D may connect a real processor to the accepted WorkerRuntime, but it must
+not begin until the processor input boundary, source assets, output schemas,
+execution profile, failure semantics and evidence gates are frozen.
 
 ### P1 → Analytics
 
