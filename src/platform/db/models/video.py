@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, Index, String, Uuid, UniqueConstraint
+from sqlalchemy import BigInteger, CheckConstraint, DateTime, ForeignKey, Index, String, Uuid, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ...domain.enums import IntegrityStatus, VideoRole
@@ -17,6 +17,11 @@ class Video(Base):
         Index("ix_videos_sha256", "sha256"),
         UniqueConstraint("session_id", "role", name="uq_videos_session_role"),
         UniqueConstraint("object_key", name="uq_videos_object_key"),
+        CheckConstraint("role IN ('SOURCE')", name="ck_videos_role"),
+        CheckConstraint(
+            "integrity_status IN ('CLIENT_DECLARED', 'STORAGE_VERIFIED', 'HASH_VERIFIED', 'FAILED')",
+            name="ck_videos_integrity_status",
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)

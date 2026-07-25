@@ -58,6 +58,22 @@ not implemented, inference was not executed, no videos are versioned, and GPU,
 cloud, and spend are zero. The release tag is
 `tennisai-session-platform-v1.0.0`.
 
+## Core Stage 2B — Analysis job orchestration candidate
+
+Stage 2B adds a separate analysis-job API, PostgreSQL queue/lease persistence,
+idempotent run requests, worker heartbeat/reclaim semantics, and validated
+artifact finalization. The OpenAPI snapshot is
+`config/platform/analysis_job_api_v1.openapi.json`; it is generated and
+validated by the Stage 2B scripts. The local Compose stack exposes the
+additive contract at port 8001 while the frozen Session API remains unchanged.
+
+The independent release audit passed as `CORE_STAGE2B_RELEASE_AUDIT_PASSED` at
+head `4d5fde966bd36354b77151ece5b28f47c4f3d0e2`. The analysis-job API V1 and
+orchestration contract are frozen and accepted. This stage does not implement
+the production worker, process video, execute inference, load models, or make
+GPU/cloud calls; the worker is a separately scoped future stage. The accepted
+contract is documented in [Stage 2B orchestration](docs/platform/STAGE2B_ANALYSIS_JOB_ORCHESTRATION.md).
+
 ## Setup ligero en macOS
 
 El desarrollo de Stage 4, la documentacion y los tests no requieren tracker, PyTorch ni

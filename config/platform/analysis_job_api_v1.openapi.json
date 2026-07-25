@@ -1,0 +1,722 @@
+{
+  "components": {
+    "schemas": {
+      "AnalysisRunCreate": {
+        "properties": {
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key"
+          },
+          "max_attempts": {
+            "default": 3,
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Max Attempts",
+            "type": "integer"
+          },
+          "processing_profile": {
+            "$ref": "#/components/schemas/ProcessingProfile",
+            "default": "STANDARD"
+          },
+          "session_id": {
+            "format": "uuid",
+            "title": "Session Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_id"
+        ],
+        "title": "AnalysisRunCreate",
+        "type": "object"
+      },
+      "AnalysisRunList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AnalysisRunResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "AnalysisRunList",
+        "type": "object"
+      },
+      "AnalysisRunResponse": {
+        "properties": {
+          "attempt": {
+            "title": "Attempt",
+            "type": "integer"
+          },
+          "bundle_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bundle Fingerprint"
+          },
+          "cancel_requested_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancel Requested At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key"
+          },
+          "input_video_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Video Id"
+          },
+          "max_attempts": {
+            "title": "Max Attempts",
+            "type": "integer"
+          },
+          "processing_profile": {
+            "$ref": "#/components/schemas/ProcessingProfile"
+          },
+          "queued_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Queued At"
+          },
+          "result_manifest": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Manifest"
+          },
+          "session_id": {
+            "format": "uuid",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AnalysisRunStatus"
+          },
+          "terminal_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Terminal At"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "worker_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Worker Version"
+          }
+        },
+        "required": [
+          "id",
+          "session_id",
+          "input_video_id",
+          "status",
+          "processing_profile",
+          "idempotency_key",
+          "attempt",
+          "max_attempts",
+          "queued_at",
+          "started_at",
+          "completed_at",
+          "terminal_at",
+          "worker_version",
+          "bundle_fingerprint",
+          "result_manifest",
+          "error_code",
+          "error_message",
+          "created_at",
+          "updated_at",
+          "cancel_requested_at"
+        ],
+        "title": "AnalysisRunResponse",
+        "type": "object"
+      },
+      "AnalysisRunStatus": {
+        "enum": [
+          "PENDING",
+          "QUEUED",
+          "RUNNING",
+          "COMPLETE",
+          "PARTIAL",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "title": "AnalysisRunStatus",
+        "type": "string"
+      },
+      "CancelAnalysisRequest": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "title": "CancelAnalysisRequest",
+        "type": "object"
+      },
+      "ErrorPayload": {
+        "properties": {
+          "code": {
+            "examples": [
+              "SESSION_NOT_FOUND"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "details": {
+            "additionalProperties": true,
+            "title": "Details",
+            "type": "object"
+          },
+          "message": {
+            "examples": [
+              "session not found"
+            ],
+            "title": "Message",
+            "type": "string"
+          },
+          "request_id": {
+            "examples": [
+              "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+            ],
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "request_id"
+        ],
+        "title": "ErrorPayload",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorPayload"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "ProcessingProfile": {
+        "enum": [
+          "FAST",
+          "STANDARD",
+          "TACTICAL"
+        ],
+        "title": "ProcessingProfile",
+        "type": "string"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Additive Stage 2B orchestration API; no vision worker is included.",
+    "title": "TennisAI Analysis Job API",
+    "version": "v1"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/analysis-runs": {
+      "post": {
+        "description": "Idempotently enqueue a future analysis worker run for an uploaded session.",
+        "operationId": "requestAnalysisRun",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalysisRunCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisRunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ACTIVE_ANALYSIS_RUN_EXISTS": {
+                    "summary": "ACTIVE_ANALYSIS_RUN_EXISTS",
+                    "value": {
+                      "error": {
+                        "code": "ACTIVE_ANALYSIS_RUN_EXISTS",
+                        "details": {},
+                        "message": "an active analysis run already exists",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "IDEMPOTENCY_KEY_REUSED": {
+                    "summary": "IDEMPOTENCY_KEY_REUSED",
+                    "value": {
+                      "error": {
+                        "code": "IDEMPOTENCY_KEY_REUSED",
+                        "details": {},
+                        "message": "idempotency key was reused with a different request",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  },
+                  "SESSION_NOT_READY_FOR_ANALYSIS": {
+                    "summary": "SESSION_NOT_READY_FOR_ANALYSIS",
+                    "value": {
+                      "error": {
+                        "code": "SESSION_NOT_READY_FOR_ANALYSIS",
+                        "details": {},
+                        "message": "session is not ready for analysis",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "session is not ready for analysis"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Request an analysis run",
+        "tags": [
+          "Analysis Jobs"
+        ]
+      }
+    },
+    "/api/v1/analysis-runs/{run_id}": {
+      "get": {
+        "description": "Return persisted analysis run state without inventing progress.",
+        "operationId": "getAnalysisRun",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisRunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ANALYSIS_RUN_NOT_FOUND": {
+                    "summary": "ANALYSIS_RUN_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "ANALYSIS_RUN_NOT_FOUND",
+                        "details": {},
+                        "message": "analysis run not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "analysis run not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get an analysis run",
+        "tags": [
+          "Analysis Jobs"
+        ]
+      }
+    },
+    "/api/v1/analysis-runs/{run_id}/cancel": {
+      "post": {
+        "description": "Cancel a queued run or request cooperative cancellation from its worker.",
+        "operationId": "cancelAnalysisRun",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/CancelAnalysisRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisRunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "ANALYSIS_CANCELLATION_INVALID": {
+                    "summary": "ANALYSIS_CANCELLATION_INVALID",
+                    "value": {
+                      "error": {
+                        "code": "ANALYSIS_CANCELLATION_INVALID",
+                        "details": {},
+                        "message": "analysis cancellation is not allowed",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "analysis cancellation is not allowed"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Request analysis cancellation",
+        "tags": [
+          "Analysis Jobs"
+        ]
+      }
+    },
+    "/api/v1/sessions/{session_id}/analysis-runs": {
+      "get": {
+        "description": "List all analysis runs associated with a session.",
+        "operationId": "listSessionAnalysisRuns",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisRunList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "SESSION_NOT_FOUND": {
+                    "summary": "SESSION_NOT_FOUND",
+                    "value": {
+                      "error": {
+                        "code": "SESSION_NOT_FOUND",
+                        "details": {},
+                        "message": "session not found",
+                        "request_id": "2f9e4f25-9d45-4e04-a5e7-8dd3b6c2d310"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "SESSION_NOT_FOUND: The requested session does not exist."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List session analysis runs",
+        "tags": [
+          "Analysis Jobs"
+        ]
+      }
+    }
+  },
+  "tags": [
+    {
+      "description": "Persistent analysis orchestration.",
+      "name": "Analysis Jobs"
+    }
+  ]
+}

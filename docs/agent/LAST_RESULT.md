@@ -108,3 +108,39 @@
 - Postman collection/environment are versioned; collection is generated from OpenAPI, includes a manual-binary presigned PUT workflow, and CI validates operation IDs, path scope, derivation, and absence of credentials.
 - Final contract precision: all public SHA-256 and bundle fingerprints require exactly 64 hex characters; impossible session `INVALID_REQUEST` responses are absent from OpenAPI; download signing failures return HTTP 503 `STORAGE_SIGNING_FAILED` with `operation: download`; Postman temporary upload variables never enter the four-key environment and are cleaned after completion.
 - Approved runtime mode: `global_api_local_development`; MinIO bucket private; local-only, no authentication, no worker, no inference, no videos committed, and GPU/cloud/spend all zero. Next action: TennisWebAI Stage 0C — Session Library and managed uploads.
+
+## Core Stage 2B Analysis Job Orchestration
+
+- Branch: `agent/analysis-jobs-stage2b`; base: `b3703003fe2aa23f8703097b0dc155c7825f5363`.
+- Migration: `0002_analysis_job_orchestration` adds queue, attempt, lease,
+  cancellation and result-manifest persistence with active-run uniqueness.
+- Public candidate operations: `requestAnalysisRun`, `getAnalysisRun`,
+  `listSessionAnalysisRuns`, `cancelAnalysisRun`. Internal operations are
+  claim, heartbeat, complete, partial, fail and acknowledge cancellation.
+- Independent release audit passed as `CORE_STAGE2B_RELEASE_AUDIT_PASSED` at
+  functional head `4d5fde966bd36354b77151ece5b28f47c4f3d0e2`. Stage 2B is
+  accepted as `CORE_STAGE2B_ANALYSIS_ORCHESTRATION_ACCEPTED`, and the public
+  Analysis Job API is frozen as `ANALYSIS_JOB_API_V1_CONTRACT_FROZEN`.
+- Analysis OpenAPI snapshot SHA-256 after the idempotency-key contract change:
+  `329ad9092a1dbf115fe1722f06ea7141b787e454c96f43ec05e7149051087647`.
+- Candidate gates are registered but not passed or frozen pending re-audit;
+  internal worker operations remain non-public.
+- Final gates: `STAGE2B_ANALYSIS_RUN_STATE_MACHINE_PASSED`,
+  `STAGE2B_IDEMPOTENT_JOB_ORCHESTRATION_PASSED`,
+  `STAGE2B_ATOMIC_WORKER_LEASE_PASSED`,
+  `STAGE2B_ARTIFACT_FINALIZATION_CONTRACT_PASSED`,
+  `STAGE2B_RUNTIME_SECURITY_AUDIT_PASSED`,
+  `ANALYSIS_JOB_API_V1_CONTRACT_FROZEN`, and
+  `CORE_STAGE2B_ANALYSIS_ORCHESTRATION_ACCEPTED`.
+- Workflow `30136680719` succeeded and artifact `8613038474`
+  (`stage2b-analysis-orchestration-evidence`, 6,078 bytes, expires
+  `2026-08-24T00:37:51Z`) is tied to the audited head. Session API SHA and
+  Analysis OpenAPI SHA remain frozen and unchanged.
+- PR #11 is merged by normal merge commit. The production worker remains
+  unimplemented; no video processing, inference, GPU/cloud work or spend was
+  introduced.
+- Non-blocking debt: `processing_profile` has API/domain validation but no
+  PostgreSQL `CHECK` constraint.
+- Cloud calls / GPU calls / inference / videos processed / spend: 0 / 0 / 0 / 0 / 0.
+- Next action: plan the separately scoped production-worker stage; do not
+  implement it without a new prompt.

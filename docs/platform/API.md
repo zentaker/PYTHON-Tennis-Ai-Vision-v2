@@ -56,3 +56,11 @@ responses.
 
 Release gates: `CHATGPT_CORE_STAGE2A_RELEASE_AUDIT_PASSED`,
 `SESSION_PLATFORM_API_V1_FROZEN`, and `CORE_STAGE2A_SESSION_PLATFORM_ACCEPTED`.
+
+## Additive Stage 2B analysis-job API
+
+The orchestration candidate is served by a separate `create_analysis_app`
+application and is documented in [ANALYSIS_JOB_API.md](ANALYSIS_JOB_API.md).
+Its snapshot and four stable operation IDs are intentionally not mounted into
+the frozen Session API, so the Session API V1 document remains byte-for-byte
+unchanged.

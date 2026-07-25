@@ -180,6 +180,19 @@ jobs:
           git diff --exit-code -- config/platform/session_api_v1.openapi.json config/platform/SESSION_API_SOURCE.json docs/postman/TennisAI-Session-API.postman_collection.json
           uv run ruff check src/platform tests/test_session_platform.py scripts/export_session_api_openapi.py scripts/export_session_api_postman.py scripts/validate_session_api_contract.py
 
+      - name: Stage 2B orchestration unit and OpenAPI contract
+        run: |
+          mkdir -p .artifacts/stage2b-analysis-jobs
+          uv run --extra platform pytest tests/test_analysis_jobs.py tests/test_analysis_job_api.py \
+            --junitxml=.artifacts/stage2b-analysis-jobs/unit-test-report.xml
+          uv run --extra platform python scripts/export_analysis_job_api_openapi.py
+          uv run --extra platform python scripts/validate_analysis_job_contract.py \
+            > .artifacts/stage2b-analysis-jobs/openapi-validation.json
+          uv run ruff check src/platform tests/test_analysis_jobs.py tests/test_analysis_job_api.py \
+            tests/test_analysis_jobs_integration.py scripts/export_analysis_job_api_openapi.py \
+            scripts/validate_analysis_job_contract.py scripts/audit_analysis_job_runtime.py \
+            scripts/export_analysis_job_runtime_evidence.py
+
       - name: Start PostgreSQL, MinIO and API container
         env:
           POSTGRES_PASSWORD: tennisai
@@ -191,13 +204,24 @@ jobs:
             exit 1
           }
           docker compose -f infrastructure/session-platform/compose.yml logs --no-color minio-init
-          docker compose -f infrastructure/session-platform/compose.yml up -d --build api
-          docker compose -f infrastructure/session-platform/compose.yml logs --no-color api || true
+          docker compose -f infrastructure/session-platform/compose.yml up -d --build api analysis-api
+          docker compose -f infrastructure/session-platform/compose.yml logs --no-color api analysis-api || true
+          api_ready=false
           for attempt in $(seq 1 60); do
-            if curl --fail --silent http://localhost:8000/healthz >/dev/null; then break; fi
+            if curl --fail --silent http://localhost:8000/healthz >/dev/null; then api_ready=true; break; fi
             sleep 2
           done
+          docker compose -f infrastructure/session-platform/compose.yml logs --no-color api analysis-api || true
+          test "$api_ready" = true
           curl --fail --silent http://localhost:8000/healthz >/dev/null
+          analysis_api_ready=false
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://localhost:8001/api/v1/analysis/openapi.json >/dev/null; then analysis_api_ready=true; break; fi
+            sleep 2
+          done
+          docker compose -f infrastructure/session-platform/compose.yml logs --no-color api analysis-api || true
+          test "$analysis_api_ready" = true
+          curl --fail --silent http://localhost:8001/api/v1/analysis/openapi.json >/dev/null
           docker compose -f infrastructure/session-platform/compose.yml ps
           docker compose -f infrastructure/session-platform/compose.yml images --format json api \
             > .artifacts/stage2a-session-platform/docker-images.json
@@ -218,12 +242,29 @@ jobs:
           SESSION_PLATFORM_RUNTIME_RESULTS_PATH: .artifacts/stage2a-session-platform/runtime-results.json
         run: |
           uv run --extra platform tennisai platform migrate
+          uv run --extra platform alembic downgrade 0001_session_platform
+          uv run --extra platform alembic upgrade head
           uv run --extra platform alembic current > .artifacts/stage2a-session-platform/alembic-current.txt
-          uv run python -c 'import json; from pathlib import Path; p=Path(".artifacts/stage2a-session-platform/alembic-current.txt"); Path(".artifacts/stage2a-session-platform/migration-report.json").write_text(json.dumps({"status":"migrations_applied","service":"postgresql","alembic_current":p.read_text().strip()}, sort_keys=True)+"\n")'
+          uv run python -c 'import json; from pathlib import Path; p=Path(".artifacts/stage2a-session-platform/alembic-current.txt"); Path(".artifacts/stage2a-session-platform/migration-report.json").write_text(json.dumps({"status":"migrations_reapplied","service":"postgresql","alembic_current":p.read_text().strip(),"revision":"0002_analysis_job_orchestration"}, sort_keys=True)+"\n")'
           uv run --extra platform tennisai platform doctor \
             > .artifacts/stage2a-session-platform/doctor-report.json
           uv run --extra platform pytest tests/test_session_platform_integration.py \
             --junitxml=.artifacts/stage2a-session-platform/integration-test-report.xml
+          RUN_ANALYSIS_JOB_HTTP_INTEGRATION=1 ANALYSIS_JOB_API_BASE_URL=http://localhost:8001 \
+            uv run --extra platform pytest tests/test_analysis_jobs_integration.py \
+            --junitxml=.artifacts/stage2b-analysis-jobs/integration-test-report.xml
+          uv run python scripts/export_analysis_job_runtime_evidence.py \
+            --unit .artifacts/stage2b-analysis-jobs/unit-test-report.xml \
+            --integration .artifacts/stage2b-analysis-jobs/integration-test-report.xml \
+            --openapi .artifacts/stage2b-analysis-jobs/openapi-validation.json \
+            --session-openapi config/platform/session_api_v1.openapi.json \
+            --base-sha b3703003fe2aa23f8703097b0dc155c7825f5363 \
+            --head-sha "${{ github.event.pull_request.head.sha || github.sha }}" \
+            --migration-revision 0002_analysis_job_orchestration \
+            --migration-report .artifacts/stage2a-session-platform/migration-report.json \
+            --output .artifacts/stage2b-analysis-jobs/analysis-job-runtime.json
+          uv run python scripts/audit_analysis_job_runtime.py .artifacts/stage2b-analysis-jobs/analysis-job-runtime.json \
+            > .artifacts/stage2b-analysis-jobs/security-summary.json
           curl --fail --silent http://localhost:8000/api/v1/openapi.json >/dev/null
           docker compose -f infrastructure/session-platform/compose.yml run --rm --no-deps \
             --entrypoint /bin/sh minio-init -c \
@@ -260,6 +301,23 @@ jobs:
             .artifacts/stage2a-session-platform/docker-build-report.json
             .artifacts/stage2a-session-platform/security-summary.json
             .artifacts/stage2a-session-platform/runtime-test-summary.json
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
+
+      - name: Publish Stage 2B analysis orchestration evidence
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage2b-analysis-orchestration-evidence
+          path: |
+            config/platform/analysis_job_api_v1.openapi.json
+            .artifacts/stage2b-analysis-jobs/unit-test-report.xml
+            .artifacts/stage2b-analysis-jobs/integration-test-report.xml
+            .artifacts/stage2b-analysis-jobs/openapi-validation.json
+            .artifacts/stage2b-analysis-jobs/analysis-job-runtime.json
+            .artifacts/stage2b-analysis-jobs/security-summary.json
+            .artifacts/stage2a-session-platform/migration-report.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 6

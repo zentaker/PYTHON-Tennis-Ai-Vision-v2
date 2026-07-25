@@ -12,10 +12,11 @@ browser -> FastAPI Session API V1 -> PostgreSQL (metadata)
                       `-> Core bundle boundary (future worker, not Stage 2A)
 ```
 
-There is no queue, worker, Redis, Celery, authentication provider, cloud
-provider, tracking, detection, or inference in this stage. The API is suitable
-for a local development stack only; production credentials and networking are
-intentionally not supplied.
+Stage 2B adds a database-backed queue and lease contract, but still no worker
+implementation, Redis, Celery, authentication provider, cloud provider,
+tracking, detection, or inference. The API is suitable for a local development
+stack only; production credentials and networking are intentionally not
+supplied.
 
 The contract snapshot is frozen and auditable under
 `SESSION_PLATFORM_API_V1_FROZEN`; it is stored at
@@ -34,3 +35,7 @@ The layers remain recognizable and intentionally one-directional:
 `schemas`, `storage`, and `domain` providing DTOs, MinIO/S3, and invariants.
 
 Routes do not execute SQL, call boto3, or expose ORM objects as public DTOs.
+
+The additive `analysis_app.py` owns analysis-job routes and uses the same
+layering. It is not mounted into `create_app()` so the frozen Session API
+OpenAPI and route semantics remain byte-for-byte stable.

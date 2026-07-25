@@ -27,6 +27,17 @@ V1 is frozen as `SESSION_PLATFORM_API_V1_FROZEN` and Stage 2A is accepted as
 The patch fixes exact 64-hex SHA-256/fingerprint constraints, removes impossible
 session `INVALID_REQUEST` documentation, normalizes download signer failures to
 a safe HTTP 503 envelope, and keeps Postman upload metadata in collection
-variables only. The release tag is `tennisai-session-platform-v1.0.0`. The next
-action is TennisWebAI Stage 0C — Session Library and managed uploads; no Stage
-2B worker branch is created.
+variables only. The release tag is `tennisai-session-platform-v1.0.0`.
+
+Core Stage 2B is implemented on `agent/analysis-jobs-stage2b` from frozen main
+`b3703003fe2aa23f8703097b0dc155c7825f5363`. The additive analysis API,
+Alembic migration, idempotent queue, atomic lease/heartbeat/reclaim logic,
+artifact finalization contract, worker harness, OpenAPI snapshot, Compose
+analysis-api service, tests and documentation are present. No worker,
+inference, GPU, cloud, video or secret work was performed. The initial release
+audit was blocked at the previous head; remediation now covers real Compose
+HTTP/persistence evidence, row-locked lease reclaim and heartbeat semantics,
+strict artifact-key validation, sanitized worker failures, and atomic
+cancellation linearization. Remediation CI evidence is ready at the current
+head, but candidate gates remain registered and not passed or frozen; request
+the next release audit and do not merge or create a release tag beforehand.

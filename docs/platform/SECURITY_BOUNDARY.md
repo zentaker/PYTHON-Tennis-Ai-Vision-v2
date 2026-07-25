@@ -21,6 +21,12 @@ it never logs request bodies, credentials, or complete presigned URLs. The
 public storage endpoint is separated from the internal MinIO endpoint and is
 checked before signing.
 
+Stage 2B additionally rejects query-bearing artifact keys and manifests, full
+URLs, duplicate keys, invalid checksums, and unbounded worker identifiers.
+Lease tokens are opaque and logs contain no tokens, URLs, credentials, paths,
+or payloads. Runtime evidence scripts fail closed on secret-like values and on
+video/GPU observations.
+
 Authentication, authorization, tenant isolation, rate limiting, malware/video
 scanning, TLS termination, retention enforcement, and production IAM remain
 outside this gate and must be added before deployment.

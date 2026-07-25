@@ -8,5 +8,5 @@ case "$current" in
   *) echo "migration did not reach Alembic head" >&2; exit 1 ;;
 esac
 
-exec uv run --frozen --no-sync uvicorn src.platform.api.app:create_app \
-  --factory --host "${TENNISAI_API_HOST:-0.0.0.0}" --port "${TENNISAI_API_PORT:-8000}"
+exec uv run --frozen --no-sync uvicorn src.platform.api.analysis_app:create_analysis_app \
+  --factory --host "${TENNISAI_API_HOST:-0.0.0.0}" --port "${TENNISAI_ANALYSIS_API_PORT:-8001}"
