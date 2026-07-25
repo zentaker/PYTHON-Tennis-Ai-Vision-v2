@@ -119,6 +119,14 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
         heartbeat_interval=0.1,
         poll_interval=0.01,
     )
+    discarded_by_a: list[list[str]] = []
+    original_discard_a = worker_a._discard_published
+
+    def record_discard_a(keys, run_id=None, attempt=None):
+        discarded_by_a.append(list(keys))
+        original_discard_a(keys, run_id, attempt)
+
+    worker_a._discard_published = record_discard_a
     _cancel_existing_queue(factory, run_id)
     thread_a = threading.Thread(target=worker_a.run_once)
     thread_a.start()
@@ -154,7 +162,7 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
     new_second = new_prefix + "second.json"
     assert not any(storage.object_exists(key) for key in old_keys), (
         f"deletes={storage.delete_calls} puts={storage.put_keys} "
-        f"worker_a={worker_a.counters} worker_b={worker_b.counters}"
+        f"worker_a={worker_a.counters} worker_b={worker_b.counters} discarded={discarded_by_a}"
     )
     with factory() as db:
         terminal = db.get(AnalysisRun, run_id)
