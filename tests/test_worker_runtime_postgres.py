@@ -35,7 +35,9 @@ def test_postgres_stale_attempt_recovery_isolated():
         assert first.attempt == 1
         first.lease_expires_at = datetime.now(timezone.utc) - timedelta(seconds=1)
         db.commit()
-        reclaim_expired_jobs(db)
+        db.refresh(first)
+        assert reclaim_expired_jobs(db) == 1
+        db.expire_all()
         second, token2 = claim_next_job(db, "stage2c-stale-b", "test")
         assert second.attempt == 2
         old_key = f"runs/{run_id}/bundle/attempt-1/manifest.json"
