@@ -11,7 +11,11 @@ from src.platform.config.settings import PlatformSettings
 from src.platform.db.models import AnalysisRun
 from src.platform.db.session import make_session_factory
 from src.platform.domain.errors import PlatformError
-from src.platform.services.analysis_jobs import claim_next_job, reclaim_expired_jobs
+from src.platform.services.analysis_jobs import (
+    claim_next_job,
+    reclaim_expired_jobs,
+    request_cancellation,
+)
 from src.platform.services.worker_contract import WorkerContractClient
 from src.platform.storage.s3 import S3ObjectStorage
 from tests.test_worker_runtime_integration import _uploaded_session, _call
@@ -31,7 +35,15 @@ def test_postgres_stale_attempt_recovery_isolated():
     factory = make_session_factory(settings)
     storage = S3ObjectStorage(settings)
     with factory() as db:
+        # The shared Compose database may contain queued runs from the earlier
+        # integration suites. Cancel those runs so this proof claims the run it
+        # just created, rather than an unrelated queue entry.
+        pending_runs = db.query(AnalysisRun).filter(AnalysisRun.status == "QUEUED").all()
+        for pending in pending_runs:
+            if pending.id != run_id:
+                request_cancellation(db, pending.id)
         first, token1 = claim_next_job(db, "stage2c-stale-a", "test")
+        assert first.id == run_id
         assert first.attempt == 1
         first.lease_expires_at = datetime.now(timezone.utc) - timedelta(seconds=1)
         db.commit()
