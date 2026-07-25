@@ -15,6 +15,7 @@ PATTERNS = {
     "traceback": re.compile(r"Traceback \(most recent call last\)"),
     "video_bytes_or_file": re.compile(r"(?i)\.(?:mp4|mov|avi|mkv|webm)\b"),
 }
+REQUIRED_CLAIMS = {"lease_loss", "stale_attempt", "workspace_boundary", "bounded_read"}
 
 
 def main() -> int:
@@ -37,7 +38,12 @@ def main() -> int:
     evidence_path = args.evidence_dir / "worker-runtime-evidence.json"
     if evidence_path.exists():
         evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
-        for claim, support in evidence.get("supporting_tests", {}).items():
+        claims = evidence.get("supporting_tests", {})
+        for claim in sorted(REQUIRED_CLAIMS):
+            support = claims.get(claim)
+            if not isinstance(support, dict) or support.get("passed") is not True or not support.get("tests"):
+                violations.append({"file": str(evidence_path.relative_to(args.evidence_dir)), "pattern": f"unsupported_claim:{claim}"})
+        for claim, support in claims.items():
             if support.get("passed") is not True or not support.get("tests"):
                 violations.append({"file": str(evidence_path.relative_to(args.evidence_dir)), "pattern": f"unsupported_claim:{claim}"})
     summary = {"files_scanned": scanned, "patterns_checked": sorted(PATTERNS), "violations": violations, "status": "failed" if violations else "passed"}

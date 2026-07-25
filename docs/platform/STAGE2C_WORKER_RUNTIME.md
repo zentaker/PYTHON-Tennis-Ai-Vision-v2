@@ -52,6 +52,14 @@ before reading. Objects use exclusive keys such as
 `runs/{run_id}/bundle/attempt-1/manifest.json`; partial uploads are compensated
 and cleanup is restricted to the attempt's own publication set.
 
+The configured worker root, run directory, and attempt directory are accepted
+only as real directories. Their device/inode identities are captured before
+processor execution and checked again before publication and cleanup. A
+processor that deletes, renames, or replaces the workspace (including with a
+symlink) fails closed; cleanup never resolves or follows a replacement. Artifact
+reads use `lstat`, `O_NOFOLLOW` where available, `fstat`, a single-link check,
+the filesystem size before reading, and a `max_artifact_bytes + 1` read bound.
+
 Release evidence is generated from JUnit testcase names and fails closed when
 required tests are skipped or absent. The Stage 2C security auditor scans the
 generated reports, worker log, Compose state, and structured evidence for lease
@@ -61,13 +69,15 @@ summary is produced by that scan; it is not a hardcoded status.
 
 The evidence suite names the proof points explicitly: symlink-to-file inside
 and outside the workspace, symlinked parent, hardlink, duplicate descriptor and
-key, single and aggregate size limits, lease loss before and after publication,
+key, single and aggregate size limits, bounded sparse-file rejection, workspace
+root/run/attempt replacement, lease loss before and after publication,
 shutdown during processing and finalization, cancellation/lease-loss race,
-partial-upload compensation, and stale-attempt recovery. The PostgreSQL test
-claims attempt 1 expiry/requeue, attempt 2 publication, stale finalization
-rejection, and preservation of attempt 2 objects. A skipped integration or
-PostgreSQL testcase prevents evidence export and therefore prevents artifact
-publication.
+partial-upload compensation, and stale-attempt recovery. The PostgreSQL/MinIO
+scenario pauses Worker A after its first successful publication, expires and
+requeues attempt 1 through Stage 2B, lets Worker B complete attempt 2, then
+resumes Worker A; production cleanup removes attempt-1 objects automatically,
+without a test-side delete. A skipped integration or PostgreSQL testcase
+prevents evidence export and therefore prevents artifact publication.
 
 Runtime events (`claim`, `run_finished`, `run_failed`, `lease_lost`,
 `cleanup_failed`, and idle polls) are structured log records. No external

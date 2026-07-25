@@ -20,7 +20,13 @@ from ..services.worker_contract import WorkerContractClient
 from ..storage.interface import ObjectStorage
 from ..storage.keys import bundle_artifact_key, validate_object_key
 from .protocol import AnalysisContext, AnalysisProcessor, AnalysisResult, ProcessorOutcome
-from .workspace import attempt_workspace, cleanup_workspace, ensure_worker_root
+from .workspace import (
+    attempt_workspace,
+    capture_workspace_identity,
+    cleanup_workspace,
+    ensure_worker_root,
+    validate_workspace_identity,
+)
 
 LOGGER = logging.getLogger("tennisai.worker")
 
@@ -119,6 +125,7 @@ class WorkerRuntime:
                 name="analysis-heartbeat",
             )
             workspace = attempt_workspace(self.worker_root, run.id, run.attempt)
+            workspace_identity = capture_workspace_identity(self.worker_root, workspace)
             started = time.monotonic()
             published_keys: list[str] = []
             self.active_stop_event = threading.Event()
@@ -142,6 +149,7 @@ class WorkerRuntime:
                     shutdown_requested=self.active_stop_event,
                 )
                 result = self.processor_factory().process(context)
+                validate_workspace_identity(self.worker_root, workspace, workspace_identity)
                 if lease_lost.is_set() or self.shutdown_requested.is_set():
                     raise LeaseLost()
                 # The claim object is deliberately detached from long-running
@@ -226,8 +234,8 @@ class WorkerRuntime:
                 heartbeat_thread.join(timeout=max(1.0, self.heartbeat_interval))
                 cancellation_thread.join(timeout=1.0)
                 try:
-                    cleanup_workspace(self.worker_root, workspace)
-                except OSError:
+                    cleanup_workspace(self.worker_root, workspace, workspace_identity)
+                except Exception:
                     LOGGER.info("worker_cleanup_failed", extra={"event": "cleanup_failed"})
                 self.active_stop_event = None
 
@@ -279,13 +287,10 @@ class WorkerRuntime:
             if (not relative or canonical_relative != relative or relative.startswith("/") or "\\" in relative
                     or any(ord(char) < 32 or ord(char) == 127 for char in relative)):
                 raise PublicationError(keys)
-            root = workspace.resolve()
-            target = workspace / PurePosixPath(relative)
-            resolved = target.resolve(strict=False)
-            if root not in resolved.parents or resolved == root:
+            if not self._workspace_contains(workspace, relative):
                 raise PublicationError(keys)
             try:
-                body = self._read_regular_artifact(workspace, relative)
+                body = self._read_regular_artifact(workspace, relative, self.max_artifact_bytes)
             except (OSError, ValueError) as exc:
                 raise PublicationError(keys) from exc
             if len(body) > self.max_artifact_bytes:
@@ -313,10 +318,22 @@ class WorkerRuntime:
         return published, keys
 
     @staticmethod
-    def _read_regular_artifact(workspace: Path, relative: str) -> bytes:
+    def _workspace_contains(workspace: Path, relative: str) -> bool:
+        if not workspace.is_absolute():
+            workspace = Path.cwd() / workspace
+        target = workspace / PurePosixPath(relative)
+        return workspace in target.parents and target != workspace
+
+    @staticmethod
+    def _read_regular_artifact(workspace: Path, relative: str, max_bytes: int) -> bytes:
         """Read only a non-link regular file, with no-follow semantics."""
 
-        root = workspace.resolve()
+        root = workspace if workspace.is_absolute() else Path.cwd() / workspace
+        if not root.is_absolute():
+            raise ValueError("workspace must be absolute")
+        info = os.lstat(root)
+        if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
+            raise ValueError("workspace is not a real directory")
         current = root
         parts = PurePosixPath(relative).parts
         for index, part in enumerate(parts):
@@ -331,11 +348,14 @@ class WorkerRuntime:
         fd = os.open(current, flags | nofollow)
         try:
             info = os.fstat(fd)
-            if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+            if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_size > max_bytes:
                 raise ValueError("artifact link count or type invalid")
             with os.fdopen(fd, "rb") as handle:
                 fd = -1
-                return handle.read()
+                body = handle.read(max_bytes + 1)
+                if len(body) > max_bytes:
+                    raise ValueError("artifact exceeds size limit")
+                return body
         finally:
             if fd >= 0:
                 os.close(fd)

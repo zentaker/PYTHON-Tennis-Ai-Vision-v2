@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
 import threading
 import time
@@ -25,7 +26,11 @@ from src.platform.worker.protocol import AnalysisResult, ProcessorArtifact
 from src.platform.domain.enums import ArtifactKind
 from src.platform.worker.fixture_processor import ContractFixtureProcessor
 from src.product.cli import main as cli_main
-from src.platform.worker.workspace import attempt_workspace, cleanup_workspace
+from src.platform.worker.workspace import (
+    attempt_workspace,
+    capture_workspace_identity,
+    cleanup_workspace,
+)
 
 
 class MemoryStorage:
@@ -521,7 +526,7 @@ def test_lease_loss_before_publication_fails_closed(fixture_run, tmp_path):
     assert storage.objects == {}
 
 
-def test_lease_loss_after_partial_publication_compensates_attempt(fixture_run, tmp_path):
+def test_publication_after_partial_upload_compensates_current_attempt(fixture_run, tmp_path):
     factory, session_id = fixture_run
     with factory() as db:
         run = create_and_queue_run(db, session_id, "STANDARD")
@@ -625,7 +630,7 @@ def test_cancel_and_lease_loss_race_never_publishes_stale_result(fixture_run, tm
     assert storage.objects == {}
 
 
-def test_stale_attempt_recovery_is_isolated(fixture_run, tmp_path):
+def test_attempt_one_cannot_delete_attempt_two_objects(fixture_run, tmp_path):
     factory, session_id = fixture_run
     storage = MemoryStorage()
     with factory() as db:
@@ -639,7 +644,6 @@ def test_stale_attempt_recovery_is_isolated(fixture_run, tmp_path):
         second, token2 = claim_next_job(db, "worker-b", "test")
         key2 = f"runs/{run.id}/bundle/attempt-2/manifest.json"
         storage.put_bytes(key2, b"new", "application/json")
-        storage.delete_object(key1)
         client = WorkerContractClient(db, "worker-b", "test")
         client.run_id, client.lease_token = second.id, token2
         client.complete(
@@ -666,4 +670,149 @@ def test_stale_attempt_recovery_is_isolated(fixture_run, tmp_path):
         )
         runtime._discard_published([key2], run.id, 1)
         assert storage.object_exists(key2)
+        assert storage.object_exists(key1)
         assert db.get(type(run), run.id).result_manifest == key2
+
+
+def test_attempt_one_cannot_finalize_after_attempt_two_claim(fixture_run, tmp_path):
+    factory, session_id = fixture_run
+    storage = MemoryStorage()
+    with factory() as db:
+        run = create_and_queue_run(db, session_id, "STANDARD")
+        first, token1 = claim_next_job(db, "worker-a", "test")
+        first.lease_expires_at = datetime.now(timezone.utc) - timedelta(seconds=1)
+        db.commit()
+        reclaim_expired_jobs(db)
+        second, token2 = claim_next_job(db, "worker-b", "test")
+        client = WorkerContractClient(db, "worker-b", "test")
+        client.run_id, client.lease_token = second.id, token2
+        key2 = f"runs/{run.id}/bundle/attempt-2/manifest.json"
+        storage.put_bytes(key2, b"new", "application/json")
+        client.complete(
+            [{"kind": "MANIFEST", "object_key": key2, "media_type": "application/json", "size_bytes": 3, "sha256": "a" * 64}],
+            "b" * 64,
+            key2,
+        )
+        stale = WorkerContractClient(db, "worker-a", "test")
+        stale.run_id, stale.lease_token = run.id, token1
+        with pytest.raises(Exception):
+            stale.complete(
+                [{"kind": "MANIFEST", "object_key": key2, "media_type": "application/json", "size_bytes": 3, "sha256": "a" * 64}],
+                "b" * 64,
+                key2,
+            )
+        assert db.get(type(run), run.id).result_manifest == key2
+
+
+def test_rejects_symlinked_worker_root(fixture_run, tmp_path):
+    factory, _ = fixture_run
+    real_root = tmp_path / "real-root"
+    real_root.mkdir()
+    link_root = tmp_path / "worker-root"
+    link_root.symlink_to(real_root, target_is_directory=True)
+    with pytest.raises(ValueError):
+        WorkerRuntime(
+            factory,
+            MemoryStorage(),
+            worker_id="test-worker",
+            worker_version="test",
+            processor_factory=ContractFixtureProcessor,
+            worker_root=link_root,
+        )
+
+
+def test_rejects_symlinked_run_directory(tmp_path):
+    root = tmp_path / "root"
+    root.mkdir()
+    run_id = uuid4()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (root / str(run_id)).symlink_to(outside, target_is_directory=True)
+    with pytest.raises(ValueError):
+        attempt_workspace(root, run_id, 1)
+
+
+def test_cleanup_never_follows_replaced_workspace(tmp_path):
+    root = tmp_path / "root"
+    root.mkdir()
+    run_id = uuid4()
+    workspace = attempt_workspace(root, run_id, 1)
+    identity = capture_workspace_identity(root, workspace)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    sentinel = outside / "sentinel.txt"
+    sentinel.write_text("keep")
+    workspace.rmdir()
+    workspace.symlink_to(outside, target_is_directory=True)
+    with pytest.raises(ValueError):
+        cleanup_workspace(root, workspace, identity)
+    assert sentinel.read_text() == "keep"
+
+
+def test_rejects_replaced_workspace_symlink(fixture_run, tmp_path):
+    factory, session_id = fixture_run
+    with factory() as db:
+        run = create_and_queue_run(db, session_id, "STANDARD")
+
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    sentinel = outside / "sentinel.txt"
+    sentinel.write_text("keep")
+
+    class ReplaceWorkspace:
+        def process(self, context):
+            shutil.rmtree(context.workspace)
+            context.workspace.symlink_to(outside, target_is_directory=True)
+            return AnalysisResult("COMPLETE", ())
+
+    runtime = WorkerRuntime(
+        factory,
+        MemoryStorage(),
+        worker_id="test-worker",
+        worker_version="test",
+        processor_factory=ReplaceWorkspace,
+        worker_root=tmp_path / "worker-root",
+    )
+    runtime.run_once()
+    with factory() as db:
+        assert db.get(type(run), run.id).status == "FAILED"
+    assert sentinel.read_text() == "keep"
+
+
+def test_workspace_inode_replacement_fails_closed(fixture_run, tmp_path):
+    factory, session_id = fixture_run
+    with factory() as db:
+        run = create_and_queue_run(db, session_id, "STANDARD")
+
+    class ReplaceDirectory:
+        def process(self, context):
+            moved = context.workspace.with_name("replaced")
+            context.workspace.rename(moved)
+            context.workspace.mkdir()
+            (context.workspace / "manifest.json").write_text("{}")
+            return AnalysisResult("COMPLETE", ())
+
+    storage = MemoryStorage()
+    runtime = WorkerRuntime(
+        factory,
+        storage,
+        worker_id="test-worker",
+        worker_version="test",
+        processor_factory=ReplaceDirectory,
+        worker_root=tmp_path / "worker-root",
+    )
+    runtime.run_once()
+    with factory() as db:
+        assert db.get(type(run), run.id).status == "FAILED"
+    assert storage.objects == {}
+
+
+def test_oversized_artifact_rejected_before_unbounded_read(fixture_run, tmp_path):
+    runtime, workspace = _path_runtime(fixture_run, tmp_path, max_artifact_bytes=1024)
+    workspace.mkdir()
+    sparse = workspace / "sparse.bin"
+    with sparse.open("wb") as handle:
+        handle.truncate(1025)
+    descriptor = ProcessorArtifact("sparse.bin", ArtifactKind.MANIFEST, "application/octet-stream", "test")
+    with pytest.raises(PublicationError):
+        runtime._publish(uuid4(), 1, workspace, AnalysisResult("COMPLETE", (descriptor,)), threading.Event())

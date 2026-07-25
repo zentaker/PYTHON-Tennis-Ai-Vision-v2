@@ -25,14 +25,22 @@ REQUIRED = {
     ),
     "lease_loss": (
         "test_lease_loss_before_publication_fails_closed",
-        "test_lease_loss_after_partial_publication_compensates_attempt",
+        "test_real_lease_loss_after_first_publication_compensates_attempt",
         "test_cancel_and_lease_loss_race_never_publishes_stale_result",
     ),
     "shutdown": (
         "test_shutdown_during_processor_stops_without_finalization",
         "test_shutdown_after_publication_before_finalization_compensates",
     ),
-    "stale_attempt": ("test_stale_attempt_recovery_is_isolated",),
+    "stale_attempt": ("test_postgres_minio_stale_attempt_cleanup_is_automatic",),
+    "workspace_boundary": (
+        "test_rejects_replaced_workspace_symlink",
+        "test_rejects_symlinked_worker_root",
+        "test_rejects_symlinked_run_directory",
+        "test_workspace_inode_replacement_fails_closed",
+        "test_cleanup_never_follows_replaced_workspace",
+    ),
+    "bounded_read": ("test_oversized_artifact_rejected_before_unbounded_read",),
     "publication_failure": ("test_partial_upload_is_compensated_without_touching_other_attempt",),
 }
 
