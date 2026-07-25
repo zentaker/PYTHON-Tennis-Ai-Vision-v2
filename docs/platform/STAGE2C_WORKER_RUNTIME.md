@@ -16,12 +16,15 @@ public `FAILED` path for deterministic integration evidence.
 
 ```sh
 uv run --extra platform tennisai worker run --once \
+  --processor contract-fixture --allow-contract-fixture \
   --worker-id local-worker --worker-version stage2c-contract-fixture
 ```
 
-The Compose `worker` service uses the same command and internal MinIO/Postgres
-endpoints. It is started explicitly for runtime integration evidence; the
-Session and Analysis HTTP contracts remain unchanged.
+The normal CLI has no processor fallback and exits safely when no real
+processor is configured. The fixture requires both `--processor
+contract-fixture` and `--allow-contract-fixture`; it is not real analysis. The
+Compose worker is isolated under the `stage2c-evidence` profile and is never
+started by an unprofiled `docker compose up`.
 
 Lease ownership belongs to the attempt that claimed the run. Heartbeats use a
 new SQLAlchemy session and a stale or lost lease causes the runtime to abandon
@@ -42,6 +45,12 @@ The processor seam is intentionally narrow:
 Only the runtime publishes objects or changes run state. Logs contain event,
 run status, and duration fields, never lease tokens, credentials, signed URLs,
 local paths, or exception traces.
+
+Processor artifact descriptors contain controlled relative paths. The runtime
+rejects traversal, symlink, directory, duplicate, hardlink, and size violations
+before reading. Objects use exclusive keys such as
+`runs/{run_id}/bundle/attempt-1/manifest.json`; partial uploads are compensated
+and cleanup is restricted to the attempt's own publication set.
 
 Runtime events (`claim`, `run_finished`, `run_failed`, `lease_lost`,
 `cleanup_failed`, and idle polls) are structured log records. No external

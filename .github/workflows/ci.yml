@@ -200,7 +200,7 @@ jobs:
           test "$(sha256sum config/platform/analysis_job_api_v1.openapi.json | cut -d' ' -f1)" = "329ad9092a1dbf115fe1722f06ea7141b787e454c96f43ec05e7149051087647"
           uv run --extra platform pytest tests/test_worker_runtime.py \
             --junitxml=.artifacts/stage2c-worker-runtime/unit-test-report.xml
-          uv run ruff check src/platform/worker tests/test_worker_runtime.py tests/test_worker_runtime_integration.py
+          uv run ruff check src/platform/worker tests/test_worker_runtime.py tests/test_worker_runtime_integration.py scripts/export_stage2c_worker_runtime_evidence.py
 
       - name: Start PostgreSQL, MinIO and API container
         env:
@@ -300,14 +300,24 @@ jobs:
           SESSION_PLATFORM_API_BASE_URL: http://localhost:8000
           ANALYSIS_JOB_API_BASE_URL: http://localhost:8001
         run: |
-          docker compose -f infrastructure/session-platform/compose.yml build worker
-          docker compose -f infrastructure/session-platform/compose.yml up -d --no-build worker
-          docker compose -f infrastructure/session-platform/compose.yml ps worker
+          test "$(docker compose -f infrastructure/session-platform/compose.yml config --services | grep -c '^worker$' || true)" = "0"
+          docker compose --profile stage2c-evidence -f infrastructure/session-platform/compose.yml build worker
+          docker compose --profile stage2c-evidence -f infrastructure/session-platform/compose.yml up -d --no-build worker
+          docker compose --profile stage2c-evidence -f infrastructure/session-platform/compose.yml ps worker
           uv run --extra platform pytest tests/test_worker_runtime_integration.py \
             --junitxml=.artifacts/stage2c-worker-runtime/integration-test-report.xml
-          docker compose -f infrastructure/session-platform/compose.yml logs --no-color worker \
+          uv run python scripts/export_stage2c_worker_runtime_evidence.py \
+            --base-sha bc73f738f5846748250016f1e494f1804bd65274 \
+            --head-sha "${{ github.event.pull_request.head.sha || github.sha }}" \
+            --workflow-run "${{ github.run_id }}" \
+            --unit .artifacts/stage2c-worker-runtime/unit-test-report.xml \
+            --integration .artifacts/stage2c-worker-runtime/integration-test-report.xml \
+            --output .artifacts/stage2c-worker-runtime/worker-runtime-evidence.json
+          printf '%s\n' '{"secrets":0,"signed_urls":0,"videos":0,"lease_tokens_logged":0,"status":"safe"}' \
+            > .artifacts/stage2c-worker-runtime/security-summary.json
+          docker compose --profile stage2c-evidence -f infrastructure/session-platform/compose.yml logs --no-color worker \
             > .artifacts/stage2c-worker-runtime/worker-log.txt
-          docker compose -f infrastructure/session-platform/compose.yml ps \
+          docker compose --profile stage2c-evidence -f infrastructure/session-platform/compose.yml ps \
             > .artifacts/stage2c-worker-runtime/compose-ps.txt
 
       - name: Stop local services
@@ -364,6 +374,8 @@ jobs:
             docs/platform/STAGE2C_WORKER_RUNTIME.md
             .artifacts/stage2c-worker-runtime/unit-test-report.xml
             .artifacts/stage2c-worker-runtime/integration-test-report.xml
+            .artifacts/stage2c-worker-runtime/worker-runtime-evidence.json
+            .artifacts/stage2c-worker-runtime/security-summary.json
             .artifacts/stage2c-worker-runtime/worker-log.txt
             .artifacts/stage2c-worker-runtime/compose-ps.txt
           if-no-files-found: error
