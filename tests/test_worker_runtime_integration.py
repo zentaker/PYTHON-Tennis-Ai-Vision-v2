@@ -62,7 +62,7 @@ def test_worker_service_processes_http_run_and_persists_minio_artifacts():
     terminal = _terminal_run(analysis_base, session_id, "STANDARD", f"stage2c-{uuid4()}")
     run_id = terminal["id"]
     assert terminal["status"] == "COMPLETE", terminal
-    assert terminal["result_manifest"] == f"runs/{run_id}/bundle/manifest.json"
+    assert terminal["result_manifest"] == f"runs/{run_id}/bundle/attempt-1/manifest.json"
     storage = S3ObjectStorage(PlatformSettings())
     assert json.loads(storage.get_bytes(terminal["result_manifest"]))["schema_version"] == "stage2c.fixture.v1"
     status, artifacts = _call(session_base, "GET", f"/api/v1/sessions/{session_id}/artifacts")
