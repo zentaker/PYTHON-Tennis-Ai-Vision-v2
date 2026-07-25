@@ -137,7 +137,6 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
     old_keys = [old_prefix + "first.json", old_prefix + "second.json"]
     new_manifest = new_prefix + "first.json"
     new_second = new_prefix + "second.json"
-    assert all(key in storage.delete_calls for key in old_keys), storage.delete_calls
     assert not any(storage.object_exists(key) for key in old_keys)
     with factory() as db:
         terminal = db.get(AnalysisRun, run_id)
@@ -145,8 +144,10 @@ def _run_real_lease_loss_scenario(tmp_path: Path) -> None:
         if terminal.status != "COMPLETE":
             pytest.fail(
                 f"status={terminal.status} error_code={terminal.error_code} "
-                f"attempt={terminal.attempt} worker_a={worker_a.counters} worker_b={worker_b.counters}"
+                f"attempt={terminal.attempt} worker_a={worker_a.counters} worker_b={worker_b.counters} "
+                f"deletes={storage.delete_calls}"
             )
+        assert all(key in storage.delete_calls for key in old_keys), storage.delete_calls
         assert terminal.attempt == 2
         assert terminal.result_manifest == new_manifest
         assert all(artifact.object_key.startswith(new_prefix) for artifact in terminal.artifacts)
